@@ -286,6 +286,8 @@ TPL_BASE = """
   <!-- Bootswatch (Darkly) + Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/darkly/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css">
   <!-- Chart.js + datalabels plugin -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
@@ -356,6 +358,8 @@ TPL_BASE = """
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
 </body>
 </html>
 """
@@ -600,15 +604,27 @@ TPL_PERSONS = """
 
 <div class="card shadow-soft p-3">
   <div class="table-responsive">
-    <table class="table table-hover table-sm align-middle">
-      <thead><tr><th>#</th><th>Nom</th><th>Prénom</th><th>Naissance</th><th>Sexe</th><th>Âge</th><th class="text-end">Actions</th></tr></thead>
+    <table id="personsTable" class="table table-hover table-sm align-middle">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Naissance</th>
+          <th>Sexe</th>
+          <th>Âge</th>
+          <th class="text-end">Actions</th>
+          <th>Chambre</th>
+          <th>Arrivée</th>
+        </tr>
+      </thead>
       <tbody>
       {% for p in persons %}
         <tr>
           <td class="text-secondary">{{ p.id }}</td>
           <td class="fw-semibold">{{ p.last_name }}</td>
           <td>{{ p.first_name }}</td>
-          <td>{{ fmt_date(p.dob) or "—" }}</td>
+          <td data-order="{{ p.dob.isoformat() if p.dob else '' }}">{{ fmt_date(p.dob) or "—" }}</td>
           <td>{{ p.sex or "—" }}</td>
           <td>{{ p.age if p.age is not none else "—" }}</td>
           <td class="text-end">
@@ -617,12 +633,27 @@ TPL_PERSONS = """
               <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash3"></i></button>
             </form>
           </td>
+          <td>{{ family.room_number or "—" }}</td>
+          <td data-order="{{ family.arrival_date.isoformat() if family.arrival_date else '' }}">{{ fmt_date(family.arrival_date) or "—" }}</td>
         </tr>
       {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  new DataTable('#personsTable', {
+    columnDefs: [
+      { orderable: false, targets: [0,5,6,7,8] },
+      { visible: false, targets: [7,8] }
+    ],
+    language: {
+      url: 'https://cdn.datatables.net/plug-ins/2.0.8/i18n/fr-FR.json'
+    }
+  });
+});
+</script>
 """
 
 TPL_PERSON_FORM = """
