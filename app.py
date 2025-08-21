@@ -291,37 +291,43 @@ TPL_BASE = """
   <!-- Chart.js + datalabels plugin -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+  <script>
+    window.activeCharts = [];
+    const storedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-bs-theme', storedTheme);
+    const headStyles = getComputedStyle(document.documentElement);
+    Chart.defaults.color = headStyles.getPropertyValue('--bs-body-color');
+    Chart.defaults.borderColor = headStyles.getPropertyValue('--bs-border-color-translucent');
+  </script>
   <style>
     :root {
       --card-radius: 18px;
     }
     .card { border-radius: var(--card-radius); }
     .shadow-soft { box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-    .badge-soft { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); }
-    .table>thead { position: sticky; top: 0; background: rgba(0,0,0,.35); backdrop-filter: blur(6px); }
+    .badge-soft { background: rgba(var(--bs-body-color-rgb), .08); border: 1px solid rgba(var(--bs-body-color-rgb), .15); }
+    .table>thead { position: sticky; top: 0; background: rgba(var(--bs-body-bg-rgb), .85); backdrop-filter: blur(6px); }
     .brand { font-weight: 800; letter-spacing: .6px; }
     .nav-link.active { font-weight: 600; }
-    .form-floating>.form-control, .form-select { background: rgba(255,255,255,.04); }
+    .form-floating>.form-control, .form-select { background: rgba(var(--bs-body-color-rgb), .04); }
 
-    /* patch visibilité des champs */
     .form-control, .form-select {
-      color: #f8f9fa !important;
+      color: var(--bs-body-color) !important;
     }
     .form-control::placeholder {
-      color: rgba(255,255,255,.5);
+      color: rgba(var(--bs-body-color-rgb), .5);
     }
     .form-floating>label {
-      color: rgba(255,255,255,.7);
+      color: rgba(var(--bs-body-color-rgb), .7);
     }
 
-    /* fix menu déroulant select (sexe etc.) */
     select.form-select {
-      color: #f8f9fa !important;
-      background-color: #212529 !important;
+      color: var(--bs-body-color) !important;
+      background-color: var(--bs-body-bg) !important;
     }
     select.form-select option {
-      color: #f8f9fa !important;
-      background-color: #212529 !important;
+      color: var(--bs-body-color) !important;
+      background-color: var(--bs-body-bg) !important;
     }
   </style>
 </head>
@@ -332,6 +338,7 @@ TPL_BASE = """
       <i class="bi bi-houses-fill me-2"></i>Kardex Hôtel Social
     </a>
     <div class="ms-auto d-flex gap-2">
+      <button id="themeToggle" class="btn btn-outline-secondary" title="Basculer le thème"><i class="bi bi-sun"></i></button>
       <a class="btn btn-outline-info" href="{{ url_for('families_list') }}"><i class="bi bi-people me-1"></i>Familles</a>
       <div class="btn-group">
         <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
@@ -360,6 +367,33 @@ TPL_BASE = """
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
+<script>
+(() => {
+  const themeKey = 'theme';
+  const applyTheme = t => {
+    document.documentElement.setAttribute('data-bs-theme', t);
+    const styles = getComputedStyle(document.documentElement);
+    Chart.defaults.color = styles.getPropertyValue('--bs-body-color');
+    Chart.defaults.borderColor = styles.getPropertyValue('--bs-border-color-translucent');
+    window.activeCharts.forEach(c => c.update());
+    const icon = document.querySelector('#themeToggle i');
+    if (icon) {
+      icon.classList.toggle('bi-sun', t === 'dark');
+      icon.classList.toggle('bi-moon', t === 'light');
+    }
+  };
+  applyTheme(document.documentElement.getAttribute('data-bs-theme'));
+  const btn = document.getElementById('themeToggle');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-bs-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(themeKey, next);
+      applyTheme(next);
+    });
+  }
+})();
+</script>
 </body>
 </html>
 """
@@ -444,7 +478,7 @@ TPL_DASHBOARD = """
 Chart.register(ChartDataLabels);
 
 // SEXES (hommes/femmes)
-new Chart(document.getElementById('sexChart'), {
+window.activeCharts.push(new Chart(document.getElementById('sexChart'), {
   type: 'doughnut',
   data: {
     labels: {{ sex_labels|tojson }},
@@ -472,7 +506,7 @@ new Chart(document.getElementById('sexChart'), {
 // ÂGES par sexe
 const ageColorsF = {{ age_colors_f|tojson }};
 const ageColorsM = {{ age_colors_m|tojson }};
-new Chart(document.getElementById('ageChart'), {
+window.activeCharts.push(new Chart(document.getElementById('ageChart'), {
   type: 'bar',
   data: {
     labels: {{ age_labels|tojson }},
@@ -496,7 +530,7 @@ new Chart(document.getElementById('ageChart'), {
     },
     scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
   }
-});
+}));
 </script>
 """
 
@@ -652,7 +686,7 @@ document.addEventListener('DOMContentLoaded', () => {
       url: 'https://cdn.datatables.net/plug-ins/2.0.8/i18n/fr-FR.json'
     }
   });
-});
+}));
 </script>
 """
 
