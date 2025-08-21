@@ -5,6 +5,7 @@ from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from io import StringIO
 import csv
+import json
 
 from flask import Flask, request, redirect, url_for, render_template_string, make_response
 from flask_sqlalchemy import SQLAlchemy
@@ -272,6 +273,74 @@ def export_persons_csv():
     resp.headers["Content-Disposition"] = "attachment; filename=persons.csv"
     return resp
 
+# ----- Sauvegarde / Restauration JSON -----
+
+@app.route("/backup")
+def backup():
+    data = {
+        "families": [
+            {
+                "id": f.id,
+                "label": f.label,
+                "room_number": f.room_number,
+                "arrival_date": f.arrival_date.isoformat() if f.arrival_date else None,
+            }
+            for f in Family.query.order_by(Family.id.asc()).all()
+        ],
+        "persons": [
+            {
+                "id": p.id,
+                "family_id": p.family_id,
+                "first_name": p.first_name,
+                "last_name": p.last_name,
+                "dob": p.dob.isoformat() if p.dob else None,
+                "sex": p.sex,
+            }
+            for p in Person.query.order_by(Person.id.asc()).all()
+        ],
+    }
+    resp = make_response(json.dumps(data, ensure_ascii=False))
+    resp.headers["Content-Type"] = "application/json; charset=utf-8"
+    resp.headers["Content-Disposition"] = "attachment; filename=backup.json"
+    return resp
+
+@app.route("/restore", methods=["GET", "POST"])
+def restore():
+    if request.method == "POST":
+        if request.form.get("confirm") != "yes":
+            return redirect(url_for("restore"))
+        file = request.files.get("file")
+        if not file:
+            return redirect(url_for("restore"))
+        data = json.load(file)
+        Person.query.delete()
+        Family.query.delete()
+        db.session.commit()
+        db.session.execute(db.text("DELETE FROM sqlite_sequence WHERE name IN ('family','person')"))
+        db.session.commit()
+        for f in data.get("families", []):
+            fam = Family(
+                id=f.get("id"),
+                label=f.get("label"),
+                room_number=f.get("room_number"),
+                arrival_date=parse_date(f.get("arrival_date")),
+            )
+            db.session.add(fam)
+        db.session.commit()
+        for p in data.get("persons", []):
+            pers = Person(
+                id=p.get("id"),
+                family_id=p.get("family_id"),
+                first_name=p.get("first_name"),
+                last_name=p.get("last_name"),
+                dob=parse_date(p.get("dob")),
+                sex=p.get("sex"),
+            )
+            db.session.add(pers)
+        db.session.commit()
+        return redirect(url_for("dashboard"))
+    return page(TPL_RESTORE)
+
 # ============================
 # Templates (inline + layout propre)
 # ============================
@@ -349,6 +418,8 @@ TPL_BASE = """
           <li><a class="dropdown-item" href="{{ url_for('export_persons_csv') }}">Personnes (CSV)</a></li>
         </ul>
       </div>
+      <a class="btn btn-outline-success" href="{{ url_for('backup') }}"><i class="bi bi-save me-1"></i>Sauvegarde</a>
+      <a class="btn btn-outline-warning" href="{{ url_for('restore') }}"><i class="bi bi-arrow-counterclockwise me-1"></i>Restaurer</a>
       <a class="btn btn-primary" href="{{ url_for('families_new') }}"><i class="bi bi-plus-lg me-1"></i>Nouvelle famille</a>
     </div>
   </div>
@@ -726,6 +797,20 @@ TPL_PERSON_FORM = """
       <button class="btn btn-primary"><i class="bi bi-check2-circle me-1"></i>Enregistrer</button>
       <a class="btn btn-outline-secondary" href="{{ url_for('persons_list', fid=family.id) }}">Annuler</a>
     </div>
+  </form>
+</div>
+"""
+
+TPL_RESTORE = """
+<div class="card shadow-soft p-3 col-md-6 mx-auto">
+  <h4 class="mb-3">Restauration</h4>
+  <div class="alert alert-warning">Cette opération effacera toutes les données existantes.</div>
+  <form method="post" enctype="multipart/form-data" onsubmit="return confirm('Cette action écrasera les données actuelles. Continuer ?');">
+    <div class="mb-3">
+      <input type="file" name="file" accept="application/json" class="form-control" required>
+    </div>
+    <button class="btn btn-danger" name="confirm" value="yes"><i class="bi bi-arrow-counterclockwise me-1"></i>Restaurer</button>
+    <a class="btn btn-outline-secondary" href="{{ url_for('dashboard') }}">Annuler</a>
   </form>
 </div>
 """
