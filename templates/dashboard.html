@@ -21,7 +21,10 @@
         <div>
           <div class="text-secondary text-uppercase small">Total clients</div>
           <div class="h3 m-0">{{ total_clients }}</div>
-          <div class="small text-secondary">{{ female_count }} femmes, {{ male_count }} hommes, {{ children_count }} enfants</div>
+          <div class="small text-secondary">
+            Adultes : {{ adult_female_count }} femmes, {{ adult_male_count }} hommes<br>
+            Enfants : {{ girl_count }} filles, {{ boy_count }} garçons
+          </div>
         </div>
       </div>
     </div>
