@@ -38,15 +38,9 @@
       <i class="bi bi-houses-fill me-2"></i>Kardex Hôtel Social
     </a>
     <div class="ms-auto d-flex gap-2">
-      <div class="btn-group">
-        <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
-          <i class="bi bi-palette me-1"></i>Thème
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item {% if theme=='light' %}active{% endif %}" href="{{ url_for('set_theme', mode='light') }}">Clair</a></li>
-          <li><a class="dropdown-item {% if theme=='dark' %}active{% endif %}" href="{{ url_for('set_theme', mode='dark') }}">Sombre</a></li>
-        </ul>
-      </div>
+      <button id="themeToggle" class="btn btn-outline-secondary" title="Changer de thème">
+        <i class="bi {% if theme=='dark' %}bi-moon-stars-fill{% else %}bi-sun-fill{% endif %}"></i>
+      </button>
       <a class="btn btn-outline-info" href="{{ url_for('families_list') }}"><i class="bi bi-people me-1"></i>Familles</a>
       <div class="btn-group">
         <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
@@ -82,6 +76,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const styles = getComputedStyle(document.documentElement);
   Chart.defaults.color = styles.getPropertyValue('--bs-body-color');
   Chart.defaults.borderColor = styles.getPropertyValue('--bs-border-color-translucent');
+
+  const btn = document.getElementById('themeToggle');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      const mode = document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+      window.location.href = `/theme/${mode}`;
+    });
+  }
 });
 </script>
 {% block scripts %}{% endblock %}
