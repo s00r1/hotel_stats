@@ -58,7 +58,17 @@ SEX_CHOICES = ["F", "M", "Autre/NP"]
 def parse_date(s: str | None):
     if not s:
         return None
-    return datetime.strptime(s, "%Y-%m-%d").date()
+    for fmt in ("%Y-%m-%d", "%d/%m/%Y"):
+        try:
+            return datetime.strptime(s, fmt).date()
+        except ValueError:
+            continue
+    return None
+
+def fmt_date(d: date | None):
+    if not d:
+        return ""
+    return d.strftime("%d/%m/%Y")
 
 def age_years(dob: date | None, ref: date | None = None) -> int | None:
     if not dob:
@@ -76,7 +86,10 @@ def bucket_for_age(a: int | None):
 
 def page(content_html: str, **ctx):
     """Injecte un fragment HTML dans le layout de base."""
-    return render_template_string(TPL_BASE, content=render_template_string(content_html, **ctx))
+    return render_template_string(
+        TPL_BASE,
+        content=render_template_string(content_html, fmt_date=fmt_date, **ctx),
+    )
 
 # ============================
 # Routes
@@ -419,7 +432,7 @@ TPL_DASHBOARD = """
           <td class="text-secondary">{{ f.id }}</td>
           <td class="fw-semibold">{{ f.label or "—" }}</td>
           <td>{{ f.room_number or "—" }}</td>
-          <td>{{ f.arrival_date or "—" }}</td>
+          <td>{{ fmt_date(f.arrival_date) or "—" }}</td>
           <td><span class="badge text-bg-secondary">{{ f.persons.count() }}</span></td>
           <td class="text-end">
             <a class="btn btn-sm btn-outline-info" href="{{ url_for('persons_list', fid=f.id) }}"><i class="bi bi-arrow-right-circle"></i></a>
@@ -491,6 +504,7 @@ new Chart(document.getElementById('ageChart'), {
 </script>
 """
 
+
 TPL_FAMILIES = """
 <div class="card shadow-soft p-3">
   <div class="d-flex flex-wrap gap-2 justify-content-between align-items-end">
@@ -528,7 +542,7 @@ TPL_FAMILIES = """
     </form>
   </div>
 
-  <div class="table-responsive mt-3">
+  <div class="table-responsive mt-3" style="max-height: 60vh;">
     <table id="familiesTable" class="table table-hover table-sm align-middle nowrap w-100">
       <thead>
         <tr>
@@ -549,7 +563,7 @@ TPL_FAMILIES = """
           <td class="text-secondary">{{ f.id }}</td>
           <td class="fw-semibold">{{ f.label or "—" }}</td>
           <td>{{ f.room_number or "—" }}</td>
-          <td>{{ f.arrival_date or "—" }}</td>
+          <td>{{ fmt_date(f.arrival_date) or "—" }}</td>
           <td><span class="badge text-bg-secondary">{{ f.persons.count() }}</span></td>
           <td class="text-end">
             <a class="btn btn-sm btn-outline-info" href="{{ url_for('persons_list', fid=f.id) }}"><i class="bi bi-person-lines-fill"></i></a>
@@ -603,7 +617,7 @@ TPL_FAMILY_FORM = """
     </div>
     <div class="col-md-4">
       <div class="form-floating">
-        <input type="date" name="arrival_date" class="form-control" id="fl3" value="{{ family.arrival_date if family and family.arrival_date else '' }}">
+        <input type="text" name="arrival_date" class="form-control" id="fl3" value="{{ fmt_date(family.arrival_date) if family and family.arrival_date else '' }}" placeholder="jj/mm/aaaa" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}">
         <label for="fl3">Date d'arrivée</label>
       </div>
     </div>
@@ -634,7 +648,7 @@ TPL_PERSONS = """
           <td class="text-secondary">{{ p.id }}</td>
           <td class="fw-semibold">{{ p.last_name }}</td>
           <td>{{ p.first_name }}</td>
-          <td>{{ p.dob or "—" }}</td>
+          <td>{{ fmt_date(p.dob) or "—" }}</td>
           <td>{{ p.sex or "—" }}</td>
           <td>{{ p.age if p.age is not none else "—" }}</td>
           <td class="text-end">
@@ -669,7 +683,7 @@ TPL_PERSON_FORM = """
     </div>
     <div class="col-md-3">
       <div class="form-floating">
-        <input type="date" name="dob" class="form-control" id="p3" value="{{ person.dob if person and person.dob else '' }}">
+        <input type="text" name="dob" class="form-control" id="p3" value="{{ fmt_date(person.dob) if person and person.dob else '' }}" placeholder="jj/mm/aaaa" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}">
         <label for="p3">Date de naissance</label>
       </div>
     </div>
