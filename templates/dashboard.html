@@ -1,20 +1,8 @@
 {% extends 'base.html' %}
 {% block title %}Tableau de bord - Kardex Hôtel Social{% endblock %}
 {% block content %}
-{% if birthdays %}
-<div class="alert alert-warning d-flex align-items-center mb-4">
-  <i class="bi bi-cake2 me-2"></i>
-  <div>
-    Anniversaire{% if birthdays|length > 1 %}s{% endif %} aujourd'hui :
-    {% for p in birthdays %}
-      <strong>{{ p.first_name }} {{ p.last_name }}</strong>
-      <span class="text-secondary">({{ p.family.label }})</span>{% if not loop.last %}, {% endif %}
-    {% endfor %}
-  </div>
-</div>
-{% endif %}
 <div class="row g-4">
-  <div class="col-12 col-xl-4">
+  <div class="col-12 col-xl-4 d-flex flex-column">
     <div class="card shadow-soft p-3">
       <div class="d-flex align-items-center">
         <div class="display-6 me-3 text-info"><i class="bi bi-people-fill"></i></div>
@@ -26,6 +14,51 @@
             Enfants : {{ girl_count }} filles, {{ boy_count }} garçons
           </div>
         </div>
+      </div>
+    </div>
+    <div class="card shadow-soft p-3 mt-4">
+      <h6 class="mb-3"><i class="bi bi-cake2 me-2"></i>Anniversaires</h6>
+      {% if birthdays_today %}
+      <div class="alert alert-warning py-2 small mb-3">
+        Joyeux anniversaire à
+        {% for b in birthdays_today %}
+          <strong>{{ b.person.first_name }} {{ b.person.last_name }}</strong> ({{ b.age }} ans){% if not loop.last %}{% if loop.revindex == 2 %} et {% else %}, {% endif %}{% endif %}
+        {% endfor %} !
+      </div>
+      {% endif %}
+      <div class="small">
+        <div class="fw-semibold">Semaine à venir</div>
+        <ul class="mb-2">
+          {% for b in birthdays_week_ahead %}
+            <li>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} ({{ b.age }} ans)</li>
+          {% else %}
+            <li>Aucun</li>
+          {% endfor %}
+        </ul>
+        <div class="fw-semibold">Semaine passée</div>
+        <ul class="mb-2">
+          {% for b in birthdays_week_past %}
+            <li>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} ({{ b.age }} ans)</li>
+          {% else %}
+            <li>Aucun</li>
+          {% endfor %}
+        </ul>
+        <div class="fw-semibold">Mois à venir</div>
+        <ul class="mb-2">
+          {% for b in birthdays_month_ahead %}
+            <li>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} ({{ b.age }} ans)</li>
+          {% else %}
+            <li>Aucun</li>
+          {% endfor %}
+        </ul>
+        <div class="fw-semibold">Mois passé</div>
+        <ul class="mb-0">
+          {% for b in birthdays_month_past %}
+            <li>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} ({{ b.age }} ans)</li>
+          {% else %}
+            <li>Aucun</li>
+          {% endfor %}
+        </ul>
       </div>
     </div>
   </div>
