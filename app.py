@@ -139,11 +139,57 @@ def dashboard():
                 else:
                     adult_male_count += 1
 
-    # Anniversaires du jour
-    birthdays = [
-        p for p in persons
-        if p.dob and p.dob.month == today.month and p.dob.day == today.day
-    ]
+    # Anniversaires (semaine/mois passés et à venir)
+    birthdays_today: list[dict] = []
+    birthdays_week_ahead: list[dict] = []
+    birthdays_week_past: list[dict] = []
+    birthdays_month_ahead: list[dict] = []
+    birthdays_month_past: list[dict] = []
+
+    week_ahead_end = today + relativedelta(weeks=1)
+    month_ahead_end = today + relativedelta(months=1)
+    week_past_start = today - relativedelta(weeks=1)
+    month_past_start = today - relativedelta(months=1)
+
+    for p in persons:
+        if not p.dob:
+            continue
+        dob_this_year = p.dob.replace(year=today.year)
+        if dob_this_year == today:
+            birthdays_today.append({
+                "person": p,
+                "age": age_years(p.dob, today),
+            })
+            continue
+
+        next_bd = dob_this_year if dob_this_year > today else dob_this_year.replace(year=today.year + 1)
+        prev_bd = dob_this_year if dob_this_year < today else dob_this_year.replace(year=today.year - 1)
+
+        if today < next_bd <= week_ahead_end:
+            birthdays_week_ahead.append({
+                "person": p,
+                "date": next_bd,
+                "age": age_years(p.dob, next_bd),
+            })
+        elif today < next_bd <= month_ahead_end:
+            birthdays_month_ahead.append({
+                "person": p,
+                "date": next_bd,
+                "age": age_years(p.dob, next_bd),
+            })
+
+        if week_past_start <= prev_bd < today:
+            birthdays_week_past.append({
+                "person": p,
+                "date": prev_bd,
+                "age": age_years(p.dob, prev_bd),
+            })
+        elif month_past_start <= prev_bd < today:
+            birthdays_month_past.append({
+                "person": p,
+                "date": prev_bd,
+                "age": age_years(p.dob, prev_bd),
+            })
 
     # Familles récentes
     families = Family.query.order_by(Family.arrival_date.desc().nullslast(), Family.id.desc()).all()
@@ -159,7 +205,11 @@ def dashboard():
         age_colors_f=AGE_COLORS_F,
         age_colors_m=AGE_COLORS_M,
         families=families,
-        birthdays=birthdays,
+        birthdays_today=birthdays_today,
+        birthdays_week_ahead=birthdays_week_ahead,
+        birthdays_week_past=birthdays_week_past,
+        birthdays_month_ahead=birthdays_month_ahead,
+        birthdays_month_past=birthdays_month_past,
         adult_female_count=adult_female_count,
         adult_male_count=adult_male_count,
         girl_count=girl_count,
