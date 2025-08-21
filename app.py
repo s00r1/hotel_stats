@@ -9,6 +9,7 @@ import json
 
 from flask import Flask, request, redirect, url_for, render_template, make_response
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import OperationalError
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///hotel_social.db"
@@ -334,8 +335,11 @@ def restore():
         Person.query.delete()
         Family.query.delete()
         db.session.commit()
-        db.session.execute(db.text("DELETE FROM sqlite_sequence WHERE name IN ('family','person')"))
-        db.session.commit()
+        try:
+            db.session.execute(db.text("DELETE FROM sqlite_sequence WHERE name IN ('family','person')"))
+            db.session.commit()
+        except OperationalError:
+            db.session.rollback()
         for f in data.get("families", []):
             fam = Family(
                 id=f.get("id"),
