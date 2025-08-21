@@ -19,46 +19,76 @@
     <div class="card shadow-soft p-3 mt-4">
       <h6 class="mb-3"><i class="bi bi-cake2 me-2"></i>Anniversaires</h6>
       {% if birthdays_today %}
-      <div class="alert alert-warning py-2 small mb-3">
+      <div class="alert alert-warning py-2 mb-3 small">
         Joyeux anniversaire à
         {% for b in birthdays_today %}
           <strong>{{ b.person.first_name }} {{ b.person.last_name }}</strong> ({{ b.age }} ans){% if not loop.last %}{% if loop.revindex == 2 %} et {% else %}, {% endif %}{% endif %}
         {% endfor %} !
       </div>
       {% endif %}
-      <div class="small">
-        <div class="fw-semibold">Semaine à venir</div>
-        <ul class="mb-2">
-          {% for b in birthdays_week_ahead %}
-            <li>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} ({{ b.age }} ans)</li>
-          {% else %}
-            <li>Aucun</li>
-          {% endfor %}
-        </ul>
-        <div class="fw-semibold">Semaine passée</div>
-        <ul class="mb-2">
-          {% for b in birthdays_week_past %}
-            <li>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} ({{ b.age }} ans)</li>
-          {% else %}
-            <li>Aucun</li>
-          {% endfor %}
-        </ul>
-        <div class="fw-semibold">Mois à venir</div>
-        <ul class="mb-2">
-          {% for b in birthdays_month_ahead %}
-            <li>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} ({{ b.age }} ans)</li>
-          {% else %}
-            <li>Aucun</li>
-          {% endfor %}
-        </ul>
-        <div class="fw-semibold">Mois passé</div>
-        <ul class="mb-0">
-          {% for b in birthdays_month_past %}
-            <li>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} ({{ b.age }} ans)</li>
-          {% else %}
-            <li>Aucun</li>
-          {% endfor %}
-        </ul>
+      <ul class="nav nav-tabs small" id="birthdayTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="weekahead-tab" data-bs-toggle="tab" data-bs-target="#weekahead" type="button" role="tab">Semaine à venir</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="weekpast-tab" data-bs-toggle="tab" data-bs-target="#weekpast" type="button" role="tab">Semaine passée</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="monthahead-tab" data-bs-toggle="tab" data-bs-target="#monthahead" type="button" role="tab">Mois à venir</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="monthpast-tab" data-bs-toggle="tab" data-bs-target="#monthpast" type="button" role="tab">Mois passé</button>
+        </li>
+      </ul>
+      <div class="tab-content small mt-3">
+        <div class="tab-pane fade show active" id="weekahead" role="tabpanel">
+          <ul class="list-group list-group-flush">
+            {% for b in birthdays_week_ahead %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }}</span>
+                <span class="badge text-bg-primary rounded-pill">{{ b.age }} ans</span>
+              </li>
+            {% else %}
+              <li class="list-group-item">Aucun</li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="tab-pane fade" id="weekpast" role="tabpanel">
+          <ul class="list-group list-group-flush">
+            {% for b in birthdays_week_past %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }}</span>
+                <span class="badge text-bg-secondary rounded-pill">{{ b.age }} ans</span>
+              </li>
+            {% else %}
+              <li class="list-group-item">Aucun</li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="tab-pane fade" id="monthahead" role="tabpanel">
+          <ul class="list-group list-group-flush">
+            {% for b in birthdays_month_ahead %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }}</span>
+                <span class="badge text-bg-primary rounded-pill">{{ b.age }} ans</span>
+              </li>
+            {% else %}
+              <li class="list-group-item">Aucun</li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="tab-pane fade" id="monthpast" role="tabpanel">
+          <ul class="list-group list-group-flush">
+            {% for b in birthdays_month_past %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }}</span>
+                <span class="badge text-bg-secondary rounded-pill">{{ b.age }} ans</span>
+              </li>
+            {% else %}
+              <li class="list-group-item">Aucun</li>
+            {% endfor %}
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -66,6 +96,25 @@
     <div class="card shadow-soft p-3">
       <h6 class="mb-3"><i class="bi bi-gender-ambiguous me-2"></i>Répartition par sexe</h6>
       <canvas id="sexChart" height="200"></canvas>
+    </div>
+    <div class="card shadow-soft p-3 mt-4">
+      <h6 class="mb-3"><i class="bi bi-hourglass-split me-2"></i>Ancienneté</h6>
+      <ul class="nav nav-pills mb-3" id="seniorityTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="old-tab" data-bs-toggle="pill" data-bs-target="#old-fam" type="button" role="tab">Plus anciennes</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="new-tab" data-bs-toggle="pill" data-bs-target="#new-fam" type="button" role="tab">Plus récentes</button>
+        </li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane fade show active" id="old-fam" role="tabpanel">
+          <canvas id="oldFamiliesChart" height="200"></canvas>
+        </div>
+        <div class="tab-pane fade" id="new-fam" role="tabpanel">
+          <canvas id="newFamiliesChart" height="200"></canvas>
+        </div>
+      </div>
     </div>
   </div>
   <div class="col-12 col-xl-4">
@@ -136,20 +185,65 @@ document.addEventListener('DOMContentLoaded', () => {
     type: 'doughnut',
     data: {
       labels: {{ sex_labels|tojson }},
-      datasets: [{
-        data: {{ sex_values|tojson }},
-        backgroundColor: ['#e83e8c', '#007bff', '#6c757d']
-      }]
+      datasets: [
+        {
+          data: {{ sex_values|tojson }},
+          backgroundColor: ['#e83e8c', '#007bff', '#6c757d']
+        },
+        {
+          data: {{ sex_child_values|tojson }},
+          backgroundColor: ['#f8a5c2', '#66b2ff', '#adb5bd'],
+          weight: 0.5
+        }
+      ]
     },
     options: {
       plugins: {
         legend: { position: 'bottom' },
         datalabels: {
-          formatter: (v) => v || '',
+          formatter: (v, ctx) => ctx.datasetIndex === 0 ? (v || '') : '',
           font: { weight: 600 }
         }
       },
       cutout: '60%'
+    }
+  }));
+
+  window.activeCharts.push(new Chart(document.getElementById('oldFamiliesChart'), {
+    type: 'bar',
+    data: {
+      labels: {{ old_labels|tojson }},
+      datasets: [{
+        data: {{ old_values|tojson }},
+        backgroundColor: '#6f42c1'
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: {
+        legend: { display: false },
+        datalabels: { anchor: 'end', align: 'right', formatter: v => v || '' }
+      },
+      scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+  }));
+
+  window.activeCharts.push(new Chart(document.getElementById('newFamiliesChart'), {
+    type: 'bar',
+    data: {
+      labels: {{ recent_labels|tojson }},
+      datasets: [{
+        data: {{ recent_values|tojson }},
+        backgroundColor: '#198754'
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: {
+        legend: { display: false },
+        datalabels: { anchor: 'end', align: 'right', formatter: v => v || '' }
+      },
+      scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
     }
   }));
 
