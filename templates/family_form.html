@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Famille - Kardex Hôtel Social{% endblock %}
+{% block content %}
+<div class="card shadow-soft p-3">
+  <h4 class="mb-3">{{ 'Modifier la famille' if family else 'Nouvelle famille' }}</h4>
+  <form method="post" class="row g-3">
+    <div class="col-md-5">
+      <div class="form-floating">
+        <input name="label" class="form-control" id="fl1" placeholder="Label" value="{{ family.label if family else '' }}">
+        <label for="fl1">Label (ex: Famille Dupont)</label>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-floating">
+        <input name="room_number" class="form-control" id="fl2" placeholder="Chambre" value="{{ family.room_number if family else '' }}">
+        <label for="fl2">Chambre</label>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-floating">
+        <input type="text" name="arrival_date" class="form-control" id="fl3" value="{{ fmt_date(family.arrival_date) if family and family.arrival_date else '' }}" placeholder="jj/mm/aaaa" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}">
+        <label for="fl3">Date d'arrivée</label>
+      </div>
+    </div>
+    <div class="col-12 d-flex gap-2">
+      <button class="btn btn-primary"><i class="bi bi-check2-circle me-1"></i>Enregistrer</button>
+      <a class="btn btn-outline-secondary" href="{{ url_for('families_list') }}">Annuler</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

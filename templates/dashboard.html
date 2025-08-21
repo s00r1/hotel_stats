@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block title %}Tableau de bord - Kardex Hôtel Social{% endblock %}
+{% block content %}
+{% if birthdays %}
+<div class="alert alert-warning d-flex align-items-center mb-4">
+  <i class="bi bi-cake2 me-2"></i>
+  <div>
+    Anniversaire{% if birthdays|length > 1 %}s{% endif %} aujourd'hui :
+    {% for p in birthdays %}
+      <strong>{{ p.first_name }} {{ p.last_name }}</strong>
+      <span class="text-secondary">({{ p.family.label }})</span>{% if not loop.last %}, {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+<div class="row g-4">
+  <div class="col-12 col-xl-4">
+    <div class="card shadow-soft p-3">
+      <div class="d-flex align-items-center">
+        <div class="display-6 me-3 text-info"><i class="bi bi-people-fill"></i></div>
+        <div>
+          <div class="text-secondary text-uppercase small">Total clients</div>
+          <div class="h3 m-0">{{ total_clients }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-xl-4">
+    <div class="card shadow-soft p-3">
+      <h6 class="mb-3"><i class="bi bi-gender-ambiguous me-2"></i>Répartition par sexe</h6>
+      <canvas id="sexChart" height="200"></canvas>
+    </div>
+  </div>
+  <div class="col-12 col-xl-4">
+    <div class="card shadow-soft p-3">
+      <h6 class="mb-3"><i class="bi bi-activity me-2"></i>Tranches d’âge</h6>
+      <canvas id="ageChart" height="200"></canvas>
+      <div id="ageLegend" class="mt-2">
+        {% for lbl in age_labels %}
+        <div class="d-flex align-items-center mb-1">
+          <span class="me-1" style="width:12px;height:12px;background-color:{{ age_colors_f[loop.index0] }};display:inline-block;border-radius:2px;"></span>
+          <span class="me-2" style="width:12px;height:12px;background-color:{{ age_colors_m[loop.index0] }};display:inline-block;border-radius:2px;"></span>
+          <span class="small">{{ lbl }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow-soft p-3 mt-4">
+  <div class="d-flex align-items-center justify-content-between">
+    <h6 class="mb-0"><i class="bi bi-clock-history me-2"></i>Familles récentes</h6>
+    <span class="badge rounded-pill badge-soft">{{ families|length }} familles</span>
+  </div>
+  <div class="table-responsive mt-3" style="max-height: 420px;">
+    <table class="table table-hover align-middle table-sm">
+      <thead>
+        <tr><th>#</th><th>Famille</th><th>Chambre</th><th>Arrivée</th><th>Personnes</th><th></th></tr>
+      </thead>
+      <tbody>
+      {% for f in families %}
+        <tr>
+          <td class="text-secondary">{{ f.id }}</td>
+          <td class="fw-semibold">{{ f.label or "—" }}</td>
+          <td>{{ f.room_number or "—" }}</td>
+          <td>{{ fmt_date(f.arrival_date) or "—" }}</td>
+          <td><span class="badge text-bg-secondary">{{ f.persons.count() }}</span></td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-info" href="{{ url_for('persons_list', fid=f.id) }}"><i class="bi bi-arrow-right-circle"></i></a>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  Chart.register(ChartDataLabels);
+
+  window.activeCharts = [];
+  window.activeCharts.push(new Chart(document.getElementById('sexChart'), {
+    type: 'doughnut',
+    data: {
+      labels: {{ sex_labels|tojson }},
+      datasets: [{
+        data: {{ sex_values|tojson }},
+        backgroundColor: ['#e83e8c', '#007bff', '#6c757d']
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { position: 'bottom' },
+        datalabels: {
+          formatter: (v) => v || '',
+          font: { weight: 600 }
+        }
+      },
+      cutout: '60%'
+    }
+  }));
+
+  const ageColorsF = {{ age_colors_f|tojson }};
+  const ageColorsM = {{ age_colors_m|tojson }};
+  window.activeCharts.push(new Chart(document.getElementById('ageChart'), {
+    type: 'bar',
+    data: {
+      labels: {{ age_labels|tojson }},
+      datasets: [
+        {
+          label: 'Femmes',
+          data: {{ age_f_values|tojson }},
+          backgroundColor: ageColorsF
+        },
+        {
+          label: 'Hommes',
+          data: {{ age_m_values|tojson }},
+          backgroundColor: ageColorsM
+        }
+      ]
+    },
+    options: {
+      plugins: {
+        legend: { display: false },
+        datalabels: { anchor: 'end', align: 'top', formatter: v => v || '' }
+      },
+      scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+  }));
+});
+</script>
+{% endblock %}
