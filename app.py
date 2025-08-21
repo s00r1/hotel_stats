@@ -208,10 +208,18 @@ def dashboard():
     def days_since(arrival: date | None) -> int:
         return (today - arrival).days if arrival else 0
 
+    def tenure_text(arrival: date | None) -> str:
+        if not arrival:
+            return "(0 jour)"
+        rd = relativedelta(today, arrival)
+        return f"({rd.years} ans et {rd.months} mois et {rd.days} jours)"
+
     old_labels = [f.label or f"Famille {f.id}" for f in old_families]
     old_values = [days_since(f.arrival_date) for f in old_families]
+    old_tenures = [tenure_text(f.arrival_date) for f in old_families]
     recent_labels = [f.label or f"Famille {f.id}" for f in recent_families]
     recent_values = [days_since(f.arrival_date) for f in recent_families]
+    recent_tenures = [tenure_text(f.arrival_date) for f in recent_families]
 
     # Alertes : sur-occupation, femmes isolées, bébés < 1 an
     overcrowded: list[Family] = []
@@ -256,8 +264,10 @@ def dashboard():
         age_colors_m=AGE_COLORS_M,
         old_labels=old_labels,
         old_values=old_values,
+        old_tenures=old_tenures,
         recent_labels=recent_labels,
         recent_values=recent_values,
+        recent_tenures=recent_tenures,
         families=families,
         birthdays_today=birthdays_today,
         birthdays_week_ahead=birthdays_week_ahead,
