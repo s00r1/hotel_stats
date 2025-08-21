@@ -85,16 +85,22 @@ def dashboard():
 
     # Répartition sexes
     sex_counts = {k: 0 for k in SEX_CHOICES}
-    # Tranches d'âge
-    age_counts = {b[0]: 0 for b in AGE_BUCKETS}
+    # Tranches d'âge par sexe
+    age_counts = {b[0]: {"F": 0, "M": 0} for b in AGE_BUCKETS}
 
     for p in persons:
         s = p.sex if p.sex in sex_counts else "Autre/NP"
         sex_counts[s] += 1
         a = age_years(p.dob, today)
         b = bucket_for_age(a)
-        if b:
-            age_counts[b] += 1
+        if b and s in ("F", "M"):
+            age_counts[b][s] += 1
+
+    # Anniversaires du jour
+    birthdays = [
+        p for p in persons
+        if p.dob and p.dob.month == today.month and p.dob.day == today.day
+    ]
 
     # Familles récentes
     families = Family.query.order_by(Family.arrival_date.desc().nullslast(), Family.id.desc()).all()
@@ -105,8 +111,10 @@ def dashboard():
         sex_labels=list(sex_counts.keys()),
         sex_values=list(sex_counts.values()),
         age_labels=list(age_counts.keys()),
-        age_values=list(age_counts.values()),
-        families=families
+        age_f_values=[age_counts[k]["F"] for k in age_counts.keys()],
+        age_m_values=[age_counts[k]["M"] for k in age_counts.keys()],
+        families=families,
+        birthdays=birthdays
     )
 
 # ----- Familles -----
@@ -334,6 +342,18 @@ TPL_BASE = """
 """
 
 TPL_DASHBOARD = """
+{% if birthdays %}
+<div class="alert alert-warning d-flex align-items-center mb-4">
+  <i class="bi bi-cake2 me-2"></i>
+  <div>
+    Anniversaire{% if birthdays|length > 1 %}s{% endif %} aujourd'hui :
+    {% for p in birthdays %}
+      <strong>{{ p.first_name }} {{ p.last_name }}</strong>
+      <span class="text-secondary">({{ p.family.label }})</span>{% if not loop.last %}, {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
 <div class="row g-4">
   <div class="col-12 col-xl-4">
     <div class="card shadow-soft p-3">
@@ -417,28 +437,29 @@ new Chart(document.getElementById('sexChart'), {
   }
 });
 
-// ÂGES (palette par tranche)
+// ÂGES par sexe
+const ageColorsF = ['#8bd0db', '#8fe4cb', '#93d3a2', '#ffe083', '#febe89', '#ed9aa2', '#b7a0e0', '#999c9f'];
+const ageColorsM = ['#128193', '#19a078', '#208537', '#cc9a05', '#ca6410', '#b02a37', '#58349a', '#292e33'];
 new Chart(document.getElementById('ageChart'), {
   type: 'bar',
   data: {
     labels: {{ age_labels|tojson }},
-    datasets: [{
-      data: {{ age_values|tojson }},
-      backgroundColor: [
-        '#17a2b8', // 0-2 : cyan
-        '#20c997', // 3-5 : vert clair
-        '#28a745', // 6-12 : vert
-        '#ffc107', // 13-17 : jaune
-        '#fd7e14', // 18-24 : orange
-        '#dc3545', // 25-39 : rouge
-        '#6f42c1', // 40-59 : violet
-        '#343a40'  // 60+ : gris foncé
-      ]
-    }]
+    datasets: [
+      {
+        label: 'Femmes',
+        data: {{ age_f_values|tojson }},
+        backgroundColor: ageColorsF
+      },
+      {
+        label: 'Hommes',
+        data: {{ age_m_values|tojson }},
+        backgroundColor: ageColorsM
+      }
+    ]
   },
   options: {
     plugins: {
-      legend: { display: false },
+      legend: { position: 'bottom' },
       datalabels: { anchor: 'end', align: 'top', formatter: v => v || '' }
     },
     scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
