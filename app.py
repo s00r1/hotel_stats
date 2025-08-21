@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from io import StringIO
 import csv
 import json
+import re
 
 from flask import Flask, request, redirect, url_for, render_template, make_response
 from flask_sqlalchemy import SQLAlchemy
@@ -219,7 +220,8 @@ def dashboard():
 
     for f in families:
         persons_list = f.persons.all()
-        if f.room_number not in ("53", "54") and len(persons_list) > 3:
+        rooms = re.findall(r"\d+", f.room_number or "")
+        if len(rooms) == 1 and rooms[0] not in ("53", "54") and len(persons_list) > 3:
             overcrowded.append(f)
 
         has_adult_male = False
