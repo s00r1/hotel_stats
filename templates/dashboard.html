@@ -138,7 +138,40 @@
           <span class="me-2" style="width:12px;height:12px;background-color:{{ age_colors_m[loop.index0] }};display:inline-block;border-radius:2px;"></span>
           <span class="small">{{ lbl }}</span>
         </div>
-        {% endfor %}
+      {% endfor %}
+      </div>
+    </div>
+    <div class="card shadow-soft p-3 mt-4">
+      <h6 class="mb-3"><i class="bi bi-exclamation-triangle me-2"></i>Alertes</h6>
+      <div class="mb-2">
+        <strong>Familles &gt;3 pers. dans une chambre (hors 53/54)</strong>
+        <ul class="small mb-3">
+          {% for f in overcrowded_families %}
+            <li>{{ f.label or "Famille " ~ f.id }} — chambre {{ f.room_number }} ({{ f.persons.count() }} pers.)</li>
+          {% else %}
+            <li>Aucune</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="mb-2">
+        <strong>Femmes isolées</strong>
+        <ul class="small mb-3">
+          {% for f in isolated_women_families %}
+            <li>{{ f.label or "Famille " ~ f.id }} — chambre {{ f.room_number }}</li>
+          {% else %}
+            <li>Aucune</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div>
+        <strong>Bébés de moins d'un an</strong>
+        <ul class="small mb-0">
+          {% for f in baby_families %}
+            <li>{{ f.label or "Famille " ~ f.id }} — chambre {{ f.room_number }}</li>
+          {% else %}
+            <li>Aucune</li>
+          {% endfor %}
+        </ul>
       </div>
     </div>
   </div>
