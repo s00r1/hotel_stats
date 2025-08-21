@@ -192,19 +192,41 @@ def dashboard():
                 "age": age_years(p.dob, prev_bd),
             })
 
-    # Familles récentes
-    families = Family.query.filter(Family.departure_date.is_(None)).order_by(Family.arrival_date.desc().nullslast(), Family.id.desc()).all()
+    # Familles récentes et ancienneté
+    families = Family.query.filter(Family.departure_date.is_(None)).order_by(
+        Family.arrival_date.desc().nullslast(), Family.id.desc()
+    ).all()
+    recent_families = families[:5]
+    old_families = (
+        Family.query.filter(Family.departure_date.is_(None))
+        .order_by(Family.arrival_date.asc().nullslast(), Family.id.asc())
+        .limit(5)
+        .all()
+    )
+
+    def days_since(arrival: date | None) -> int:
+        return (today - arrival).days if arrival else 0
+
+    old_labels = [f.label or f"Famille {f.id}" for f in old_families]
+    old_values = [days_since(f.arrival_date) for f in old_families]
+    recent_labels = [f.label or f"Famille {f.id}" for f in recent_families]
+    recent_values = [days_since(f.arrival_date) for f in recent_families]
 
     return render_template(
         "dashboard.html",
         total_clients=len(persons),
         sex_labels=list(sex_counts.keys()),
         sex_values=list(sex_counts.values()),
+        sex_child_values=[girl_count, boy_count, 0],
         age_labels=list(age_counts.keys()),
         age_f_values=[age_counts[k]["F"] for k in age_counts.keys()],
         age_m_values=[age_counts[k]["M"] for k in age_counts.keys()],
         age_colors_f=AGE_COLORS_F,
         age_colors_m=AGE_COLORS_M,
+        old_labels=old_labels,
+        old_values=old_values,
+        recent_labels=recent_labels,
+        recent_values=recent_values,
         families=families,
         birthdays_today=birthdays_today,
         birthdays_week_ahead=birthdays_week_ahead,
