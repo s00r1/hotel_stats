@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Familles - Kardex Hôtel Social{% endblock %}
+{% block content %}
+<div class="card shadow-soft p-3">
+  <div class="d-flex flex-wrap gap-2 justify-content-between align-items-end">
+    <h4 class="m-0"><i class="bi bi-people me-2"></i>Familles</h4>
+    <form class="row g-2" method="get">
+      <div class="col-auto">
+        <div class="form-floating">
+          <input class="form-control" name="label" id="f1" placeholder="Label" value="{{ label }}">
+          <label for="f1">Label</label>
+        </div>
+      </div>
+      <div class="col-auto">
+        <div class="form-floating">
+          <input class="form-control" name="room" id="f2" placeholder="Chambre" value="{{ room }}">
+          <label for="f2">Chambre</label>
+        </div>
+      </div>
+      <div class="col-auto">
+        <div class="form-floating">
+          <input type="date" class="form-control" name="dmin" id="f3" value="{{ dmin }}">
+          <label for="f3">Arrivée min</label>
+        </div>
+      </div>
+      <div class="col-auto">
+        <div class="form-floating">
+          <input type="date" class="form-control" name="dmax" id="f4" value="{{ dmax }}">
+          <label for="f4">Arrivée max</label>
+        </div>
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-outline-info"><i class="bi bi-search"></i></button>
+        <a class="btn btn-outline-secondary" href="{{ url_for('families_list') }}"><i class="bi bi-x-lg"></i></a>
+        <a class="btn btn-primary" href="{{ url_for('families_new') }}"><i class="bi bi-plus-lg me-1"></i>Nouvelle famille</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="table-responsive mt-3" style="max-height: 60vh;">
+    <table id="familiesTable" class="table table-hover table-sm align-middle">
+      <thead><tr><th>#</th><th>Label</th><th>Chambre</th><th>Arrivée</th><th>Personnes</th><th class="text-end">Actions</th></tr></thead>
+      <tbody>
+      {% for f in families %}
+        <tr>
+          <td class="text-secondary">{{ f.id }}</td>
+          <td class="fw-semibold">{{ f.label or "—" }}</td>
+          <td>{{ f.room_number or "—" }}</td>
+          <td>{{ fmt_date(f.arrival_date) or "—" }}</td>
+          <td><span class="badge text-bg-secondary">{{ f.persons.count() }}</span></td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-info" href="{{ url_for('persons_list', fid=f.id) }}"><i class="bi bi-person-lines-fill"></i></a>
+            <a class="btn btn-sm btn-outline-warning" href="{{ url_for('families_edit', fid=f.id) }}"><i class="bi bi-pencil-square"></i></a>
+            <form method="post" action="{{ url_for('families_delete', fid=f.id) }}" class="d-inline" onsubmit="return confirm('Supprimer la famille et ses membres ?');">
+              <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash3"></i></button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  new DataTable('#familiesTable', {
+    columnDefs: [{ orderable: false, targets: [5] }],
+    language: { url: 'https://cdn.datatables.net/plug-ins/2.0.8/i18n/fr-FR.json' }
+  });
+});
+</script>
+{% endblock %}

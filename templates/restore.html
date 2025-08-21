@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Restauration - Kardex Hôtel Social{% endblock %}
+{% block content %}
+<div class="card shadow-soft p-3 col-md-6 mx-auto">
+  <h4 class="mb-3">Restauration</h4>
+  <div class="alert alert-warning">Cette opération effacera toutes les données existantes.</div>
+  <form method="post" enctype="multipart/form-data" onsubmit="return confirm('Cette action écrasera les données actuelles. Continuer ?');">
+    <div class="mb-3">
+      <input type="file" name="file" accept="application/json" class="form-control" required>
+    </div>
+    <button class="btn btn-danger" name="confirm" value="yes"><i class="bi bi-arrow-counterclockwise me-1"></i>Restaurer</button>
+    <a class="btn btn-outline-secondary" href="{{ url_for('dashboard') }}">Annuler</a>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Personne - Kardex Hôtel Social{% endblock %}
+{% block content %}
+<div class="card shadow-soft p-3">
+  <h4 class="mb-3">{{ 'Modifier' if person else 'Ajouter' }} une personne <span class="text-secondary">dans {{ family.label or 'Famille' }}</span></h4>
+  <form method="post" class="row g-3">
+    <div class="col-md-3">
+      <div class="form-floating">
+        <input name="last_name" class="form-control" id="p1" placeholder="Nom" value="{{ person.last_name if person else '' }}" required>
+        <label for="p1">Nom</label>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-floating">
+        <input name="first_name" class="form-control" id="p2" placeholder="Prénom" value="{{ person.first_name if person else '' }}" required>
+        <label for="p2">Prénom</label>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-floating">
+        <input type="text" name="dob" class="form-control" id="p3" value="{{ fmt_date(person.dob) if person and person.dob else '' }}" placeholder="jj/mm/aaaa" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}">
+        <label for="p3">Date de naissance</label>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-floating">
+        <select name="sex" class="form-select" id="p4">
+          {% for s in sex_choices %}
+            <option value="{{ s }}" {% if person and person.sex==s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+        <label for="p4">Sexe</label>
+      </div>
+    </div>
+    <div class="col-12 d-flex gap-2">
+      <button class="btn btn-primary"><i class="bi bi-check2-circle me-1"></i>Enregistrer</button>
+      <a class="btn btn-outline-secondary" href="{{ url_for('persons_list', fid=family.id) }}">Annuler</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

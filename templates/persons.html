@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Personnes - Kardex Hôtel Social{% endblock %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h4 class="m-0"><i class="bi bi-person-lines-fill me-2"></i>{{ family.label or 'Famille' }} <span class="text-secondary">| Chambre {{ family.room_number or '—' }}</span></h4>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{{ url_for('families_list') }}"><i class="bi bi-arrow-left"></i> Retour</a>
+    <a class="btn btn-primary" href="{{ url_for('persons_new', fid=family.id) }}"><i class="bi bi-plus-lg me-1"></i>Ajouter une personne</a>
+  </div>
+</div>
+
+<div class="card shadow-soft p-3">
+  <div class="table-responsive">
+    <table id="personsTable" class="table table-hover table-sm align-middle">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Naissance</th>
+          <th>Sexe</th>
+          <th>Âge</th>
+          <th class="text-end">Actions</th>
+          <th>Chambre</th>
+          <th>Arrivée</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for p in persons %}
+        <tr>
+          <td class="text-secondary">{{ p.id }}</td>
+          <td class="fw-semibold">{{ p.last_name }}</td>
+          <td>{{ p.first_name }}</td>
+          <td data-order="{{ p.dob.isoformat() if p.dob else '' }}">{{ fmt_date(p.dob) or "—" }}</td>
+          <td>{{ p.sex or "—" }}</td>
+          <td>{{ p.age if p.age is not none else "—" }}</td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-warning" href="{{ url_for('persons_edit', fid=family.id, pid=p.id) }}"><i class="bi bi-pencil"></i></a>
+            <form method="post" action="{{ url_for('persons_delete', fid=family.id, pid=p.id) }}" class="d-inline" onsubmit="return confirm('Supprimer cette personne ?');">
+              <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash3"></i></button>
+            </form>
+          </td>
+          <td>{{ family.room_number or "—" }}</td>
+          <td data-order="{{ family.arrival_date.isoformat() if family.arrival_date else '' }}">{{ fmt_date(family.arrival_date) or "—" }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  new DataTable('#personsTable', {
+    columnDefs: [
+      { orderable: false, targets: [0,5,6,7,8] },
+      { visible: false, targets: [7,8] }
+    ],
+    language: {
+      url: 'https://cdn.datatables.net/plug-ins/2.0.8/i18n/fr-FR.json'
+    }
+  });
+});
+</script>
+{% endblock %}
