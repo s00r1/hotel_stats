@@ -25,6 +25,7 @@ class Family(db.Model):
     label = db.Column(db.String(120), index=True)         # ex: "Famille Dupont"
     room_number = db.Column(db.String(20), index=True)
     arrival_date = db.Column(db.Date, index=True)
+    departure_date = db.Column(db.Date, index=True)
 
     persons = db.relationship("Person", backref="family", cascade="all,delete", lazy="dynamic")
 
@@ -110,7 +111,7 @@ def set_theme(mode):
 @app.route("/")
 def dashboard():
     today = date.today()
-    persons = Person.query.all()
+    persons = Person.query.join(Family).filter(Family.departure_date.is_(None)).all()
 
     # Répartition sexes
     sex_counts = {k: 0 for k in SEX_CHOICES}
@@ -192,7 +193,7 @@ def dashboard():
             })
 
     # Familles récentes
-    families = Family.query.order_by(Family.arrival_date.desc().nullslast(), Family.id.desc()).all()
+    families = Family.query.filter(Family.departure_date.is_(None)).order_by(Family.arrival_date.desc().nullslast(), Family.id.desc()).all()
 
     return render_template(
         "dashboard.html",
@@ -220,7 +221,7 @@ def dashboard():
 
 @app.route("/families")
 def families_list():
-    q = Family.query
+    q = Family.query.filter(Family.departure_date.is_(None))
     room = (request.args.get("room") or "").strip()
     label = (request.args.get("label") or "").strip()
     dmin = parse_date(request.args.get("dmin"))
@@ -270,6 +271,15 @@ def families_edit(fid):
         return redirect(url_for("families_list"))
     return render_template("family_form.html", family=fam)
 
+@app.route("/families/<int:fid>/depart", methods=["GET","POST"])
+def families_depart(fid):
+    fam = Family.query.get_or_404(fid)
+    if request.method == "POST":
+        fam.departure_date = parse_date(request.form.get("departure_date"))
+        db.session.commit()
+        return redirect(url_for("families_list"))
+    return render_template("family_depart.html", family=fam)
+
 @app.route("/families/<int:fid>/delete", methods=["POST"])
 def families_delete(fid):
     fam = Family.query.get_or_404(fid)
@@ -281,7 +291,7 @@ def families_delete(fid):
 
 @app.route("/persons/<int:fid>")
 def persons_list(fid):
-    fam = Family.query.get_or_404(fid)
+    fam = Family.query.filter_by(id=fid).filter(Family.departure_date.is_(None)).first_or_404()
     today = date.today()
     rows = []
     for p in fam.persons.order_by(Person.id.asc()).all():
@@ -297,7 +307,7 @@ def persons_list(fid):
 
 @app.route("/persons/<int:fid>/new", methods=["GET","POST"])
 def persons_new(fid):
-    fam = Family.query.get_or_404(fid)
+    fam = Family.query.filter_by(id=fid).filter(Family.departure_date.is_(None)).first_or_404()
     if request.method == "POST":
         p = Person(
             family_id=fid,
@@ -313,8 +323,8 @@ def persons_new(fid):
 
 @app.route("/persons/<int:fid>/<int:pid>/edit", methods=["GET","POST"])
 def persons_edit(fid, pid):
-    fam = Family.query.get_or_404(fid)
-    p = Person.query.get_or_404(pid)
+    fam = Family.query.filter_by(id=fid).filter(Family.departure_date.is_(None)).first_or_404()
+    p = Person.query.join(Family).filter(Person.id == pid, Family.departure_date.is_(None)).first_or_404()
     if request.method == "POST":
         p.first_name = request.form.get("first_name").strip()
         p.last_name  = request.form.get("last_name").strip()
@@ -326,7 +336,7 @@ def persons_edit(fid, pid):
 
 @app.route("/persons/<int:fid>/<int:pid>/delete", methods=["POST"])
 def persons_delete(fid, pid):
-    p = Person.query.get_or_404(pid)
+    p = Person.query.join(Family).filter(Person.id == pid, Family.departure_date.is_(None)).first_or_404()
     db.session.delete(p)
     db.session.commit()
     return redirect(url_for("persons_list", fid=fid))
@@ -337,7 +347,7 @@ def persons_delete(fid, pid):
 def residents_list():
     today = date.today()
     rows = []
-    for p in Person.query.join(Family).all():
+    for p in Person.query.join(Family).filter(Family.departure_date.is_(None)).all():
         fam = p.family
         rows.append({
             "id": p.id,
@@ -369,7 +379,7 @@ def search():
 
     families = []
     if any([fam_label, fam_room, fam_arrival, fam_dmin, fam_dmax]):
-        qf = Family.query
+        qf = Family.query.filter(Family.departure_date.is_(None))
         if fam_label:
             qf = qf.filter(Family.label.like(f"%{fam_label}%"))
         if fam_room:
@@ -384,7 +394,7 @@ def search():
 
     persons = []
     if any([p_last, p_first, p_dob, p_arrival, p_room]):
-        qp = Person.query.join(Family)
+        qp = Person.query.join(Family).filter(Family.departure_date.is_(None))
         if p_last:
             qp = qp.filter(Person.last_name.like(f"%{p_last}%"))
         if p_first:
@@ -424,6 +434,77 @@ def search():
         p_room=p_room,
     )
 
+@app.route("/archive")
+def archive():
+    fam_label = (request.args.get("fam_label") or "").strip()
+    fam_room = (request.args.get("fam_room") or "").strip()
+    fam_arrival = parse_date(request.args.get("fam_arrival"))
+    fam_dmin = parse_date(request.args.get("fam_dmin"))
+    fam_dmax = parse_date(request.args.get("fam_dmax"))
+
+    p_last = (request.args.get("p_last") or "").strip()
+    p_first = (request.args.get("p_first") or "").strip()
+    p_dob = parse_date(request.args.get("p_dob"))
+    p_arrival = parse_date(request.args.get("p_arrival"))
+    p_room = (request.args.get("p_room") or "").strip()
+
+    families = []
+    if any([fam_label, fam_room, fam_arrival, fam_dmin, fam_dmax]):
+        qf = Family.query.filter(Family.departure_date.isnot(None))
+        if fam_label:
+            qf = qf.filter(Family.label.like(f"%{fam_label}%"))
+        if fam_room:
+            qf = qf.filter(Family.room_number.like(f"%{fam_room}%"))
+        if fam_arrival:
+            qf = qf.filter(Family.arrival_date == fam_arrival)
+        if fam_dmin:
+            qf = qf.filter(Family.arrival_date >= fam_dmin)
+        if fam_dmax:
+            qf = qf.filter(Family.arrival_date <= fam_dmax)
+        families = qf.order_by(Family.arrival_date.desc().nullslast()).all()
+
+    persons = []
+    if any([p_last, p_first, p_dob, p_arrival, p_room]):
+        qp = Person.query.join(Family).filter(Family.departure_date.isnot(None))
+        if p_last:
+            qp = qp.filter(Person.last_name.like(f"%{p_last}%"))
+        if p_first:
+            qp = qp.filter(Person.first_name.like(f"%{p_first}%"))
+        if p_dob:
+            qp = qp.filter(Person.dob == p_dob)
+        if p_arrival:
+            qp = qp.filter(Family.arrival_date == p_arrival)
+        if p_room:
+            qp = qp.filter(Family.room_number.like(f"%{p_room}%"))
+        today = date.today()
+        persons = [
+            {
+                "id": p.id,
+                "first_name": p.first_name,
+                "last_name": p.last_name,
+                "age": age_years(p.dob, today),
+                "room_number": p.family.room_number,
+                "arrival_date": p.family.arrival_date,
+            }
+            for p in qp.all()
+        ]
+
+    return render_template(
+        "archive.html",
+        families=families,
+        persons=persons,
+        fam_label=fam_label,
+        fam_room=fam_room,
+        fam_arrival=request.args.get("fam_arrival") or "",
+        fam_dmin=request.args.get("fam_dmin") or "",
+        fam_dmax=request.args.get("fam_dmax") or "",
+        p_last=p_last,
+        p_first=p_first,
+        p_dob=request.args.get("p_dob") or "",
+        p_arrival=request.args.get("p_arrival") or "",
+        p_room=p_room,
+    )
+
 # ----- Export CSV -----
 
 @app.route("/export/families.csv")
@@ -431,7 +512,7 @@ def export_families_csv():
     out = StringIO()
     w = csv.writer(out, dialect="excel")
     w.writerow(["id","label","room_number","arrival_date","num_persons"])
-    for f in Family.query.order_by(Family.id.asc()).all():
+    for f in Family.query.filter(Family.departure_date.is_(None)).order_by(Family.id.asc()).all():
         w.writerow([f.id, f.label or "", f.room_number or "", f.arrival_date or "", f.persons.count()])
     resp = make_response(out.getvalue().encode("utf-8-sig"))
     resp.headers["Content-Type"] = "text/csv; charset=utf-8"
@@ -444,7 +525,7 @@ def export_persons_csv():
     w = csv.writer(out, dialect="excel")
     w.writerow(["id","family_id","family_label","room_number","last_name","first_name","dob","sex","age"])
     today = date.today()
-    for p in Person.query.order_by(Person.id.asc()).all():
+    for p in Person.query.join(Family).filter(Family.departure_date.is_(None)).order_by(Person.id.asc()).all():
         fam = p.family
         w.writerow([p.id, fam.id, fam.label or "", fam.room_number or "", p.last_name, p.first_name, p.dob or "", p.sex or "", age_years(p.dob, today) or ""])
     resp = make_response(out.getvalue().encode("utf-8-sig"))
@@ -463,6 +544,7 @@ def backup():
                 "label": f.label,
                 "room_number": f.room_number,
                 "arrival_date": f.arrival_date.isoformat() if f.arrival_date else None,
+                "departure_date": f.departure_date.isoformat() if f.departure_date else None,
             }
             for f in Family.query.order_by(Family.id.asc()).all()
         ],
@@ -509,6 +591,7 @@ def restore():
                 label=f.get("label"),
                 room_number=f.get("room_number"),
                 arrival_date=parse_date(f.get("arrival_date")),
+                departure_date=parse_date(f.get("departure_date")),
             )
             db.session.add(fam)
         db.session.commit()
