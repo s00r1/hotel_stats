@@ -212,6 +212,35 @@ def dashboard():
     recent_labels = [f.label or f"Famille {f.id}" for f in recent_families]
     recent_values = [days_since(f.arrival_date) for f in recent_families]
 
+    # Alertes : sur-occupation, femmes isolées, bébés < 1 an
+    overcrowded: list[Family] = []
+    isolated_women: list[Family] = []
+    baby_families: list[Family] = []
+
+    for f in families:
+        persons_list = f.persons.all()
+        if f.room_number not in ("53", "54") and len(persons_list) > 3:
+            overcrowded.append(f)
+
+        has_adult_male = False
+        has_adult_female = False
+        has_baby = False
+        for p in persons_list:
+            a = age_years(p.dob, today)
+            if a is None:
+                continue
+            if a >= 18:
+                if p.sex == "M":
+                    has_adult_male = True
+                elif p.sex == "F":
+                    has_adult_female = True
+            if a < 1:
+                has_baby = True
+        if has_adult_female and not has_adult_male:
+            isolated_women.append(f)
+        if has_baby:
+            baby_families.append(f)
+
     return render_template(
         "dashboard.html",
         total_clients=len(persons),
@@ -237,6 +266,9 @@ def dashboard():
         adult_male_count=adult_male_count,
         girl_count=girl_count,
         boy_count=boy_count,
+        overcrowded_families=overcrowded,
+        isolated_women_families=isolated_women,
+        baby_families=baby_families,
     )
 
 # ----- Familles -----
