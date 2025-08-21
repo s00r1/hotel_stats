@@ -327,7 +327,10 @@ def restore():
         file = request.files.get("file")
         if not file:
             return redirect(url_for("restore"))
-        data = json.load(file)
+        try:
+            data = json.load(file.stream)
+        except json.JSONDecodeError:
+            return redirect(url_for("restore"))
         Person.query.delete()
         Family.query.delete()
         db.session.commit()

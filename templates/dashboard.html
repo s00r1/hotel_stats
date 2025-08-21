@@ -80,7 +80,9 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  Chart.register(ChartDataLabels);
+  if (window.ChartDataLabels) {
+    Chart.register(ChartDataLabels);
+  }
 
   window.activeCharts = [];
   window.activeCharts.push(new Chart(document.getElementById('sexChart'), {
