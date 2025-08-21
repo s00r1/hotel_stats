@@ -276,6 +276,14 @@ TPL_BASE = """
   <!-- Chart.js + datalabels plugin -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+  <!-- jQuery + DataTables (Bootstrap 5) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
   <style>
     :root {
       --card-radius: 18px;
@@ -520,9 +528,21 @@ TPL_FAMILIES = """
     </form>
   </div>
 
-  <div class="table-responsive mt-3" style="max-height: 60vh;">
-    <table class="table table-hover table-sm align-middle">
-      <thead><tr><th>#</th><th>Label</th><th>Chambre</th><th>Arrivée</th><th>Personnes</th><th class="text-end">Actions</th></tr></thead>
+  <div class="table-responsive mt-3">
+    <table id="familiesTable" class="table table-hover table-sm align-middle nowrap w-100">
+      <thead>
+        <tr>
+          <th>#</th><th>Nom</th><th>Chambre</th><th>Arrivée</th><th>Personnes</th><th class="text-end">Actions</th>
+        </tr>
+        <tr>
+          <th></th>
+          <th><input class="form-control form-control-sm" placeholder="Nom"></th>
+          <th><input class="form-control form-control-sm" placeholder="Chambre"></th>
+          <th><input class="form-control form-control-sm" placeholder="Arrivée"></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
       <tbody>
       {% for f in families %}
         <tr>
@@ -544,6 +564,25 @@ TPL_FAMILIES = """
     </table>
   </div>
 </div>
+<script>
+$(document).ready(function(){
+  let table = $('#familiesTable').DataTable({
+    responsive: true,
+    orderCellsTop: true,
+    columnDefs: [
+      { orderable: false, targets: [0,4,5] }
+    ]
+  });
+  // Filtres par colonne
+  $('#familiesTable thead tr:eq(1) th').each(function(i){
+    $('input', this).on('keyup change', function(){
+      if(table.column(i).search() !== this.value){
+        table.column(i).search(this.value).draw();
+      }
+    });
+  });
+});
+</script>
 """
 
 TPL_FAMILY_FORM = """
