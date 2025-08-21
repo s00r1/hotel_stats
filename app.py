@@ -116,6 +116,9 @@ def dashboard():
     sex_counts = {k: 0 for k in SEX_CHOICES}
     # Tranches d'âge par sexe
     age_counts = {b[0]: {"F": 0, "M": 0} for b in AGE_BUCKETS}
+    # Comptages adultes/enfants détaillés
+    adult_female_count = adult_male_count = 0
+    girl_count = boy_count = 0
 
     for p in persons:
         s = p.sex if p.sex in sex_counts else "Autre/NP"
@@ -124,12 +127,17 @@ def dashboard():
         b = bucket_for_age(a)
         if b and s in ("F", "M"):
             age_counts[b][s] += 1
-
-    female_count = sex_counts.get("F", 0)
-    male_count = sex_counts.get("M", 0)
-    children_count = sum(
-        1 for p in persons if (age := age_years(p.dob, today)) is not None and age < 18
-    )
+        if a is not None and s in ("F", "M"):
+            if a < 18:
+                if s == "F":
+                    girl_count += 1
+                else:
+                    boy_count += 1
+            else:
+                if s == "F":
+                    adult_female_count += 1
+                else:
+                    adult_male_count += 1
 
     # Anniversaires du jour
     birthdays = [
@@ -152,9 +160,10 @@ def dashboard():
         age_colors_m=AGE_COLORS_M,
         families=families,
         birthdays=birthdays,
-        female_count=female_count,
-        male_count=male_count,
-        children_count=children_count,
+        adult_female_count=adult_female_count,
+        adult_male_count=adult_male_count,
+        girl_count=girl_count,
+        boy_count=boy_count,
     )
 
 # ----- Familles -----
