@@ -49,6 +49,10 @@ AGE_BUCKETS = [
     ("60+",   60, 200),
 ]
 
+# Couleurs des tranches d'âge (Femmes / Hommes)
+AGE_COLORS_F = ['#8bd0db', '#8fe4cb', '#93d3a2', '#ffe083', '#febe89', '#ed9aa2', '#b7a0e0', '#999c9f']
+AGE_COLORS_M = ['#128193', '#19a078', '#208537', '#cc9a05', '#ca6410', '#b02a37', '#58349a', '#292e33']
+
 SEX_CHOICES = ["F", "M", "Autre/NP"]
 
 def parse_date(s: str | None):
@@ -113,6 +117,8 @@ def dashboard():
         age_labels=list(age_counts.keys()),
         age_f_values=[age_counts[k]["F"] for k in age_counts.keys()],
         age_m_values=[age_counts[k]["M"] for k in age_counts.keys()],
+        age_colors_f=AGE_COLORS_F,
+        age_colors_m=AGE_COLORS_M,
         families=families,
         birthdays=birthdays
     )
@@ -376,6 +382,15 @@ TPL_DASHBOARD = """
     <div class="card shadow-soft p-3">
       <h6 class="mb-3"><i class="bi bi-activity me-2"></i>Tranches d’âge</h6>
       <canvas id="ageChart" height="200"></canvas>
+      <div id="ageLegend" class="mt-2">
+        {% for lbl in age_labels %}
+        <div class="d-flex align-items-center mb-1">
+          <span class="me-1" style="width:12px;height:12px;background-color:{{ age_colors_f[loop.index0] }};display:inline-block;border-radius:2px;"></span>
+          <span class="me-2" style="width:12px;height:12px;background-color:{{ age_colors_m[loop.index0] }};display:inline-block;border-radius:2px;"></span>
+          <span class="small">{{ lbl }}</span>
+        </div>
+        {% endfor %}
+      </div>
     </div>
   </div>
 </div>
@@ -438,8 +453,8 @@ new Chart(document.getElementById('sexChart'), {
 });
 
 // ÂGES par sexe
-const ageColorsF = ['#8bd0db', '#8fe4cb', '#93d3a2', '#ffe083', '#febe89', '#ed9aa2', '#b7a0e0', '#999c9f'];
-const ageColorsM = ['#128193', '#19a078', '#208537', '#cc9a05', '#ca6410', '#b02a37', '#58349a', '#292e33'];
+const ageColorsF = {{ age_colors_f|tojson }};
+const ageColorsM = {{ age_colors_m|tojson }};
 new Chart(document.getElementById('ageChart'), {
   type: 'bar',
   data: {
@@ -459,7 +474,7 @@ new Chart(document.getElementById('ageChart'), {
   },
   options: {
     plugins: {
-      legend: { position: 'bottom' },
+      legend: { display: false },
       datalabels: { anchor: 'end', align: 'top', formatter: v => v || '' }
     },
     scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
