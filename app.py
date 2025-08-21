@@ -92,6 +92,7 @@ def inject_globals():
         "fmt_date": fmt_date,
         "sex_choices": SEX_CHOICES,
         "theme": request.cookies.get("theme", "dark"),
+        "age_years": age_years,
     }
 
 @app.route("/theme/<mode>")
@@ -124,6 +125,12 @@ def dashboard():
         if b and s in ("F", "M"):
             age_counts[b][s] += 1
 
+    female_count = sex_counts.get("F", 0)
+    male_count = sex_counts.get("M", 0)
+    children_count = sum(
+        1 for p in persons if (age := age_years(p.dob, today)) is not None and age < 18
+    )
+
     # Anniversaires du jour
     birthdays = [
         p for p in persons
@@ -145,6 +152,9 @@ def dashboard():
         age_colors_m=AGE_COLORS_M,
         families=families,
         birthdays=birthdays,
+        female_count=female_count,
+        male_count=male_count,
+        children_count=children_count,
     )
 
 # ----- Familles -----
@@ -174,6 +184,7 @@ def families_list():
         label=label,
         dmin=request.args.get("dmin") or "",
         dmax=request.args.get("dmax") or "",
+        Person=Person,
     )
 
 @app.route("/families/new", methods=["GET","POST"])
@@ -260,6 +271,99 @@ def persons_delete(fid, pid):
     db.session.delete(p)
     db.session.commit()
     return redirect(url_for("persons_list", fid=fid))
+
+# ----- Résidents -----
+
+@app.route("/residents")
+def residents_list():
+    today = date.today()
+    rows = []
+    for p in Person.query.join(Family).all():
+        fam = p.family
+        rows.append({
+            "id": p.id,
+            "first_name": p.first_name,
+            "last_name": p.last_name,
+            "sex": p.sex,
+            "age": age_years(p.dob, today),
+            "family_label": fam.label,
+            "room_number": fam.room_number,
+            "arrival_date": fam.arrival_date,
+        })
+    return render_template("residents.html", persons=rows)
+
+# ----- Recherches -----
+
+@app.route("/search")
+def search():
+    fam_label = (request.args.get("fam_label") or "").strip()
+    fam_room = (request.args.get("fam_room") or "").strip()
+    fam_arrival = parse_date(request.args.get("fam_arrival"))
+    fam_dmin = parse_date(request.args.get("fam_dmin"))
+    fam_dmax = parse_date(request.args.get("fam_dmax"))
+
+    p_last = (request.args.get("p_last") or "").strip()
+    p_first = (request.args.get("p_first") or "").strip()
+    p_dob = parse_date(request.args.get("p_dob"))
+    p_arrival = parse_date(request.args.get("p_arrival"))
+    p_room = (request.args.get("p_room") or "").strip()
+
+    families = []
+    if any([fam_label, fam_room, fam_arrival, fam_dmin, fam_dmax]):
+        qf = Family.query
+        if fam_label:
+            qf = qf.filter(Family.label.like(f"%{fam_label}%"))
+        if fam_room:
+            qf = qf.filter(Family.room_number.like(f"%{fam_room}%"))
+        if fam_arrival:
+            qf = qf.filter(Family.arrival_date == fam_arrival)
+        if fam_dmin:
+            qf = qf.filter(Family.arrival_date >= fam_dmin)
+        if fam_dmax:
+            qf = qf.filter(Family.arrival_date <= fam_dmax)
+        families = qf.order_by(Family.arrival_date.desc().nullslast()).all()
+
+    persons = []
+    if any([p_last, p_first, p_dob, p_arrival, p_room]):
+        qp = Person.query.join(Family)
+        if p_last:
+            qp = qp.filter(Person.last_name.like(f"%{p_last}%"))
+        if p_first:
+            qp = qp.filter(Person.first_name.like(f"%{p_first}%"))
+        if p_dob:
+            qp = qp.filter(Person.dob == p_dob)
+        if p_arrival:
+            qp = qp.filter(Family.arrival_date == p_arrival)
+        if p_room:
+            qp = qp.filter(Family.room_number.like(f"%{p_room}%"))
+        today = date.today()
+        persons = [
+            {
+                "id": p.id,
+                "first_name": p.first_name,
+                "last_name": p.last_name,
+                "age": age_years(p.dob, today),
+                "room_number": p.family.room_number,
+                "arrival_date": p.family.arrival_date,
+            }
+            for p in qp.all()
+        ]
+
+    return render_template(
+        "search.html",
+        families=families,
+        persons=persons,
+        fam_label=fam_label,
+        fam_room=fam_room,
+        fam_arrival=request.args.get("fam_arrival") or "",
+        fam_dmin=request.args.get("fam_dmin") or "",
+        fam_dmax=request.args.get("fam_dmax") or "",
+        p_last=p_last,
+        p_first=p_first,
+        p_dob=request.args.get("p_dob") or "",
+        p_arrival=request.args.get("p_arrival") or "",
+        p_room=p_room,
+    )
 
 # ----- Export CSV -----
 

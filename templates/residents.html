@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Résidents - Kardex Hôtel Social{% endblock %}
+{% block content %}
+<div class="card shadow-soft p-3">
+  <div class="table-responsive">
+    <table id="residentsTable" class="table table-hover table-sm align-middle">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Sexe</th>
+          <th>Âge</th>
+          <th>Famille</th>
+          <th>Chambre</th>
+          <th>Arrivée</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for p in persons %}
+        <tr>
+          <td class="text-secondary">{{ p.id }}</td>
+          <td class="fw-semibold">{{ p.last_name }}</td>
+          <td>{{ p.first_name }}</td>
+          <td>{{ p.sex or "—" }}</td>
+          <td>{{ p.age if p.age is not none else "—" }}</td>
+          <td>{{ p.family_label or "—" }}</td>
+          <td>{{ p.room_number or "—" }}</td>
+          <td data-order="{{ p.arrival_date.isoformat() if p.arrival_date else '' }}">{{ fmt_date(p.arrival_date) or "—" }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  new DataTable('#residentsTable', {
+    language: { url: 'https://cdn.datatables.net/plug-ins/2.0.8/i18n/fr-FR.json' }
+  });
+});
+</script>
+{% endblock %}

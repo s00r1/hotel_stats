@@ -21,6 +21,7 @@
         <div>
           <div class="text-secondary text-uppercase small">Total clients</div>
           <div class="h3 m-0">{{ total_clients }}</div>
+          <div class="small text-secondary">{{ female_count }} femmes, {{ male_count }} hommes, {{ children_count }} enfants</div>
         </div>
       </div>
     </div>
@@ -45,9 +46,9 @@
           <span class="small">Hommes</span>
         </div>
       </div>
-      <div id="ageLegend" class="mt-2">
+      <div id="ageLegend" class="mt-2 d-flex flex-column align-items-center">
         {% for lbl in age_labels %}
-        <div class="d-flex align-items-center mb-1">
+        <div class="d-flex align-items-center justify-content-center mb-1">
           <span class="me-1" style="width:12px;height:12px;background-color:{{ age_colors_f[loop.index0] }};display:inline-block;border-radius:2px;"></span>
           <span class="me-2" style="width:12px;height:12px;background-color:{{ age_colors_m[loop.index0] }};display:inline-block;border-radius:2px;"></span>
           <span class="small">{{ lbl }}</span>
