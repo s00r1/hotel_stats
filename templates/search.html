@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% block title %}Recherches - Kardex Hôtel Social{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12 col-lg-6">
+    <div class="card shadow-soft p-3 h-100">
+      <h5 class="mb-3">Recherche familles</h5>
+      <form class="row g-2 mb-3" method="get">
+        <div class="col-12">
+          <div class="form-floating">
+            <input class="form-control" name="fam_label" id="fam_label" value="{{ fam_label }}">
+            <label for="fam_label">Nom</label>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-floating">
+            <input class="form-control" name="fam_room" id="fam_room" value="{{ fam_room }}">
+            <label for="fam_room">Chambre</label>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-floating">
+            <input type="date" class="form-control" name="fam_arrival" id="fam_arrival" value="{{ fam_arrival }}">
+            <label for="fam_arrival">Arrivée exacte</label>
+          </div>
+        </div>
+        <div class="col-6"></div>
+        <div class="col-6">
+          <div class="form-floating">
+            <input type="date" class="form-control" name="fam_dmin" id="fam_dmin" value="{{ fam_dmin }}">
+            <label for="fam_dmin">Arrivée min</label>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-floating">
+            <input type="date" class="form-control" name="fam_dmax" id="fam_dmax" value="{{ fam_dmax }}">
+            <label for="fam_dmax">Arrivée max</label>
+          </div>
+        </div>
+        <div class="col-12">
+          <button class="btn btn-outline-info"><i class="bi bi-search"></i></button>
+          <a class="btn btn-outline-secondary" href="{{ url_for('search') }}"><i class="bi bi-x-lg"></i></a>
+        </div>
+      </form>
+      {% if families %}
+      <div class="table-responsive" style="max-height:40vh;">
+        <table class="table table-sm table-hover align-middle">
+          <thead><tr><th>#</th><th>Famille</th><th>Chambre</th><th>Arrivée</th></tr></thead>
+          <tbody>
+          {% for f in families %}
+            <tr>
+              <td class="text-secondary">{{ f.id }}</td>
+              <td>{{ f.label or '—' }}</td>
+              <td>{{ f.room_number or '—' }}</td>
+              <td>{{ fmt_date(f.arrival_date) or '—' }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card shadow-soft p-3 h-100">
+      <h5 class="mb-3">Recherche personnes</h5>
+      <form class="row g-2 mb-3" method="get">
+        <div class="col-6">
+          <div class="form-floating">
+            <input class="form-control" name="p_last" id="p_last" value="{{ p_last }}">
+            <label for="p_last">Nom</label>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-floating">
+            <input class="form-control" name="p_first" id="p_first" value="{{ p_first }}">
+            <label for="p_first">Prénom</label>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-floating">
+            <input type="date" class="form-control" name="p_dob" id="p_dob" value="{{ p_dob }}">
+            <label for="p_dob">Naissance</label>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-floating">
+            <input type="date" class="form-control" name="p_arrival" id="p_arrival" value="{{ p_arrival }}">
+            <label for="p_arrival">Arrivée</label>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-floating">
+            <input class="form-control" name="p_room" id="p_room" value="{{ p_room }}">
+            <label for="p_room">Chambre</label>
+          </div>
+        </div>
+        <div class="col-12">
+          <button class="btn btn-outline-info"><i class="bi bi-search"></i></button>
+          <a class="btn btn-outline-secondary" href="{{ url_for('search') }}"><i class="bi bi-x-lg"></i></a>
+        </div>
+      </form>
+      {% if persons %}
+      <div class="table-responsive" style="max-height:40vh;">
+        <table class="table table-sm table-hover align-middle">
+          <thead><tr><th>#</th><th>Nom</th><th>Prénom</th><th>Âge</th><th>Chambre</th><th>Arrivée</th></tr></thead>
+          <tbody>
+          {% for p in persons %}
+            <tr>
+              <td class="text-secondary">{{ p.id }}</td>
+              <td>{{ p.last_name }}</td>
+              <td>{{ p.first_name }}</td>
+              <td>{{ p.age if p.age is not none else '—' }}</td>
+              <td>{{ p.room_number or '—' }}</td>
+              <td>{{ fmt_date(p.arrival_date) or '—' }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
