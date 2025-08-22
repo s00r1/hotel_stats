@@ -233,7 +233,13 @@ def dashboard():
 
     for f in families:
         persons_list = f.persons.all()
-        if f.room_number and not f.room_number2 and f.room_number not in ("53", "54") and len(persons_list) > 3:
+
+        rooms = [r for r in (f.room_number, f.room_number2) if r]
+        capacity = 0
+        for r in rooms:
+            capacity += 8 if r in ("53", "54") else 3
+
+        if rooms and len(persons_list) > capacity:
             overcrowded.append(f)
 
         has_adult_male = False
