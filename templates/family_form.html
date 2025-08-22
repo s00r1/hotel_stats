@@ -4,16 +4,22 @@
 <div class="card shadow-soft p-3">
   <h4 class="mb-3">{{ 'Modifier la famille' if family else 'Nouvelle famille' }}</h4>
   <form method="post" class="row g-3">
-    <div class="col-md-5">
+    <div class="col-md-4">
       <div class="form-floating">
         <input name="label" class="form-control" id="fl1" placeholder="Label" value="{{ family.label if family else '' }}">
         <label for="fl1">Label (ex: Famille Dupont)</label>
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
       <div class="form-floating">
         <input name="room_number" class="form-control" id="fl2" placeholder="Chambre" value="{{ family.room_number if family else '' }}">
-        <label for="fl2">Chambre</label>
+        <label for="fl2">Chambre 1</label>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="form-floating">
+        <input name="room_number2" class="form-control" id="fl2b" placeholder="Chambre 2" value="{{ family.room_number2 if family else '' }}">
+        <label for="fl2b">Chambre 2</label>
       </div>
     </div>
     <div class="col-md-4">
