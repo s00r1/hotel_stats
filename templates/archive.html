@@ -51,7 +51,7 @@
             <tr>
               <td class="text-secondary">{{ f.id }}</td>
               <td>{{ f.label or '—' }}</td>
-              <td>{{ f.room_number or '—' }}</td>
+              <td>{{ rooms_text(f) or '—' }}</td>
               <td data-order="{{ f.arrival_date.isoformat() if f.arrival_date else '' }}">{{ fmt_date(f.arrival_date) or '—' }}</td>
               <td data-order="{{ f.departure_date.isoformat() if f.departure_date else '' }}">{{ fmt_date(f.departure_date) or '—' }}</td>
             </tr>

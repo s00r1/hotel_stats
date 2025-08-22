@@ -51,7 +51,7 @@
             <tr>
               <td class="text-secondary">{{ f.id }}</td>
               <td>{{ f.label or '—' }}</td>
-              <td>{{ f.room_number or '—' }}</td>
+              <td>{{ rooms_text(f) or '—' }}</td>
               <td>{{ fmt_date(f.arrival_date) or '—' }}</td>
             </tr>
           {% endfor %}

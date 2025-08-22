@@ -45,7 +45,7 @@
         <tr>
           <td class="text-secondary">{{ f.id }}</td>
           <td class="fw-semibold">{{ f.label or "—" }}</td>
-          <td>{{ f.room_number or "—" }}</td>
+          <td>{{ rooms_text(f) or "—" }}</td>
           <td data-order="{{ f.arrival_date.isoformat() if f.arrival_date else '' }}">{{ fmt_date(f.arrival_date) or "—" }}</td>
           <td><span class="badge text-bg-secondary">{{ f.persons.count() }}</span></td>
           <td class="text-end">
@@ -73,7 +73,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <p><strong>Chambre :</strong> {{ f.room_number or '—' }}</p>
+        <p><strong>Chambre :</strong> {{ rooms_text(f) or '—' }}</p>
         <p><strong>Arrivée :</strong> {{ fmt_date(f.arrival_date) or '—' }}</p>
         <hr>
         <ul class="list-unstyled mb-0">

@@ -150,7 +150,7 @@
             <div class="fw-bold">Familles &gt;3 pers. dans une chambre (hors 53/54)</div>
             <ul class="mb-0 ps-3">
               {% for f in overcrowded_families %}
-                <li class="small">{{ f.label or "Famille " ~ f.id }} — chambre {{ f.room_number }} ({{ f.persons.count() }} pers.)</li>
+                <li class="small">{{ f.label or "Famille " ~ f.id }} — chambre {{ rooms_text(f) }} ({{ f.persons.count() }} pers.)</li>
               {% else %}
                 <li class="small">Aucune</li>
               {% endfor %}
@@ -163,7 +163,7 @@
             <div class="fw-bold">Femmes isolées</div>
             <ul class="mb-0 ps-3">
               {% for f in isolated_women_families %}
-                <li class="small">{{ f.label or "Famille " ~ f.id }} — chambre {{ f.room_number }}</li>
+                <li class="small">{{ f.label or "Famille " ~ f.id }} — chambre {{ rooms_text(f) }}</li>
               {% else %}
                 <li class="small">Aucune</li>
               {% endfor %}
@@ -176,7 +176,7 @@
             <div class="fw-bold">Bébés de moins d'un an</div>
             <ul class="mb-0 ps-3">
               {% for f in baby_families %}
-                <li class="small">{{ f.label or "Famille " ~ f.id }} — chambre {{ f.room_number }}</li>
+                <li class="small">{{ f.label or "Famille " ~ f.id }} — chambre {{ rooms_text(f) }}</li>
               {% else %}
                 <li class="small">Aucune</li>
               {% endfor %}
@@ -203,7 +203,7 @@
         <tr>
           <td class="text-secondary">{{ f.id }}</td>
           <td class="fw-semibold">{{ f.label or "—" }}</td>
-          <td>{{ f.room_number or "—" }}</td>
+          <td>{{ rooms_text(f) or "—" }}</td>
           <td>{{ fmt_date(f.arrival_date) or "—" }}</td>
           <td><span class="badge text-bg-secondary">{{ f.persons.count() }}</span></td>
           <td class="text-end">

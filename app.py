@@ -6,10 +6,10 @@ from dateutil.relativedelta import relativedelta
 from io import StringIO
 import csv
 import json
-import re
 
 from flask import Flask, request, redirect, url_for, render_template, make_response
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_, text
 from sqlalchemy.exc import OperationalError
 
 app = Flask(__name__)
@@ -25,6 +25,7 @@ class Family(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     label = db.Column(db.String(120), index=True)         # ex: "Famille Dupont"
     room_number = db.Column(db.String(20), index=True)
+    room_number2 = db.Column(db.String(20), index=True)
     arrival_date = db.Column(db.Date, index=True)
     departure_date = db.Column(db.Date, index=True)
 
@@ -88,6 +89,9 @@ def bucket_for_age(a: int | None):
             return label
     return None
 
+def rooms_text(f: "Family") -> str:
+    return " & ".join(r for r in [f.room_number, f.room_number2] if r)
+
 @app.context_processor
 def inject_globals():
     return {
@@ -95,6 +99,7 @@ def inject_globals():
         "sex_choices": SEX_CHOICES,
         "theme": request.cookies.get("theme", "dark"),
         "age_years": age_years,
+        "rooms_text": rooms_text,
     }
 
 @app.route("/theme/<mode>")
@@ -228,8 +233,7 @@ def dashboard():
 
     for f in families:
         persons_list = f.persons.all()
-        rooms = re.findall(r"\d+", f.room_number or "")
-        if len(rooms) == 1 and rooms[0] not in ("53", "54") and len(persons_list) > 3:
+        if f.room_number and not f.room_number2 and f.room_number not in ("53", "54") and len(persons_list) > 3:
             overcrowded.append(f)
 
         has_adult_male = False
@@ -294,7 +298,7 @@ def families_list():
     dmax = parse_date(request.args.get("dmax"))
 
     if room:
-        q = q.filter(Family.room_number.like(f"%{room}%"))
+        q = q.filter(or_(Family.room_number.like(f"%{room}%"), Family.room_number2.like(f"%{room}%")))
     if label:
         q = q.filter(Family.label.like(f"%{label}%"))
     if dmin:
@@ -319,6 +323,7 @@ def families_new():
         f = Family(
             label=request.form.get("label") or None,
             room_number=request.form.get("room_number") or None,
+            room_number2=request.form.get("room_number2") or None,
             arrival_date=parse_date(request.form.get("arrival_date"))
         )
         db.session.add(f)
@@ -332,6 +337,7 @@ def families_edit(fid):
     if request.method == "POST":
         fam.label = request.form.get("label") or None
         fam.room_number = request.form.get("room_number") or None
+        fam.room_number2 = request.form.get("room_number2") or None
         fam.arrival_date = parse_date(request.form.get("arrival_date"))
         db.session.commit()
         return redirect(url_for("families_list"))
@@ -422,7 +428,7 @@ def residents_list():
             "sex": p.sex,
             "age": age_years(p.dob, today),
             "family_label": fam.label,
-            "room_number": fam.room_number,
+            "room_number": rooms_text(fam),
             "arrival_date": fam.arrival_date,
         })
     return render_template("residents.html", persons=rows)
@@ -449,7 +455,7 @@ def search():
         if fam_label:
             qf = qf.filter(Family.label.like(f"%{fam_label}%"))
         if fam_room:
-            qf = qf.filter(Family.room_number.like(f"%{fam_room}%"))
+            qf = qf.filter(or_(Family.room_number.like(f"%{fam_room}%"), Family.room_number2.like(f"%{fam_room}%")))
         if fam_arrival:
             qf = qf.filter(Family.arrival_date == fam_arrival)
         if fam_dmin:
@@ -470,7 +476,7 @@ def search():
         if p_arrival:
             qp = qp.filter(Family.arrival_date == p_arrival)
         if p_room:
-            qp = qp.filter(Family.room_number.like(f"%{p_room}%"))
+            qp = qp.filter(or_(Family.room_number.like(f"%{p_room}%"), Family.room_number2.like(f"%{p_room}%")))
         today = date.today()
         persons = [
             {
@@ -478,7 +484,7 @@ def search():
                 "first_name": p.first_name,
                 "last_name": p.last_name,
                 "age": age_years(p.dob, today),
-                "room_number": p.family.room_number,
+                "room_number": rooms_text(p.family),
                 "arrival_date": p.family.arrival_date,
             }
             for p in qp.all()
@@ -520,7 +526,7 @@ def archive():
         if fam_label:
             qf = qf.filter(Family.label.like(f"%{fam_label}%"))
         if fam_room:
-            qf = qf.filter(Family.room_number.like(f"%{fam_room}%"))
+            qf = qf.filter(or_(Family.room_number.like(f"%{fam_room}%"), Family.room_number2.like(f"%{fam_room}%")))
         if fam_arrival:
             qf = qf.filter(Family.arrival_date == fam_arrival)
         if fam_dmin:
@@ -541,7 +547,7 @@ def archive():
         if p_arrival:
             qp = qp.filter(Family.arrival_date == p_arrival)
         if p_room:
-            qp = qp.filter(Family.room_number.like(f"%{p_room}%"))
+            qp = qp.filter(or_(Family.room_number.like(f"%{p_room}%"), Family.room_number2.like(f"%{p_room}%")))
         today = date.today()
         persons = [
             {
@@ -549,7 +555,7 @@ def archive():
                 "first_name": p.first_name,
                 "last_name": p.last_name,
                 "age": age_years(p.dob, today),
-                "room_number": p.family.room_number,
+                "room_number": rooms_text(p.family),
                 "arrival_date": p.family.arrival_date,
             }
             for p in qp.all()
@@ -579,7 +585,7 @@ def export_families_csv():
     w = csv.writer(out, dialect="excel")
     w.writerow(["id","label","room_number","arrival_date","num_persons"])
     for f in Family.query.filter(Family.departure_date.is_(None)).order_by(Family.id.asc()).all():
-        w.writerow([f.id, f.label or "", f.room_number or "", f.arrival_date or "", f.persons.count()])
+        w.writerow([f.id, f.label or "", rooms_text(f) or "", f.arrival_date or "", f.persons.count()])
     resp = make_response(out.getvalue().encode("utf-8-sig"))
     resp.headers["Content-Type"] = "text/csv; charset=utf-8"
     resp.headers["Content-Disposition"] = "attachment; filename=families.csv"
@@ -593,7 +599,7 @@ def export_persons_csv():
     today = date.today()
     for p in Person.query.join(Family).filter(Family.departure_date.is_(None)).order_by(Person.id.asc()).all():
         fam = p.family
-        w.writerow([p.id, fam.id, fam.label or "", fam.room_number or "", p.last_name, p.first_name, p.dob or "", p.sex or "", age_years(p.dob, today) or ""])
+        w.writerow([p.id, fam.id, fam.label or "", rooms_text(fam) or "", p.last_name, p.first_name, p.dob or "", p.sex or "", age_years(p.dob, today) or ""])
     resp = make_response(out.getvalue().encode("utf-8-sig"))
     resp.headers["Content-Type"] = "text/csv; charset=utf-8"
     resp.headers["Content-Disposition"] = "attachment; filename=persons.csv"
@@ -609,6 +615,7 @@ def backup():
                 "id": f.id,
                 "label": f.label,
                 "room_number": f.room_number,
+                "room_number2": f.room_number2,
                 "arrival_date": f.arrival_date.isoformat() if f.arrival_date else None,
                 "departure_date": f.departure_date.isoformat() if f.departure_date else None,
             }
@@ -656,6 +663,7 @@ def restore():
                 id=f.get("id"),
                 label=f.get("label"),
                 room_number=f.get("room_number"),
+                room_number2=f.get("room_number2"),
                 arrival_date=parse_date(f.get("arrival_date")),
                 departure_date=parse_date(f.get("departure_date")),
             )
@@ -677,6 +685,11 @@ def restore():
 
 # ============================
 with app.app_context():
+    try:
+        db.session.execute(text("ALTER TABLE family ADD COLUMN room_number2 VARCHAR(20)"))
+        db.session.commit()
+    except OperationalError:
+        db.session.rollback()
     db.create_all()
 
 if __name__ == "__main__":
