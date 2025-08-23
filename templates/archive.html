@@ -115,8 +115,7 @@
               <td class="text-secondary">{{ p.id }}</td>
               <td>{{ p.last_name }}</td>
               <td>{{ p.first_name }}</td>
-              {% set age_jours = ((now().date() - p.dob).days) if p.dob else -1 %}
-              <td data-order="{{ age_jours }}">{{ p.age_affiche or '' }}</td>
+                <td data-order="{{ p.age_days }}">{{ p.age_text or '' }}</td>
               <td data-order="{{ (p.room_number or 0)|int }}">{{ p.room_number or '' }}</td>
               <td data-order="{{ p.arrival_date.strftime('%Y-%m-%d') if p.arrival_date }}">
                 {{ p.arrival_date.strftime('%d/%m/%Y') if p.arrival_date }}
