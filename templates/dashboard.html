@@ -60,81 +60,6 @@
         </div>
       </div>
     </div>
-    <div class="card shadow-soft p-3 mt-4">
-      <h6 class="mb-3"><i class="bi bi-cake2 me-2"></i>Anniversaires</h6>
-      {% if birthdays_today %}
-      <div class="alert alert-warning py-2 mb-3 small">
-        Joyeux anniversaire à
-        {% for b in birthdays_today %}
-          <strong>{{ b.person.first_name }} {{ b.person.last_name }}</strong> ({{ b.age }} ans){% if not loop.last %}{% if loop.revindex == 2 %} et {% else %}, {% endif %}{% endif %}
-        {% endfor %} !
-      </div>
-      {% endif %}
-      <ul class="nav nav-tabs small" id="birthdayTab" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="weekahead-tab" data-bs-toggle="tab" data-bs-target="#weekahead" type="button" role="tab">Semaine à venir</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="weekpast-tab" data-bs-toggle="tab" data-bs-target="#weekpast" type="button" role="tab">Semaine passée</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="monthahead-tab" data-bs-toggle="tab" data-bs-target="#monthahead" type="button" role="tab">Mois à venir</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="monthpast-tab" data-bs-toggle="tab" data-bs-target="#monthpast" type="button" role="tab">Mois passé</button>
-        </li>
-      </ul>
-      <div class="tab-content small mt-3">
-        <div class="tab-pane fade show active" id="weekahead" role="tabpanel">
-          <ul class="list-group list-group-flush">
-            {% for b in birthdays_week_ahead %}
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }}</span>
-                <span class="badge text-bg-primary rounded-pill">{{ b.age }} ans</span>
-              </li>
-            {% else %}
-              <li class="list-group-item">Aucun</li>
-            {% endfor %}
-          </ul>
-        </div>
-        <div class="tab-pane fade" id="weekpast" role="tabpanel">
-          <ul class="list-group list-group-flush">
-            {% for b in birthdays_week_past %}
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }}</span>
-                <span class="badge text-bg-secondary rounded-pill">{{ b.age }} ans</span>
-              </li>
-            {% else %}
-              <li class="list-group-item">Aucun</li>
-            {% endfor %}
-          </ul>
-        </div>
-        <div class="tab-pane fade" id="monthahead" role="tabpanel">
-          <ul class="list-group list-group-flush">
-            {% for b in birthdays_month_ahead %}
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }}</span>
-                <span class="badge text-bg-primary rounded-pill">{{ b.age }} ans</span>
-              </li>
-            {% else %}
-              <li class="list-group-item">Aucun</li>
-            {% endfor %}
-          </ul>
-        </div>
-        <div class="tab-pane fade" id="monthpast" role="tabpanel">
-          <ul class="list-group list-group-flush">
-            {% for b in birthdays_month_past %}
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }}</span>
-                <span class="badge text-bg-secondary rounded-pill">{{ b.age }} ans</span>
-              </li>
-            {% else %}
-              <li class="list-group-item">Aucun</li>
-            {% endfor %}
-          </ul>
-        </div>
-      </div>
-    </div>
   </div>
   <div class="col-12 col-xl-4">
     <div class="card shadow-soft p-3">
@@ -185,6 +110,81 @@
       {% endfor %}
       </div>
     </div>
+      <div class="card shadow-soft p-3 mt-4">
+        <h6 class="mb-3"><i class="bi bi-cake2 me-2"></i>Anniversaires</h6>
+        {% if birthdays_today %}
+        <div class="alert alert-warning py-2 mb-3 small">
+          Joyeux anniversaire à
+          {% for b in birthdays_today %}
+            <strong>{{ b.person.first_name }} {{ b.person.last_name }}</strong> ({{ b.age }} ans){% if not loop.last %}{% if loop.revindex == 2 %} et {% else %}, {% endif %}{% endif %}
+          {% endfor %} !
+        </div>
+        {% endif %}
+        <ul class="nav nav-tabs small" id="birthdayTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="weekahead-tab" data-bs-toggle="tab" data-bs-target="#weekahead" type="button" role="tab">Semaine à venir</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="weekpast-tab" data-bs-toggle="tab" data-bs-target="#weekpast" type="button" role="tab">Semaine passée</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="monthahead-tab" data-bs-toggle="tab" data-bs-target="#monthahead" type="button" role="tab">Mois à venir</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="monthpast-tab" data-bs-toggle="tab" data-bs-target="#monthpast" type="button" role="tab">Mois passé</button>
+          </li>
+        </ul>
+        <div class="tab-content small mt-3">
+          <div class="tab-pane fade show active" id="weekahead" role="tabpanel">
+            <ul class="list-group list-group-flush">
+              {% for b in birthdays_week_ahead %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }}</span>
+                  <span class="badge text-bg-primary rounded-pill">{{ b.age }} ans</span>
+                </li>
+              {% else %}
+                <li class="list-group-item">Aucun</li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="tab-pane fade" id="weekpast" role="tabpanel">
+            <ul class="list-group list-group-flush">
+              {% for b in birthdays_week_past %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }}</span>
+                  <span class="badge text-bg-secondary rounded-pill">{{ b.age }} ans</span>
+                </li>
+              {% else %}
+                <li class="list-group-item">Aucun</li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="tab-pane fade" id="monthahead" role="tabpanel">
+            <ul class="list-group list-group-flush">
+              {% for b in birthdays_month_ahead %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }}</span>
+                  <span class="badge text-bg-primary rounded-pill">{{ b.age }} ans</span>
+                </li>
+              {% else %}
+                <li class="list-group-item">Aucun</li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="tab-pane fade" id="monthpast" role="tabpanel">
+            <ul class="list-group list-group-flush">
+              {% for b in birthdays_month_past %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }}</span>
+                  <span class="badge text-bg-secondary rounded-pill">{{ b.age }} ans</span>
+                </li>
+              {% else %}
+                <li class="list-group-item">Aucun</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
   </div>
 </div>
 
