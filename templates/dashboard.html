@@ -196,15 +196,17 @@
   <div class="table-responsive mt-3" style="max-height: 420px;">
     <table id="familiesTable" class="table table-striped table-hover align-middle table-sm">
       <thead>
-        <tr><th>#</th><th>Famille</th><th>Chambre</th><th>Arrivée</th><th>Personnes</th><th></th></tr>
+        <tr><th>#</th><th>Famille</th><th>Chambre</th><th>Arrivée</th><th>Personnes</th><th data-orderable="false"></th></tr>
       </thead>
       <tbody>
       {% for f in families %}
         <tr>
           <td class="text-secondary">{{ f.id }}</td>
           <td class="fw-semibold">{{ f.label or "—" }}</td>
-          <td data-order="{{ (rooms_text(f) or '')|int }}">{{ rooms_text(f) or "—" }}</td>
-          <td data-order="{{ f.arrival_date.strftime('%Y-%m-%d') if f.arrival_date else '' }}">{{ fmt_date(f.arrival_date) or "—" }}</td>
+          <td data-order="{{ (rooms_text(f) or 0)|int }}">{{ rooms_text(f) or '' }}</td>
+          <td data-order="{{ f.arrival_date.strftime('%Y-%m-%d') if f.arrival_date }}">
+            {{ f.arrival_date.strftime('%d/%m/%Y') if f.arrival_date }}
+          </td>
           <td><span class="badge text-bg-secondary">{{ f.persons.count() }}</span></td>
           <td class="text-end">
             <a class="btn btn-sm btn-outline-info" href="{{ url_for('persons_list', fid=f.id) }}"><i class="bi bi-arrow-right-circle"></i></a>
