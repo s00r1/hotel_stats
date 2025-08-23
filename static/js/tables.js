@@ -1,22 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const commonOpts = {
+  if (typeof window.DataTable === 'undefined') {
+    console.error('DataTables pas chargé !');
+    return;
+  }
+  const opts = {
     ordering: true,
     order: [],
-    language: { url: 'https://cdn.datatables.net/plug-ins/2.0.8/i18n/fr-FR.json' }
+    language: { url: 'https://cdn.datatables.net/plug-ins/2.0.8/i18n/fr-FR.json' },
+    columnDefs: [{ targets: -1, orderable: false }]
   };
-
-  const init = (el) => {
-    const opts = { ...commonOpts };
-    const last = el.querySelector('thead th:last-child');
-    if (last && last.textContent.trim() === 'Actions') {
-      opts.columnDefs = [{ targets: -1, orderable: false }];
-    }
-    new DataTable(el, opts);
-  };
-
-  const persons = document.querySelector('#personsTable');
-  if (persons) init(persons);
-
-  const families = document.querySelector('#familiesTable');
-  if (families) init(families);
+  if (document.querySelector('#personsTable')) new DataTable('#personsTable', opts);
+  if (document.querySelector('#familiesTable')) new DataTable('#familiesTable', opts);
 });
+
