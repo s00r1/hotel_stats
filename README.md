@@ -66,13 +66,13 @@ window.activeCharts.push(new Chart(document.getElementById('sexChart'), {
 Les tableaux des familles et des personnes s’appuient sur **DataTables** pour offrir un tri et une recherche instantanés.
 
 ```javascript
-new DataTable('#personsTable', {
+document.querySelectorAll('.sortable-table').forEach(t => new DataTable(t, {
   columnDefs: [
     { orderable: false, targets: [0,5,6,7,8] },
     { visible: false, targets: [7,8] }
   ],
   language: { url: 'https://cdn.datatables.net/plug-ins/2.0.8/i18n/fr-FR.json' }
-});
+}));
 ```
 
 ### 🎨 Sélecteur de thème
