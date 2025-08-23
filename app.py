@@ -81,6 +81,23 @@ def age_years(dob: date | None, ref: date | None = None) -> int | None:
     ref = ref or date.today()
     return relativedelta(ref, dob).years
 
+def age_days(dob: date | None, ref: date | None = None) -> int:
+    if not dob:
+        return -1
+    ref = ref or date.today()
+    return (ref - dob).days
+
+def age_text(dob: date | None, ref: date | None = None) -> str:
+    if not dob:
+        return ""
+    ref = ref or date.today()
+    rd = relativedelta(ref, dob)
+    if rd.years >= 1:
+        return f"{rd.years} an{'s' if rd.years > 1 else ''}"
+    if rd.months >= 1:
+        return f"{rd.months} mois"
+    return f"{rd.days} jour{'s' if rd.days > 1 else ''}"
+
 def bucket_for_age(a: int | None):
     if a is None:
         return None
@@ -99,6 +116,7 @@ def inject_globals():
         "sex_choices": SEX_CHOICES,
         "theme": request.cookies.get("theme", "dark"),
         "age_years": age_years,
+        "age_text": age_text,
         "rooms_text": rooms_text,
     }
 
@@ -379,7 +397,9 @@ def persons_list(fid):
             "last_name": p.last_name,
             "dob": p.dob,
             "sex": p.sex,
-            "age": age_years(p.dob, today)
+            "age": age_years(p.dob, today),
+            "age_text": age_text(p.dob, today),
+            "age_days": age_days(p.dob, today)
         })
     return render_template("persons.html", family=fam, persons=rows)
 
@@ -433,6 +453,8 @@ def residents_list():
             "last_name": p.last_name,
             "sex": p.sex,
             "age": age_years(p.dob, today),
+            "age_text": age_text(p.dob, today),
+            "age_days": age_days(p.dob, today),
             "family_label": fam.label,
             "room_number": rooms_text(fam),
             "arrival_date": fam.arrival_date,
@@ -490,6 +512,8 @@ def search():
                 "first_name": p.first_name,
                 "last_name": p.last_name,
                 "age": age_years(p.dob, today),
+                "age_text": age_text(p.dob, today),
+                "age_days": age_days(p.dob, today),
                 "room_number": rooms_text(p.family),
                 "arrival_date": p.family.arrival_date,
             }
@@ -561,6 +585,8 @@ def archive():
                 "first_name": p.first_name,
                 "last_name": p.last_name,
                 "age": age_years(p.dob, today),
+                "age_text": age_text(p.dob, today),
+                "age_days": age_days(p.dob, today),
                 "room_number": rooms_text(p.family),
                 "arrival_date": p.family.arrival_date,
             }

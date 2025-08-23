@@ -22,7 +22,7 @@
           <th>Naissance</th>
           <th>Sexe</th>
           <th>Âge</th>
-          <th class="text-end">Actions</th>
+            <th class="no-sort text-end">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -39,8 +39,7 @@
             {{ p.dob.strftime('%d/%m/%Y') if p.dob }}
           </td>
           <td>{{ p.sex or '' }}</td>
-          {% set age_jours = ((now().date() - p.dob).days) if p.dob else -1 %}
-          <td data-order="{{ age_jours }}">{{ p.age_affiche or '' }}</td>
+            <td data-order="{{ p.age_days }}">{{ p.age_text or '' }}</td>
           <td class="text-end">
             <a class="btn btn-sm btn-outline-warning" href="{{ url_for('persons_edit', fid=family.id, pid=p.id) }}"><i class="bi bi-pencil"></i></a>
             <form method="post" action="{{ url_for('persons_delete', fid=family.id, pid=p.id) }}" class="d-inline" onsubmit="return confirm('Supprimer cette personne ?');">
