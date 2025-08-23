@@ -17,6 +17,50 @@
       </div>
     </div>
     <div class="card shadow-soft p-3 mt-4">
+      <h6 class="mb-3"><i class="bi bi-exclamation-triangle me-2"></i>Alertes</h6>
+      <div class="d-flex flex-column gap-3">
+        <div class="alert alert-danger d-flex align-items-start mb-0" role="alert">
+          <i class="bi bi-people-fill fs-4 me-2"></i>
+          <div>
+            <div class="fw-bold">Familles &gt;3 pers. dans une chambre (hors 53/54)</div>
+            <ul class="mb-0 ps-3">
+              {% for f in overcrowded_families %}
+                <li class="small">{{ f.label or "Famille " ~ f.id }} — chambre {{ rooms_text(f) }} ({{ f.persons.count() }} pers.)</li>
+              {% else %}
+                <li class="small">Aucune</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        <div class="alert alert-warning d-flex align-items-start mb-0" role="alert">
+          <i class="bi bi-person-exclamation fs-4 me-2"></i>
+          <div>
+            <div class="fw-bold">Femmes isolées</div>
+            <ul class="mb-0 ps-3">
+              {% for f in isolated_women_families %}
+                <li class="small">{{ f.label or "Famille " ~ f.id }} — chambre {{ rooms_text(f) }}</li>
+              {% else %}
+                <li class="small">Aucune</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        <div class="alert alert-info d-flex align-items-start mb-0" role="alert">
+          <i class="bi bi-baby fs-4 me-2"></i>
+          <div>
+            <div class="fw-bold">Bébés de moins d'un an</div>
+            <ul class="mb-0 ps-3">
+              {% for f in baby_families %}
+                <li class="small">{{ f.label or "Famille " ~ f.id }} — chambre {{ rooms_text(f) }}</li>
+              {% else %}
+                <li class="small">Aucune</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card shadow-soft p-3 mt-4">
       <h6 class="mb-3"><i class="bi bi-cake2 me-2"></i>Anniversaires</h6>
       {% if birthdays_today %}
       <div class="alert alert-warning py-2 mb-3 small">
@@ -139,50 +183,6 @@
           <span class="small">{{ lbl }}</span>
         </div>
       {% endfor %}
-      </div>
-    </div>
-    <div class="card shadow-soft p-3 mt-4">
-      <h6 class="mb-3"><i class="bi bi-exclamation-triangle me-2"></i>Alertes</h6>
-      <div class="d-flex flex-column gap-3">
-        <div class="alert alert-danger d-flex align-items-start mb-0" role="alert">
-          <i class="bi bi-people-fill fs-4 me-2"></i>
-          <div>
-            <div class="fw-bold">Familles &gt;3 pers. dans une chambre (hors 53/54)</div>
-            <ul class="mb-0 ps-3">
-              {% for f in overcrowded_families %}
-                <li class="small">{{ f.label or "Famille " ~ f.id }} — chambre {{ rooms_text(f) }} ({{ f.persons.count() }} pers.)</li>
-              {% else %}
-                <li class="small">Aucune</li>
-              {% endfor %}
-            </ul>
-          </div>
-        </div>
-        <div class="alert alert-warning d-flex align-items-start mb-0" role="alert">
-          <i class="bi bi-person-exclamation fs-4 me-2"></i>
-          <div>
-            <div class="fw-bold">Femmes isolées</div>
-            <ul class="mb-0 ps-3">
-              {% for f in isolated_women_families %}
-                <li class="small">{{ f.label or "Famille " ~ f.id }} — chambre {{ rooms_text(f) }}</li>
-              {% else %}
-                <li class="small">Aucune</li>
-              {% endfor %}
-            </ul>
-          </div>
-        </div>
-        <div class="alert alert-info d-flex align-items-start mb-0" role="alert">
-          <i class="bi bi-baby fs-4 me-2"></i>
-          <div>
-            <div class="fw-bold">Bébés de moins d'un an</div>
-            <ul class="mb-0 ps-3">
-              {% for f in baby_families %}
-                <li class="small">{{ f.label or "Famille " ~ f.id }} — chambre {{ rooms_text(f) }}</li>
-              {% else %}
-                <li class="small">Aucune</li>
-              {% endfor %}
-            </ul>
-          </div>
-        </div>
       </div>
     </div>
   </div>
