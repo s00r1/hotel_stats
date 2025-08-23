@@ -70,18 +70,96 @@
       <h6 class="mb-3"><i class="bi bi-hourglass-split me-2"></i>Ancienneté</h6>
       <ul class="nav nav-pills mb-3" id="seniorityTab" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="old-tab" data-bs-toggle="pill" data-bs-target="#old-fam" type="button" role="tab">Plus anciennes</button>
+          <button class="nav-link active" id="old-tab" data-bs-toggle="pill" data-bs-target="#old" type="button" role="tab">Plus anciennes</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="new-tab" data-bs-toggle="pill" data-bs-target="#new-fam" type="button" role="tab">Plus récentes</button>
+          <button class="nav-link" id="new-tab" data-bs-toggle="pill" data-bs-target="#new" type="button" role="tab">Plus récentes</button>
         </li>
       </ul>
       <div class="tab-content">
-        <div class="tab-pane fade show active" id="old-fam" role="tabpanel">
-          <canvas id="oldFamiliesChart" height="200"></canvas>
+        <div class="tab-pane fade show active" id="old" role="tabpanel">
+          <ul class="nav nav-tabs small mb-3" id="oldSubTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="old-fam-tab" data-bs-toggle="tab" data-bs-target="#old-fam" type="button" role="tab">Familles</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="old-adult-tab" data-bs-toggle="tab" data-bs-target="#old-adults" type="button" role="tab">Adultes</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="old-child-tab" data-bs-toggle="tab" data-bs-target="#old-children" type="button" role="tab">Enfants</button>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane fade show active" id="old-fam" role="tabpanel">
+              <canvas id="oldFamiliesChart" height="200"></canvas>
+            </div>
+            <div class="tab-pane fade" id="old-adults" role="tabpanel">
+              <ul class="list-group list-group-flush small">
+                {% for p in oldest_adults %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
+                    <span class="badge text-bg-primary rounded-pill">{{ age_years(p.dob) }} ans</span>
+                  </li>
+                {% else %}
+                  <li class="list-group-item">Aucun</li>
+                {% endfor %}
+              </ul>
+            </div>
+            <div class="tab-pane fade" id="old-children" role="tabpanel">
+              <ul class="list-group list-group-flush small">
+                {% for p in oldest_children %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
+                    <span class="badge text-bg-primary rounded-pill">{{ age_years(p.dob) }} ans</span>
+                  </li>
+                {% else %}
+                  <li class="list-group-item">Aucun</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
         </div>
-        <div class="tab-pane fade" id="new-fam" role="tabpanel">
-          <canvas id="newFamiliesChart" height="200"></canvas>
+        <div class="tab-pane fade" id="new" role="tabpanel">
+          <ul class="nav nav-tabs small mb-3" id="newSubTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="new-fam-tab" data-bs-toggle="tab" data-bs-target="#new-fam" type="button" role="tab">Familles</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="new-adult-tab" data-bs-toggle="tab" data-bs-target="#new-adults" type="button" role="tab">Adultes</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="new-child-tab" data-bs-toggle="tab" data-bs-target="#new-children" type="button" role="tab">Enfants</button>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane fade show active" id="new-fam" role="tabpanel">
+              <canvas id="newFamiliesChart" height="200"></canvas>
+            </div>
+            <div class="tab-pane fade" id="new-adults" role="tabpanel">
+              <ul class="list-group list-group-flush small">
+                {% for p in youngest_adults %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
+                    <span class="badge text-bg-success rounded-pill">{{ age_years(p.dob) }} ans</span>
+                  </li>
+                {% else %}
+                  <li class="list-group-item">Aucun</li>
+                {% endfor %}
+              </ul>
+            </div>
+            <div class="tab-pane fade" id="new-children" role="tabpanel">
+              <ul class="list-group list-group-flush small">
+                {% for p in youngest_children %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
+                    <span class="badge text-bg-success rounded-pill">{{ age_years(p.dob) }} ans</span>
+                  </li>
+                {% else %}
+                  <li class="list-group-item">Aucun</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
