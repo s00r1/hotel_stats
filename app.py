@@ -240,6 +240,11 @@ def dashboard():
                 "age": age_years(p.dob, prev_bd),
             })
 
+    birthdays_week_ahead.sort(key=lambda b: b["date"])
+    birthdays_month_ahead.sort(key=lambda b: b["date"])
+    birthdays_week_past.sort(key=lambda b: b["date"], reverse=True)
+    birthdays_month_past.sort(key=lambda b: b["date"], reverse=True)
+
     # Familles récentes et ancienneté
     families = Family.query.filter(Family.departure_date.is_(None)).order_by(
         Family.arrival_date.desc().nullslast(), Family.id.desc()
