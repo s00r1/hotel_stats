@@ -31,12 +31,16 @@
           <td class="text-secondary">{{ p.id }}</td>
           <td class="fw-semibold">{{ p.last_name }}</td>
           <td>{{ p.first_name }}</td>
-          <td data-order="{{ (rooms_text(family) or '')|int }}">{{ rooms_text(family) or "—" }}</td>
-          <td data-order="{{ family.arrival_date.strftime('%Y-%m-%d') if family.arrival_date else '' }}">{{ fmt_date(family.arrival_date) or "—" }}</td>
-          <td data-order="{{ p.dob.strftime('%Y-%m-%d') if p.dob else '' }}">{{ fmt_date(p.dob) or "—" }}</td>
-          <td>{{ p.sex or "—" }}</td>
-          {% set age_days = ((now().date() - p.dob).days) if p.dob else -1 %}
-          <td data-order="{{ age_days }}">{{ p.age if p.age is not none else "—" }}</td>
+          <td data-order="{{ (rooms_text(family) or 0)|int }}">{{ rooms_text(family) or '' }}</td>
+          <td data-order="{{ family.arrival_date.strftime('%Y-%m-%d') if family.arrival_date }}">
+            {{ family.arrival_date.strftime('%d/%m/%Y') if family.arrival_date }}
+          </td>
+          <td data-order="{{ p.dob.strftime('%Y-%m-%d') if p.dob }}">
+            {{ p.dob.strftime('%d/%m/%Y') if p.dob }}
+          </td>
+          <td>{{ p.sex or '' }}</td>
+          {% set age_jours = ((now().date() - p.dob).days) if p.dob else -1 %}
+          <td data-order="{{ age_jours }}">{{ p.age_affiche or '' }}</td>
           <td class="text-end">
             <a class="btn btn-sm btn-outline-warning" href="{{ url_for('persons_edit', fid=family.id, pid=p.id) }}"><i class="bi bi-pencil"></i></a>
             <form method="post" action="{{ url_for('persons_delete', fid=family.id, pid=p.id) }}" class="d-inline" onsubmit="return confirm('Supprimer cette personne ?');">

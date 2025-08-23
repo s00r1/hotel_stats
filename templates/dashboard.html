@@ -203,8 +203,10 @@
         <tr>
           <td class="text-secondary">{{ f.id }}</td>
           <td class="fw-semibold">{{ f.label or "—" }}</td>
-          <td data-order="{{ (rooms_text(f) or '')|int }}">{{ rooms_text(f) or "—" }}</td>
-          <td data-order="{{ f.arrival_date.strftime('%Y-%m-%d') if f.arrival_date else '' }}">{{ fmt_date(f.arrival_date) or "—" }}</td>
+          <td data-order="{{ (rooms_text(f) or 0)|int }}">{{ rooms_text(f) or '' }}</td>
+          <td data-order="{{ f.arrival_date.strftime('%Y-%m-%d') if f.arrival_date }}">
+            {{ f.arrival_date.strftime('%d/%m/%Y') if f.arrival_date }}
+          </td>
           <td><span class="badge text-bg-secondary">{{ f.persons.count() }}</span></td>
           <td class="text-end">
             <a class="btn btn-sm btn-outline-info" href="{{ url_for('persons_list', fid=f.id) }}"><i class="bi bi-arrow-right-circle"></i></a>

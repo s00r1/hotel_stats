@@ -22,11 +22,14 @@
           <td class="text-secondary">{{ p.id }}</td>
           <td class="fw-semibold">{{ p.last_name }}</td>
           <td>{{ p.first_name }}</td>
-          <td>{{ p.sex or "—" }}</td>
-          <td data-order="{{ p.age if p.age is not none else -1 }}">{{ p.age if p.age is not none else "—" }}</td>
-          <td>{{ p.family_label or "—" }}</td>
-          <td data-order="{{ p.room_number|int if p.room_number else '' }}">{{ p.room_number or "—" }}</td>
-          <td data-order="{{ p.arrival_date.strftime('%Y-%m-%d') if p.arrival_date else '' }}">{{ fmt_date(p.arrival_date) or "—" }}</td>
+          <td>{{ p.sex or '' }}</td>
+          {% set age_jours = ((now().date() - p.dob).days) if p.dob else -1 %}
+          <td data-order="{{ age_jours }}">{{ p.age_affiche or '' }}</td>
+          <td>{{ p.family_label or '' }}</td>
+          <td data-order="{{ (p.room_number or 0)|int }}">{{ p.room_number or '' }}</td>
+          <td data-order="{{ p.arrival_date.strftime('%Y-%m-%d') if p.arrival_date }}">
+            {{ p.arrival_date.strftime('%d/%m/%Y') if p.arrival_date }}
+          </td>
         </tr>
       {% endfor %}
       </tbody>
