@@ -149,6 +149,7 @@ def dashboard():
         s = p.sex if p.sex in sex_counts else "Autre/NP"
         sex_counts[s] += 1
         a = age_years(p.dob, today)
+        p._age = a
         b = bucket_for_age(a)
         if b and s in ("F", "M"):
             age_counts[b][s] += 1
@@ -163,6 +164,14 @@ def dashboard():
                     adult_female_count += 1
                 else:
                     adult_male_count += 1
+
+    # Listes des 5 adultes/enfants les plus âgés et les plus jeunes
+    adults = [p for p in persons if p._age is not None and p._age >= 18]
+    children = [p for p in persons if p._age is not None and p._age < 18]
+    oldest_adults = sorted(adults, key=lambda p: p._age, reverse=True)[:5]
+    youngest_adults = sorted(adults, key=lambda p: p._age)[:5]
+    oldest_children = sorted(children, key=lambda p: p._age, reverse=True)[:5]
+    youngest_children = sorted(children, key=lambda p: p._age)[:5]
 
     # Anniversaires (semaine/mois passés et à venir)
     birthdays_today: list[dict] = []
@@ -296,6 +305,10 @@ def dashboard():
         recent_labels=recent_labels,
         recent_values=recent_values,
         recent_tenures=recent_tenures,
+        oldest_adults=oldest_adults,
+        youngest_adults=youngest_adults,
+        oldest_children=oldest_children,
+        youngest_children=youngest_children,
         families=families,
         birthdays_today=birthdays_today,
         birthdays_week_ahead=birthdays_week_ahead,
