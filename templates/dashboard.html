@@ -287,6 +287,7 @@
           </td>
           <td><span class="badge text-bg-secondary">{{ f.persons.count() }}</span></td>
           <td class="text-end">
+            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#famModal{{ f.id }}"><i class="bi bi-eye"></i></button>
             <a class="btn btn-sm btn-outline-info" href="{{ url_for('persons_list', fid=f.id) }}"><i class="bi bi-arrow-right-circle"></i></a>
           </td>
         </tr>
@@ -295,6 +296,28 @@
     </table>
   </div>
 </div>
+{% for f in families %}
+<div class="modal fade" id="famModal{{ f.id }}" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ f.label or 'Famille' }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Chambre :</strong> {{ rooms_text(f) or '—' }}</p>
+        <p><strong>Arrivée :</strong> {{ fmt_date(f.arrival_date) or '—' }}</p>
+        <hr>
+        <ul class="list-unstyled mb-0">
+          {% for p in f.persons.order_by(Person.id.asc()).all() %}
+          <li>{{ p.first_name }} {{ p.last_name }} – {{ age_years(p.dob) or '—' }} ans</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
 {% endblock %}
 
 {% block scripts %}
