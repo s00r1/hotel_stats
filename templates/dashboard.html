@@ -37,8 +37,12 @@
           <div>
             <div class="fw-bold">Femmes isolées</div>
             <ul class="mb-0 ps-3">
-              {% for f in isolated_women_families %}
-                <li class="small">{{ f.label or "Famille " ~ f.id }} — chambre {{ rooms_text(f) }}</li>
+              {% for p in isolated_women %}
+                <li class="small">{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}
+                  <span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">
+                    {{ age_years(p.dob) }} ans
+                  </span>
+                </li>
               {% else %}
                 <li class="small">Aucune</li>
               {% endfor %}
@@ -50,8 +54,12 @@
           <div>
             <div class="fw-bold">Bébés de moins d'un an</div>
             <ul class="mb-0 ps-3">
-              {% for f in baby_families %}
-                <li class="small">{{ f.label or "Famille " ~ f.id }} — chambre {{ rooms_text(f) }}</li>
+              {% for p in baby_persons %}
+                <li class="small">{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}
+                  <span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">
+                    {{ age_text(p.dob) }}
+                  </span>
+                </li>
               {% else %}
                 <li class="small">Aucune</li>
               {% endfor %}
@@ -98,7 +106,7 @@
                 {% for p in oldest_adults %}
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     <span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
-                    <span class="badge text-bg-primary rounded-pill">{{ age_years(p.dob) }} ans</span>
+                    <span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span>
                   </li>
                 {% else %}
                   <li class="list-group-item">Aucun</li>
@@ -110,7 +118,7 @@
                 {% for p in oldest_children %}
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     <span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
-                    <span class="badge text-bg-primary rounded-pill">{{ age_years(p.dob) }} ans</span>
+                    <span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span>
                   </li>
                 {% else %}
                   <li class="list-group-item">Aucun</li>
@@ -140,7 +148,7 @@
                 {% for p in youngest_adults %}
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     <span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
-                    <span class="badge text-bg-success rounded-pill">{{ age_years(p.dob) }} ans</span>
+                    <span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span>
                   </li>
                 {% else %}
                   <li class="list-group-item">Aucun</li>
@@ -152,7 +160,7 @@
                 {% for p in youngest_children %}
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     <span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
-                    <span class="badge text-bg-success rounded-pill">{{ age_years(p.dob) }} ans</span>
+                    <span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span>
                   </li>
                 {% else %}
                   <li class="list-group-item">Aucun</li>
@@ -194,7 +202,9 @@
         <div class="alert alert-warning py-2 mb-3 small">
           Joyeux anniversaire à
           {% for b in birthdays_today %}
-            <strong>{{ b.person.first_name }} {{ b.person.last_name }}</strong> ({{ b.age }} ans){% if not loop.last %}{% if loop.revindex == 2 %} et {% else %}, {% endif %}{% endif %}
+            <strong>{{ b.person.first_name }} {{ b.person.last_name }}</strong> (chambre {{ rooms_text(b.person.family) }},
+            <span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>)
+            {% if not loop.last %}{% if loop.revindex == 2 %} et {% else %}, {% endif %}{% endif %}
           {% endfor %} !
         </div>
         {% endif %}
@@ -217,8 +227,8 @@
             <ul class="list-group list-group-flush">
               {% for b in birthdays_week_ahead %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }}</span>
-                  <span class="badge text-bg-primary rounded-pill">{{ b.age }} ans</span>
+                  <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} — chambre {{ rooms_text(b.person.family) }}</span>
+                  <span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
                 </li>
               {% else %}
                 <li class="list-group-item">Aucun</li>
@@ -229,8 +239,8 @@
             <ul class="list-group list-group-flush">
               {% for b in birthdays_week_past %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }}</span>
-                  <span class="badge text-bg-secondary rounded-pill">{{ b.age }} ans</span>
+                  <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} — chambre {{ rooms_text(b.person.family) }}</span>
+                  <span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
                 </li>
               {% else %}
                 <li class="list-group-item">Aucun</li>
@@ -241,8 +251,8 @@
             <ul class="list-group list-group-flush">
               {% for b in birthdays_month_ahead %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }}</span>
-                  <span class="badge text-bg-primary rounded-pill">{{ b.age }} ans</span>
+                  <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} — chambre {{ rooms_text(b.person.family) }}</span>
+                  <span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
                 </li>
               {% else %}
                 <li class="list-group-item">Aucun</li>
@@ -253,8 +263,8 @@
             <ul class="list-group list-group-flush">
               {% for b in birthdays_month_past %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }}</span>
-                  <span class="badge text-bg-secondary rounded-pill">{{ b.age }} ans</span>
+                  <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} — chambre {{ rooms_text(b.person.family) }}</span>
+                  <span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
                 </li>
               {% else %}
                 <li class="list-group-item">Aucun</li>

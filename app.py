@@ -54,6 +54,8 @@ AGE_BUCKETS = [
     ("60+",   60, 200),
 ]
 
+AGE_LABELS = [b[0] for b in AGE_BUCKETS]
+
 # Couleurs des tranches d'âge (Femmes / Hommes)
 AGE_COLORS_F = ['#8bd0db', '#8fe4cb', '#93d3a2', '#ffe083', '#febe89', '#ed9aa2', '#b7a0e0', '#999c9f']
 AGE_COLORS_M = ['#128193', '#19a078', '#208537', '#cc9a05', '#ca6410', '#b02a37', '#58349a', '#292e33']
@@ -109,6 +111,18 @@ def bucket_for_age(a: int | None):
 def rooms_text(f: "Family") -> str:
     return " & ".join(r for r in [f.room_number, f.room_number2] if r)
 
+
+def age_color(p: "Person", age: int | None = None) -> str:
+    a = age if age is not None else age_years(p.dob)
+    if a is None:
+        return ""
+    label = bucket_for_age(a)
+    if not label:
+        return ""
+    idx = AGE_LABELS.index(label)
+    colors = AGE_COLORS_M if p.sex == "M" else AGE_COLORS_F
+    return colors[idx]
+
 @app.context_processor
 def inject_globals():
     return {
@@ -118,6 +132,7 @@ def inject_globals():
         "age_years": age_years,
         "age_text": age_text,
         "rooms_text": rooms_text,
+        "age_color": age_color,
     }
 
 @app.route("/theme/<mode>")
@@ -255,8 +270,8 @@ def dashboard():
 
     # Alertes : sur-occupation, femmes isolées, bébés < 1 an
     overcrowded: list[Family] = []
-    isolated_women: list[Family] = []
-    baby_families: list[Family] = []
+    isolated_women: list[Person] = []
+    baby_persons: list[Person] = []
 
     for f in families:
         persons_list = f.persons.all()
@@ -269,9 +284,8 @@ def dashboard():
         if rooms and len(persons_list) > capacity:
             overcrowded.append(f)
 
+        adult_females: list[Person] = []
         has_adult_male = False
-        has_adult_female = False
-        has_baby = False
         for p in persons_list:
             a = age_years(p.dob, today)
             if a is None:
@@ -280,13 +294,11 @@ def dashboard():
                 if p.sex == "M":
                     has_adult_male = True
                 elif p.sex == "F":
-                    has_adult_female = True
+                    adult_females.append(p)
             if a < 1:
-                has_baby = True
-        if has_adult_female and not has_adult_male:
-            isolated_women.append(f)
-        if has_baby:
-            baby_families.append(f)
+                baby_persons.append(p)
+        if adult_females and not has_adult_male:
+            isolated_women.extend(adult_females)
 
     return render_template(
         "dashboard.html",
@@ -320,8 +332,8 @@ def dashboard():
         girl_count=girl_count,
         boy_count=boy_count,
         overcrowded_families=overcrowded,
-        isolated_women_families=isolated_women,
-        baby_families=baby_families,
+        isolated_women=isolated_women,
+        baby_persons=baby_persons,
         Person=Person,
     )
 
