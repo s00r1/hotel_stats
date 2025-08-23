@@ -9,9 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     language: { url: 'https://cdn.datatables.net/plug-ins/2.0.8/i18n/fr-FR.json' },
     columnDefs: [{ targets: 'no-sort', orderable: false }]
   };
-  const pt = document.querySelector('#personsTable');
-  if (pt) new DataTable(pt, opts);
-  const ft = document.querySelector('#familiesTable');
-  if (ft) new DataTable(ft, opts);
+  document.querySelectorAll('.sortable-table').forEach(table => {
+    new DataTable(table, opts);
+  });
 });
 
