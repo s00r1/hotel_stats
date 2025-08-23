@@ -322,6 +322,7 @@ def dashboard():
         overcrowded_families=overcrowded,
         isolated_women_families=isolated_women,
         baby_families=baby_families,
+        Person=Person,
     )
 
 # ----- Familles -----
