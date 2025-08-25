@@ -28,6 +28,8 @@ class Family(db.Model):
     room_number2 = db.Column(db.String(20), index=True)
     arrival_date = db.Column(db.Date, index=True)
     departure_date = db.Column(db.Date, index=True)
+    phone1 = db.Column(db.String(20), index=True)
+    phone2 = db.Column(db.String(20), index=True)
 
     persons = db.relationship("Person", backref="family", cascade="all,delete", lazy="dynamic")
 
@@ -38,6 +40,7 @@ class Person(db.Model):
     last_name  = db.Column(db.String(80), index=True, nullable=False)
     dob = db.Column(db.Date, index=True)
     sex = db.Column(db.String(12), index=True)            # "F","M","Autre/NP"
+    phone = db.Column(db.String(20), index=True)
 
 # ============================
 # Helpers
@@ -111,6 +114,9 @@ def bucket_for_age(a: int | None):
 def rooms_text(f: "Family") -> str:
     return " & ".join(r for r in [f.room_number, f.room_number2] if r)
 
+def phones_text(f: "Family") -> str:
+    return " / ".join(p for p in [f.phone1, f.phone2] if p)
+
 
 def age_color(p: "Person", age: int | None = None) -> str:
     a = age if age is not None else age_years(p.dob)
@@ -132,6 +138,7 @@ def inject_globals():
         "age_years": age_years,
         "age_text": age_text,
         "rooms_text": rooms_text,
+        "phones_text": phones_text,
         "age_color": age_color,
     }
 
@@ -379,7 +386,9 @@ def families_new():
             label=request.form.get("label") or None,
             room_number=request.form.get("room_number") or None,
             room_number2=request.form.get("room_number2") or None,
-            arrival_date=parse_date(request.form.get("arrival_date"))
+            arrival_date=parse_date(request.form.get("arrival_date")),
+            phone1=request.form.get("phone1") or None,
+            phone2=request.form.get("phone2") or None,
         )
         db.session.add(f)
         db.session.commit()
@@ -394,6 +403,8 @@ def families_edit(fid):
         fam.room_number = request.form.get("room_number") or None
         fam.room_number2 = request.form.get("room_number2") or None
         fam.arrival_date = parse_date(request.form.get("arrival_date"))
+        fam.phone1 = request.form.get("phone1") or None
+        fam.phone2 = request.form.get("phone2") or None
         db.session.commit()
         return redirect(url_for("families_list"))
     return render_template("family_form.html", family=fam)
@@ -428,6 +439,7 @@ def persons_list(fid):
             "last_name": p.last_name,
             "dob": p.dob,
             "sex": p.sex,
+            "phone": p.phone,
             "age": age_years(p.dob, today),
             "age_text": age_text(p.dob, today),
             "age_days": age_days(p.dob, today)
@@ -443,7 +455,8 @@ def persons_new(fid):
             first_name=request.form.get("first_name").strip(),
             last_name=request.form.get("last_name").strip(),
             dob=parse_date(request.form.get("dob")),
-            sex=request.form.get("sex") or "Autre/NP"
+            sex=request.form.get("sex") or "Autre/NP",
+            phone=request.form.get("phone") or None,
         )
         db.session.add(p)
         db.session.commit()
@@ -459,6 +472,7 @@ def persons_edit(fid, pid):
         p.last_name  = request.form.get("last_name").strip()
         p.dob = parse_date(request.form.get("dob"))
         p.sex = request.form.get("sex") or "Autre/NP"
+        p.phone = request.form.get("phone") or None
         db.session.commit()
         return redirect(url_for("persons_list", fid=fid))
     return render_template("person_form.html", family=fam, person=p)
@@ -489,6 +503,7 @@ def residents_list():
             "family_label": fam.label,
             "room_number": rooms_text(fam),
             "arrival_date": fam.arrival_date,
+            "phone": p.phone,
         })
     return render_template("residents.html", persons=rows)
 
@@ -507,6 +522,7 @@ def search():
     p_dob = parse_date(request.args.get("p_dob"))
     p_arrival = parse_date(request.args.get("p_arrival"))
     p_room = (request.args.get("p_room") or "").strip()
+    p_phone = (request.args.get("p_phone") or "").strip()
 
     families = []
     if any([fam_label, fam_room, fam_arrival, fam_dmin, fam_dmax]):
@@ -524,7 +540,7 @@ def search():
         families = qf.order_by(Family.arrival_date.desc().nullslast()).all()
 
     persons = []
-    if any([p_last, p_first, p_dob, p_arrival, p_room]):
+    if any([p_last, p_first, p_dob, p_arrival, p_room, p_phone]):
         qp = Person.query.join(Family).filter(Family.departure_date.is_(None))
         if p_last:
             qp = qp.filter(Person.last_name.like(f"%{p_last}%"))
@@ -536,6 +552,8 @@ def search():
             qp = qp.filter(Family.arrival_date == p_arrival)
         if p_room:
             qp = qp.filter(or_(Family.room_number.like(f"%{p_room}%"), Family.room_number2.like(f"%{p_room}%")))
+        if p_phone:
+            qp = qp.filter(Person.phone.like(f"%{p_phone}%"))
         today = date.today()
         persons = [
             {
@@ -547,6 +565,7 @@ def search():
                 "age_days": age_days(p.dob, today),
                 "room_number": rooms_text(p.family),
                 "arrival_date": p.family.arrival_date,
+                "phone": p.phone,
             }
             for p in qp.all()
         ]
@@ -565,6 +584,7 @@ def search():
         p_dob=request.args.get("p_dob") or "",
         p_arrival=request.args.get("p_arrival") or "",
         p_room=p_room,
+        p_phone=p_phone,
     )
 
 @app.route("/archive")
@@ -597,7 +617,7 @@ def archive():
         families = qf.order_by(Family.arrival_date.desc().nullslast()).all()
 
     persons = []
-    if any([p_last, p_first, p_dob, p_arrival, p_room]):
+    if any([p_last, p_first, p_dob, p_arrival, p_room, p_phone]):
         qp = Person.query.join(Family).filter(Family.departure_date.isnot(None))
         if p_last:
             qp = qp.filter(Person.last_name.like(f"%{p_last}%"))
@@ -609,6 +629,8 @@ def archive():
             qp = qp.filter(Family.arrival_date == p_arrival)
         if p_room:
             qp = qp.filter(or_(Family.room_number.like(f"%{p_room}%"), Family.room_number2.like(f"%{p_room}%")))
+        if p_phone:
+            qp = qp.filter(Person.phone.like(f"%{p_phone}%"))
         today = date.today()
         persons = [
             {
@@ -620,6 +642,7 @@ def archive():
                 "age_days": age_days(p.dob, today),
                 "room_number": rooms_text(p.family),
                 "arrival_date": p.family.arrival_date,
+                "phone": p.phone,
             }
             for p in qp.all()
         ]
@@ -638,6 +661,7 @@ def archive():
         p_dob=request.args.get("p_dob") or "",
         p_arrival=request.args.get("p_arrival") or "",
         p_room=p_room,
+        p_phone=p_phone,
     )
 
 # ----- Export CSV -----
@@ -681,6 +705,8 @@ def backup():
                 "room_number2": f.room_number2,
                 "arrival_date": f.arrival_date.isoformat() if f.arrival_date else None,
                 "departure_date": f.departure_date.isoformat() if f.departure_date else None,
+                "phone1": f.phone1,
+                "phone2": f.phone2,
             }
             for f in Family.query.order_by(Family.id.asc()).all()
         ],
@@ -692,6 +718,7 @@ def backup():
                 "last_name": p.last_name,
                 "dob": p.dob.isoformat() if p.dob else None,
                 "sex": p.sex,
+                "phone": p.phone,
             }
             for p in Person.query.order_by(Person.id.asc()).all()
         ],
@@ -729,6 +756,8 @@ def restore():
                 room_number2=f.get("room_number2"),
                 arrival_date=parse_date(f.get("arrival_date")),
                 departure_date=parse_date(f.get("departure_date")),
+                phone1=f.get("phone1"),
+                phone2=f.get("phone2"),
             )
             db.session.add(fam)
         db.session.commit()
@@ -740,6 +769,7 @@ def restore():
                 last_name=p.get("last_name"),
                 dob=parse_date(p.get("dob")),
                 sex=p.get("sex"),
+                phone=p.get("phone"),
             )
             db.session.add(pers)
         db.session.commit()
@@ -750,6 +780,21 @@ def restore():
 with app.app_context():
     try:
         db.session.execute(text("ALTER TABLE family ADD COLUMN room_number2 VARCHAR(20)"))
+        db.session.commit()
+    except OperationalError:
+        db.session.rollback()
+    try:
+        db.session.execute(text("ALTER TABLE family ADD COLUMN phone1 VARCHAR(20)"))
+        db.session.commit()
+    except OperationalError:
+        db.session.rollback()
+    try:
+        db.session.execute(text("ALTER TABLE family ADD COLUMN phone2 VARCHAR(20)"))
+        db.session.commit()
+    except OperationalError:
+        db.session.rollback()
+    try:
+        db.session.execute(text("ALTER TABLE person ADD COLUMN phone VARCHAR(20)"))
         db.session.commit()
     except OperationalError:
         db.session.rollback()

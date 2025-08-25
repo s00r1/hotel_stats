@@ -22,16 +22,28 @@
         <label for="fl2b">Chambre 2</label>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="form-floating">
-        <input type="text" name="arrival_date" class="form-control" id="fl3" value="{{ fmt_date(family.arrival_date) if family and family.arrival_date else '' }}" placeholder="jj/mm/aaaa" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}">
-        <label for="fl3">Date d'arrivée</label>
+      <div class="col-md-4">
+        <div class="form-floating">
+          <input type="text" name="arrival_date" class="form-control" id="fl3" value="{{ fmt_date(family.arrival_date) if family and family.arrival_date else '' }}" placeholder="jj/mm/aaaa" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}">
+          <label for="fl3">Date d'arrivée</label>
+        </div>
       </div>
-    </div>
-    <div class="col-12 d-flex gap-2">
-      <button class="btn btn-primary"><i class="bi bi-check2-circle me-1"></i>Enregistrer</button>
-      <a class="btn btn-outline-secondary" href="{{ url_for('families_list') }}">Annuler</a>
-    </div>
-  </form>
+      <div class="col-md-3">
+        <div class="form-floating">
+          <input name="phone1" class="form-control" id="fl4" placeholder="Téléphone 1" value="{{ family.phone1 if family else '' }}">
+          <label for="fl4">Téléphone 1</label>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-floating">
+          <input name="phone2" class="form-control" id="fl5" placeholder="Téléphone 2" value="{{ family.phone2 if family else '' }}">
+          <label for="fl5">Téléphone 2</label>
+        </div>
+      </div>
+      <div class="col-12 d-flex gap-2">
+        <button class="btn btn-primary"><i class="bi bi-check2-circle me-1"></i>Enregistrer</button>
+        <a class="btn btn-outline-secondary" href="{{ url_for('families_list') }}">Annuler</a>
+      </div>
+    </form>
 </div>
 {% endblock %}

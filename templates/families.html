@@ -38,17 +38,18 @@
   </div>
 
   <div class="table-responsive mt-3" style="max-height: 60vh;">
-    <table class="table table-striped table-hover table-sm align-middle sortable-table">
-      <thead><tr><th>#</th><th>Label</th><th>Chambre</th><th>Arrivée</th><th>Personnes</th><th class="no-sort text-end">Actions</th></tr></thead>
+      <table class="table table-striped table-hover table-sm align-middle sortable-table">
+        <thead><tr><th>#</th><th>Label</th><th>Chambre</th><th>Téléphone</th><th>Arrivée</th><th>Personnes</th><th class="no-sort text-end">Actions</th></tr></thead>
       <tbody>
       {% for f in families %}
         <tr>
           <td class="text-secondary">{{ f.id }}</td>
           <td class="fw-semibold">{{ f.label or "—" }}</td>
           <td data-order="{{ (rooms_text(f) or 0)|int }}">{{ rooms_text(f) or '' }}</td>
-          <td data-order="{{ f.arrival_date.strftime('%Y-%m-%d') if f.arrival_date }}">
-            {{ f.arrival_date.strftime('%d/%m/%Y') if f.arrival_date }}
-          </td>
+            <td>{{ phones_text(f) or '' }}</td>
+            <td data-order="{{ f.arrival_date.strftime('%Y-%m-%d') if f.arrival_date }}">
+              {{ f.arrival_date.strftime('%d/%m/%Y') if f.arrival_date }}
+            </td>
           <td><span class="badge text-bg-secondary">{{ f.persons.count() }}</span></td>
           <td class="text-end">
             <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#famModal{{ f.id }}"><i class="bi bi-eye"></i></button>
@@ -75,14 +76,15 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <p><strong>Chambre :</strong> {{ rooms_text(f) or '—' }}</p>
-        <p><strong>Arrivée :</strong> {{ fmt_date(f.arrival_date) or '—' }}</p>
+          <p><strong>Chambre :</strong> {{ rooms_text(f) or '—' }}</p>
+          <p><strong>Arrivée :</strong> {{ fmt_date(f.arrival_date) or '—' }}</p>
+          <p><strong>Téléphone :</strong> {{ phones_text(f) or '—' }}</p>
         <hr>
-        <ul class="list-unstyled mb-0">
-          {% for p in f.persons.order_by(Person.id.asc()).all() %}
-          <li>{{ p.first_name }} {{ p.last_name }} – {{ age_years(p.dob) or '—' }} ans</li>
-          {% endfor %}
-        </ul>
+          <ul class="list-unstyled mb-0">
+            {% for p in f.persons.order_by(Person.id.asc()).all() %}
+            <li>{{ p.first_name }} {{ p.last_name }} – {{ age_years(p.dob) or '—' }} ans{% if p.phone %} – {{ p.phone }}{% endif %}</li>
+            {% endfor %}
+          </ul>
       </div>
     </div>
   </div>
