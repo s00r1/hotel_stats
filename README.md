@@ -2,6 +2,8 @@
 
 Application web légère pour gérer les familles hébergées dans un hôtel social et analyser la population accueillie. Conçue avec **Flask**, **SQLite**, **Bootstrap** et **Chart.js**.
 
+L'objectif est de proposer une expérience conviviale en soignant autant **l'interface** que **les données**. Les graphiques, les tableaux responsives et les thèmes personnalisables offrent une présentation claire, tandis que la base de données assure un contenu fiable et complet.
+
 ## Sommaire
 - [Fonctionnalités](#-fonctionnalités)
 - [Installation](#-installation)
@@ -12,18 +14,24 @@ Application web légère pour gérer les familles hébergées dans un hôtel soc
 
 ## ✨ Fonctionnalités
 
-- **Gestion complète** des familles et des personnes (ajout, édition, suppression).
-- **Tableau de bord** interactif :
+### 🎨 Présentation
+
+- Tableaux triables et filtrables grâce à *DataTables*.
+- Graphiques interactifs illustrés par *Chart.js*.
+- Sélecteur de thème clair/sombre avec mémorisation.
+
+### 📚 Contenu & statistiques
+
+- Gestion complète des familles et des personnes (ajout, édition, suppression).
+- Tableau de bord interactif :
   - statistiques globales (sexe, tranches d’âge, adultes/enfants),
   - alertes automatiques (sur‑occupation, femmes isolées, bébés < 1 an),
   - rappel des anniversaires du jour et des semaines/mois alentours,
   - classement des familles, adultes et enfants les plus anciens/récents.
-- **Recherche multi‑critères** sur les familles et les personnes en cours d’hébergement.
-- **Consultation des archives** (familles/personnes sorties) avec filtres.
-- **Tri et recherche dynamiques** dans les tableaux grâce à *DataTables*.
-- **Export CSV** des familles et des personnes.
-- **Sauvegarde/Restauration JSON** des données.
-- **Sélecteur de thème** clair/sombre avec mémorisation.
+- Recherche multi‑critères sur les familles et les personnes en cours d’hébergement.
+- Consultation des archives (familles/personnes sorties) avec filtres.
+- Export CSV des familles et des personnes.
+- Sauvegarde/Restauration JSON des données.
 
 ## 🛠️ Installation
 
