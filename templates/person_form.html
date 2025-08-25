@@ -22,20 +22,26 @@
         <label for="p3">Date de naissance</label>
       </div>
     </div>
-    <div class="col-md-3">
-      <div class="form-floating">
-        <select name="sex" class="form-select" id="p4">
-          {% for s in sex_choices %}
-            <option value="{{ s }}" {% if person and person.sex==s %}selected{% endif %}>{{ s }}</option>
-          {% endfor %}
-        </select>
-        <label for="p4">Sexe</label>
+      <div class="col-md-3">
+        <div class="form-floating">
+          <select name="sex" class="form-select" id="p4">
+            {% for s in sex_choices %}
+              <option value="{{ s }}" {% if person and person.sex==s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select>
+          <label for="p4">Sexe</label>
+        </div>
       </div>
-    </div>
-    <div class="col-12 d-flex gap-2">
-      <button class="btn btn-primary"><i class="bi bi-check2-circle me-1"></i>Enregistrer</button>
-      <a class="btn btn-outline-secondary" href="{{ url_for('persons_list', fid=family.id) }}">Annuler</a>
-    </div>
-  </form>
+      <div class="col-md-3">
+        <div class="form-floating">
+          <input name="phone" class="form-control" id="p5" placeholder="Téléphone" value="{{ person.phone if person else '' }}">
+          <label for="p5">Téléphone</label>
+        </div>
+      </div>
+      <div class="col-12 d-flex gap-2">
+        <button class="btn btn-primary"><i class="bi bi-check2-circle me-1"></i>Enregistrer</button>
+        <a class="btn btn-outline-secondary" href="{{ url_for('persons_list', fid=family.id) }}">Annuler</a>
+      </div>
+    </form>
 </div>
 {% endblock %}
