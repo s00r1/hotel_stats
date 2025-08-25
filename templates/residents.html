@@ -24,10 +24,10 @@
           <td class="fw-semibold">{{ p.last_name }}</td>
           <td>{{ p.first_name }}</td>
             <td>{{ p.sex or '' }}</td>
-            <td>{{ p.phone or '' }}</td>
+            <td>{{ '' if p.phone in [None, 'None'] else p.phone }}</td>
             <td data-order="{{ p.age_days }}">{{ p.age_text or '' }}</td>
-          <td>{{ p.family_label or '' }}</td>
-          <td data-order="{{ (p.room_number or 0)|int }}">{{ p.room_number or '' }}</td>
+            <td>{{ '' if p.family_label in [None, 'None'] else p.family_label }}</td>
+            <td data-order="{{ (p.room_number if p.room_number not in [None, 'None'] else 0)|int }}">{{ '' if p.room_number in [None, 'None'] else p.room_number }}</td>
           <td data-order="{{ p.arrival_date.strftime('%Y-%m-%d') if p.arrival_date }}">
             {{ p.arrival_date.strftime('%d/%m/%Y') if p.arrival_date }}
           </td>

@@ -2,7 +2,7 @@
 {% block title %}Personne - Kardex Hôtel Social{% endblock %}
 {% block content %}
 <div class="card shadow-soft p-3">
-  <h4 class="mb-3">{{ 'Modifier' if person else 'Ajouter' }} une personne <span class="text-secondary">dans {{ family.label or 'Famille' }}</span></h4>
+<h4 class="mb-3">{{ 'Modifier' if person else 'Ajouter' }} une personne <span class="text-secondary">dans {{ family.label if family.label not in [None, 'None'] else 'Famille' }}</span></h4>
   <form method="post" class="row g-3">
     <div class="col-md-3">
       <div class="form-floating">
@@ -34,7 +34,7 @@
       </div>
       <div class="col-md-3">
         <div class="form-floating">
-          <input name="phone" class="form-control" id="p5" placeholder="Téléphone" value="{{ person.phone if person else '' }}">
+          <input name="phone" class="form-control" id="p5" placeholder="Téléphone" value="{{ person.phone or '' if person else '' }}">
           <label for="p5">Téléphone</label>
         </div>
       </div>

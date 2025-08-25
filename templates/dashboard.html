@@ -25,7 +25,7 @@
             <div class="fw-bold">Familles &gt;3 pers. dans une chambre (hors 53/54)</div>
             <ul class="mb-0 ps-3">
               {% for f in overcrowded_families %}
-                <li class="small">{{ f.label or "Famille " ~ f.id }} — chambre {{ rooms_text(f) }} ({{ f.persons.count() }} pers.)</li>
+                <li class="small">{{ f.label if f.label not in [None, 'None'] else 'Famille ' ~ f.id }} — chambre {{ rooms_text(f) }} ({{ f.persons.count() }} pers.)</li>
               {% else %}
                 <li class="small">Aucune</li>
               {% endfor %}
@@ -290,7 +290,7 @@
       {% for f in families %}
         <tr>
           <td class="text-secondary">{{ f.id }}</td>
-          <td class="fw-semibold">{{ f.label or "—" }}</td>
+          <td class="fw-semibold">{{ f.label if f.label not in [None, 'None'] else '—' }}</td>
           <td data-order="{{ (rooms_text(f) or 0)|int }}">{{ rooms_text(f) or '' }}</td>
           <td>{{ phones_text(f) or '' }}</td>
           <td data-order="{{ f.arrival_date.strftime('%Y-%m-%d') if f.arrival_date }}">
@@ -312,7 +312,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">{{ f.label or 'Famille' }}</h5>
+        <h5 class="modal-title">{{ f.label if f.label not in [None, 'None'] else 'Famille' }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
@@ -322,7 +322,7 @@
         <hr>
         <ul class="list-unstyled mb-0">
           {% for p in f.persons.order_by(Person.id.asc()).all() %}
-          <li>{{ p.first_name }} {{ p.last_name }} – {{ age_years(p.dob) or '—' }} ans{% if p.phone %} – {{ p.phone }}{% endif %}</li>
+          <li>{{ p.first_name }} {{ p.last_name }} – {{ age_years(p.dob) or '—' }} ans{% if p.phone and p.phone != 'None' %} – {{ p.phone }}{% endif %}</li>
           {% endfor %}
         </ul>
       </div>

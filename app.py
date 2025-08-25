@@ -65,6 +65,13 @@ AGE_COLORS_M = ['#128193', '#19a078', '#208537', '#cc9a05', '#ca6410', '#b02a37'
 
 SEX_CHOICES = ["F", "M", "Autre/NP"]
 
+def clean_field(v: str | None) -> str | None:
+    """Retourne None pour les champs vides ou contenant la chaîne 'None'."""
+    if not v:
+        return None
+    v = v.strip()
+    return None if v.lower() == "none" or v == "" else v
+
 def parse_date(s: str | None):
     if not s:
         return None
@@ -112,10 +119,10 @@ def bucket_for_age(a: int | None):
     return None
 
 def rooms_text(f: "Family") -> str:
-    return " & ".join(r for r in [f.room_number, f.room_number2] if r)
+    return " & ".join(r for r in [clean_field(f.room_number), clean_field(f.room_number2)] if r)
 
 def phones_text(f: "Family") -> str:
-    return " / ".join(p for p in [f.phone1, f.phone2] if p)
+    return " / ".join(p for p in [clean_field(f.phone1), clean_field(f.phone2)] if p)
 
 
 def age_color(p: "Person", age: int | None = None) -> str:
@@ -383,12 +390,12 @@ def families_list():
 def families_new():
     if request.method == "POST":
         f = Family(
-            label=request.form.get("label") or None,
-            room_number=request.form.get("room_number") or None,
-            room_number2=request.form.get("room_number2") or None,
+            label=clean_field(request.form.get("label")),
+            room_number=clean_field(request.form.get("room_number")),
+            room_number2=clean_field(request.form.get("room_number2")),
             arrival_date=parse_date(request.form.get("arrival_date")),
-            phone1=request.form.get("phone1") or None,
-            phone2=request.form.get("phone2") or None,
+            phone1=clean_field(request.form.get("phone1")),
+            phone2=clean_field(request.form.get("phone2")),
         )
         db.session.add(f)
         db.session.commit()
@@ -399,12 +406,12 @@ def families_new():
 def families_edit(fid):
     fam = Family.query.get_or_404(fid)
     if request.method == "POST":
-        fam.label = request.form.get("label") or None
-        fam.room_number = request.form.get("room_number") or None
-        fam.room_number2 = request.form.get("room_number2") or None
+        fam.label = clean_field(request.form.get("label"))
+        fam.room_number = clean_field(request.form.get("room_number"))
+        fam.room_number2 = clean_field(request.form.get("room_number2"))
         fam.arrival_date = parse_date(request.form.get("arrival_date"))
-        fam.phone1 = request.form.get("phone1") or None
-        fam.phone2 = request.form.get("phone2") or None
+        fam.phone1 = clean_field(request.form.get("phone1"))
+        fam.phone2 = clean_field(request.form.get("phone2"))
         db.session.commit()
         return redirect(url_for("families_list"))
     return render_template("family_form.html", family=fam)
@@ -456,7 +463,7 @@ def persons_new(fid):
             last_name=request.form.get("last_name").strip(),
             dob=parse_date(request.form.get("dob")),
             sex=request.form.get("sex") or "Autre/NP",
-            phone=request.form.get("phone") or None,
+            phone=clean_field(request.form.get("phone")),
         )
         db.session.add(p)
         db.session.commit()
@@ -472,7 +479,7 @@ def persons_edit(fid, pid):
         p.last_name  = request.form.get("last_name").strip()
         p.dob = parse_date(request.form.get("dob"))
         p.sex = request.form.get("sex") or "Autre/NP"
-        p.phone = request.form.get("phone") or None
+        p.phone = clean_field(request.form.get("phone"))
         db.session.commit()
         return redirect(url_for("persons_list", fid=fid))
     return render_template("person_form.html", family=fam, person=p)
