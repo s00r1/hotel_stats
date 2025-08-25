@@ -13,17 +13,18 @@
   <div class="table-responsive">
     <table class="table table-striped table-hover table-sm align-middle sortable-table">
       <thead>
-        <tr>
-          <th>#</th>
-          <th>Nom</th>
-          <th>Prénom</th>
-          <th>Chambre</th>
-          <th>Arrivée</th>
-          <th>Naissance</th>
-          <th>Sexe</th>
-          <th>Âge</th>
+          <tr>
+            <th>#</th>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Chambre</th>
+            <th>Arrivée</th>
+            <th>Naissance</th>
+            <th>Sexe</th>
+            <th>Téléphone</th>
+            <th>Âge</th>
             <th class="no-sort text-end">Actions</th>
-        </tr>
+          </tr>
       </thead>
       <tbody>
       {% for p in persons %}
@@ -38,7 +39,8 @@
           <td data-order="{{ p.dob.strftime('%Y-%m-%d') if p.dob }}">
             {{ p.dob.strftime('%d/%m/%Y') if p.dob }}
           </td>
-          <td>{{ p.sex or '' }}</td>
+            <td>{{ p.sex or '' }}</td>
+            <td>{{ p.phone or '' }}</td>
             <td data-order="{{ p.age_days }}">{{ p.age_text or '' }}</td>
           <td class="text-end">
             <a class="btn btn-sm btn-outline-warning" href="{{ url_for('persons_edit', fid=family.id, pid=p.id) }}"><i class="bi bi-pencil"></i></a>
