@@ -607,6 +607,7 @@ def archive():
     p_dob = parse_date(request.args.get("p_dob"))
     p_arrival = parse_date(request.args.get("p_arrival"))
     p_room = (request.args.get("p_room") or "").strip()
+    p_phone = (request.args.get("p_phone") or "").strip()
 
     families = []
     if any([fam_label, fam_room, fam_arrival, fam_dmin, fam_dmax]):
