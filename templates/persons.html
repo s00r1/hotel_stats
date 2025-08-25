@@ -2,7 +2,7 @@
 {% block title %}Personnes - Kardex Hôtel Social{% endblock %}
 {% block content %}
 <div class="d-flex align-items-center justify-content-between mb-3">
-  <h4 class="m-0"><i class="bi bi-person-lines-fill me-2"></i>{{ family.label or 'Famille' }} <span class="text-secondary">| Chambre {{ rooms_text(family) or '—' }}</span></h4>
+<h4 class="m-0"><i class="bi bi-person-lines-fill me-2"></i>{{ family.label if family.label not in [None, 'None'] else 'Famille' }} <span class="text-secondary">| Chambre {{ rooms_text(family) or '—' }}</span></h4>
   <div class="d-flex gap-2">
     <a class="btn btn-outline-secondary" href="{{ url_for('families_list') }}"><i class="bi bi-arrow-left"></i> Retour</a>
     <a class="btn btn-primary" href="{{ url_for('persons_new', fid=family.id) }}"><i class="bi bi-plus-lg me-1"></i>Ajouter une personne</a>
@@ -40,7 +40,7 @@
             {{ p.dob.strftime('%d/%m/%Y') if p.dob }}
           </td>
             <td>{{ p.sex or '' }}</td>
-            <td>{{ p.phone or '' }}</td>
+            <td>{{ '' if p.phone in [None, 'None'] else p.phone }}</td>
             <td data-order="{{ p.age_days }}">{{ p.age_text or '' }}</td>
           <td class="text-end">
             <a class="btn btn-sm btn-outline-warning" href="{{ url_for('persons_edit', fid=family.id, pid=p.id) }}"><i class="bi bi-pencil"></i></a>

@@ -2,7 +2,7 @@
 {% block title %}Départ famille - Kardex Hôtel Social{% endblock %}
 {% block content %}
 <div class="card shadow-soft p-3">
-  <h4 class="mb-3">Départ : {{ family.label or 'Famille' }}</h4>
+<h4 class="mb-3">Départ : {{ family.label if family.label not in [None, 'None'] else 'Famille' }}</h4>
   <form method="post" class="row g-3">
     <div class="col-md-6">
       <div class="form-floating">

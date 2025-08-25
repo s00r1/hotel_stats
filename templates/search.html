@@ -50,7 +50,7 @@
           {% for f in families %}
             <tr>
               <td class="text-secondary">{{ f.id }}</td>
-              <td>{{ f.label or '' }}</td>
+              <td>{{ '' if f.label in [None, 'None'] else f.label }}</td>
                 <td data-order="{{ (rooms_text(f) or 0)|int }}">{{ rooms_text(f) or '' }}</td>
                 <td>{{ phones_text(f) or '' }}</td>
                 <td data-order="{{ f.arrival_date.strftime('%Y-%m-%d') if f.arrival_date }}">
@@ -119,9 +119,9 @@
               <td class="text-secondary">{{ p.id }}</td>
               <td>{{ p.last_name }}</td>
                 <td>{{ p.first_name }}</td>
-                <td>{{ p.phone or '' }}</td>
+                <td>{{ '' if p.phone in [None, 'None'] else p.phone }}</td>
                 <td data-order="{{ p.age_days }}">{{ p.age_text or '' }}</td>
-                <td data-order="{{ (p.room_number or 0)|int }}">{{ p.room_number or '' }}</td>
+                <td data-order="{{ (p.room_number if p.room_number not in [None, 'None'] else 0)|int }}">{{ '' if p.room_number in [None, 'None'] else p.room_number }}</td>
                 <td data-order="{{ p.arrival_date.strftime('%Y-%m-%d') if p.arrival_date }}">
                   {{ p.arrival_date.strftime('%d/%m/%Y') if p.arrival_date }}
                 </td>

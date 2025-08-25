@@ -6,19 +6,19 @@
   <form method="post" class="row g-3">
     <div class="col-md-4">
       <div class="form-floating">
-        <input name="label" class="form-control" id="fl1" placeholder="Label" value="{{ family.label if family else '' }}">
+        <input name="label" class="form-control" id="fl1" placeholder="Label" value="{{ family.label or '' if family else '' }}">
         <label for="fl1">Label (ex: Famille Dupont)</label>
       </div>
     </div>
     <div class="col-md-2">
       <div class="form-floating">
-        <input name="room_number" class="form-control" id="fl2" placeholder="Chambre" value="{{ family.room_number if family else '' }}">
+        <input name="room_number" class="form-control" id="fl2" placeholder="Chambre" value="{{ family.room_number or '' if family else '' }}">
         <label for="fl2">Chambre 1</label>
       </div>
     </div>
     <div class="col-md-2">
       <div class="form-floating">
-        <input name="room_number2" class="form-control" id="fl2b" placeholder="Chambre 2" value="{{ family.room_number2 if family else '' }}">
+        <input name="room_number2" class="form-control" id="fl2b" placeholder="Chambre 2" value="{{ family.room_number2 or '' if family else '' }}">
         <label for="fl2b">Chambre 2</label>
       </div>
     </div>
@@ -30,13 +30,13 @@
       </div>
       <div class="col-md-3">
         <div class="form-floating">
-          <input name="phone1" class="form-control" id="fl4" placeholder="Téléphone 1" value="{{ family.phone1 if family else '' }}">
+          <input name="phone1" class="form-control" id="fl4" placeholder="Téléphone 1" value="{{ family.phone1 or '' if family else '' }}">
           <label for="fl4">Téléphone 1</label>
         </div>
       </div>
       <div class="col-md-3">
         <div class="form-floating">
-          <input name="phone2" class="form-control" id="fl5" placeholder="Téléphone 2" value="{{ family.phone2 if family else '' }}">
+          <input name="phone2" class="form-control" id="fl5" placeholder="Téléphone 2" value="{{ family.phone2 or '' if family else '' }}">
           <label for="fl5">Téléphone 2</label>
         </div>
       </div>
