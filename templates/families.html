@@ -7,25 +7,25 @@
     <form class="row g-2" method="get">
       <div class="col-auto">
         <div class="form-floating">
-          <input class="form-control" name="label" id="f1" placeholder="Label" value="{{ label }}">
+          <input class="form-control" name="label" id="f1" placeholder="Label" value="{{ label or '' }}">
           <label for="f1">Label</label>
         </div>
       </div>
       <div class="col-auto">
         <div class="form-floating">
-          <input class="form-control" name="room" id="f2" placeholder="Chambre" value="{{ room }}">
+          <input class="form-control" name="room" id="f2" placeholder="Chambre" value="{{ room or '' }}">
           <label for="f2">Chambre</label>
         </div>
       </div>
       <div class="col-auto">
         <div class="form-floating">
-          <input type="date" class="form-control" name="dmin" id="f3" value="{{ dmin }}">
+          <input type="date" class="form-control" name="dmin" id="f3" value="{{ dmin or '' }}">
           <label for="f3">Arrivée min</label>
         </div>
       </div>
       <div class="col-auto">
         <div class="form-floating">
-          <input type="date" class="form-control" name="dmax" id="f4" value="{{ dmax }}">
+          <input type="date" class="form-control" name="dmax" id="f4" value="{{ dmax or '' }}">
           <label for="f4">Arrivée max</label>
         </div>
       </div>

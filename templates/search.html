@@ -8,32 +8,32 @@
       <form class="row g-2 mb-3" method="get">
         <div class="col-12">
           <div class="form-floating">
-            <input class="form-control" name="fam_label" id="fam_label" value="{{ fam_label }}">
+            <input class="form-control" name="fam_label" id="fam_label" value="{{ fam_label or '' }}">
             <label for="fam_label">Nom</label>
           </div>
         </div>
         <div class="col-12">
           <div class="form-floating">
-            <input class="form-control" name="fam_room" id="fam_room" value="{{ fam_room }}">
+            <input class="form-control" name="fam_room" id="fam_room" value="{{ fam_room or '' }}">
             <label for="fam_room">Chambre</label>
           </div>
         </div>
         <div class="col-6">
           <div class="form-floating">
-            <input type="date" class="form-control" name="fam_arrival" id="fam_arrival" value="{{ fam_arrival }}">
+            <input type="date" class="form-control" name="fam_arrival" id="fam_arrival" value="{{ fam_arrival or '' }}">
             <label for="fam_arrival">Arrivée exacte</label>
           </div>
         </div>
         <div class="col-6"></div>
         <div class="col-6">
           <div class="form-floating">
-            <input type="date" class="form-control" name="fam_dmin" id="fam_dmin" value="{{ fam_dmin }}">
+            <input type="date" class="form-control" name="fam_dmin" id="fam_dmin" value="{{ fam_dmin or '' }}">
             <label for="fam_dmin">Arrivée min</label>
           </div>
         </div>
         <div class="col-6">
           <div class="form-floating">
-            <input type="date" class="form-control" name="fam_dmax" id="fam_dmax" value="{{ fam_dmax }}">
+            <input type="date" class="form-control" name="fam_dmax" id="fam_dmax" value="{{ fam_dmax or '' }}">
             <label for="fam_dmax">Arrivée max</label>
           </div>
         </div>
@@ -70,37 +70,37 @@
       <form class="row g-2 mb-3" method="get">
         <div class="col-6">
           <div class="form-floating">
-            <input class="form-control" name="p_last" id="p_last" value="{{ p_last }}">
+            <input class="form-control" name="p_last" id="p_last" value="{{ p_last or '' }}">
             <label for="p_last">Nom</label>
           </div>
         </div>
         <div class="col-6">
           <div class="form-floating">
-            <input class="form-control" name="p_first" id="p_first" value="{{ p_first }}">
+            <input class="form-control" name="p_first" id="p_first" value="{{ p_first or '' }}">
             <label for="p_first">Prénom</label>
           </div>
         </div>
         <div class="col-6">
           <div class="form-floating">
-            <input type="date" class="form-control" name="p_dob" id="p_dob" value="{{ p_dob }}">
+            <input type="date" class="form-control" name="p_dob" id="p_dob" value="{{ p_dob or '' }}">
             <label for="p_dob">Naissance</label>
           </div>
         </div>
         <div class="col-6">
           <div class="form-floating">
-            <input type="date" class="form-control" name="p_arrival" id="p_arrival" value="{{ p_arrival }}">
+            <input type="date" class="form-control" name="p_arrival" id="p_arrival" value="{{ p_arrival or '' }}">
             <label for="p_arrival">Arrivée</label>
           </div>
         </div>
           <div class="col-12">
             <div class="form-floating">
-              <input class="form-control" name="p_room" id="p_room" value="{{ p_room }}">
+              <input class="form-control" name="p_room" id="p_room" value="{{ p_room or '' }}">
               <label for="p_room">Chambre</label>
             </div>
           </div>
           <div class="col-12">
             <div class="form-floating">
-              <input class="form-control" name="p_phone" id="p_phone" value="{{ p_phone }}">
+              <input class="form-control" name="p_phone" id="p_phone" value="{{ p_phone or '' }}">
               <label for="p_phone">Téléphone</label>
             </div>
           </div>
