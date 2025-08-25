@@ -1,4 +1,5 @@
 # Hôtel Social – Kardex & Statistiques
+**Langues : [Français](README.md) | [English](README.en.md) | [العربية](README.ar.md)**
 
 Application web légère pour gérer les familles hébergées dans un hôtel social et analyser la population accueillie. Conçue avec **Flask**, **SQLite**, **Bootstrap** et **Chart.js**.
 
