@@ -5,16 +5,17 @@
   <div class="table-responsive">
     <table class="table table-striped table-hover table-sm align-middle sortable-table">
       <thead>
-        <tr>
-          <th>#</th>
-          <th>Nom</th>
-          <th>Prénom</th>
-          <th>Sexe</th>
-          <th>Âge</th>
-          <th>Famille</th>
-          <th>Chambre</th>
-          <th>Arrivée</th>
-        </tr>
+          <tr>
+            <th>#</th>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Sexe</th>
+            <th>Téléphone</th>
+            <th>Âge</th>
+            <th>Famille</th>
+            <th>Chambre</th>
+            <th>Arrivée</th>
+          </tr>
       </thead>
       <tbody>
       {% for p in persons %}
@@ -22,7 +23,8 @@
           <td class="text-secondary">{{ p.id }}</td>
           <td class="fw-semibold">{{ p.last_name }}</td>
           <td>{{ p.first_name }}</td>
-          <td>{{ p.sex or '' }}</td>
+            <td>{{ p.sex or '' }}</td>
+            <td>{{ p.phone or '' }}</td>
             <td data-order="{{ p.age_days }}">{{ p.age_text or '' }}</td>
           <td>{{ p.family_label or '' }}</td>
           <td data-order="{{ (p.room_number or 0)|int }}">{{ p.room_number or '' }}</td>
