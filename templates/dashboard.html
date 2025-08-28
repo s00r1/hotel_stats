@@ -59,7 +59,10 @@
   </style>
   {% macro room_box(r) %}
     {% set info = room_data.get(r) %}
-    <div class="room-box border {{ 'bg-danger-subtle text-danger border-danger-subtle' if info and info.occupied else 'bg-success-subtle text-success border-success-subtle' }}" data-bs-toggle="tooltip" data-bs-title="{{ info.family if info and info.occupied else 'Libre' }}">{{ r }}</div>
+    <div class="room-box border {{ 'bg-danger-subtle text-danger border-danger-subtle' if info and info.occupied else 'bg-success-subtle text-success border-success-subtle' }}"
+         data-bs-toggle="tooltip"
+         data-bs-title="{{ info.family if info and info.occupied else 'Libre' }}"
+         {% if info and info.occupied %}data-family-id="{{ info.family_id }}"{% endif %}>{{ r }}</div>
   {% endmacro %}
   {% macro plain_box(label) %}
     <div class="room-box border plain-box">{{ label }}</div>
@@ -474,6 +477,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const roomTooltipTriggerList = document.querySelectorAll('#room-layout [data-bs-toggle="tooltip"]');
   roomTooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
+
+  const roomBoxes = document.querySelectorAll('#room-layout .room-box[data-family-id]');
+  roomBoxes.forEach(box => {
+    box.addEventListener('click', () => {
+      const modal = new bootstrap.Modal(document.getElementById(`famModal${box.dataset.familyId}`));
+      modal.show();
+    });
+  });
 
   window.activeCharts = [];
   window.activeCharts.push(new Chart(document.getElementById('sexChart'), {
