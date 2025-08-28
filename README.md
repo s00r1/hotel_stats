@@ -20,13 +20,15 @@ L'objectif est de proposer une expérience conviviale en soignant autant **l'int
 - Tableaux triables et filtrables grâce à *DataTables*.
 - Graphiques interactifs illustrés par *Chart.js*.
 - Sélecteur de thème clair/sombre avec mémorisation.
+- Plan des chambres interactif affichant l'occupation et les chambres libres.
 
 ### 📚 Contenu & statistiques
 
 - Gestion complète des familles et des personnes (ajout, édition, suppression).
 - Tableau de bord interactif :
   - statistiques globales (sexe, tranches d’âge, adultes/enfants),
-  - alertes automatiques (sur‑occupation, femmes isolées, bébés < 1 an),
+  - visualisation du plan des chambres avec détail de l'occupation,
+  - alertes automatiques (sur‑occupation, femmes isolées, bébés < 1 an, chambres disponibles),
   - rappel des anniversaires du jour et des semaines/mois alentours,
   - classement des familles, adultes et enfants les plus anciens/récents.
 - Recherche multi‑critères sur les familles et les personnes en cours d’hébergement.
