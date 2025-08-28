@@ -56,6 +56,15 @@
     #room-layout .span-2 {
       grid-column: span 2;
     }
+    .alert-list-item {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .alert-list-item > :first-child {
+      overflow-wrap: anywhere;
+    }
   </style>
   {% macro room_box(r) %}
     {% set info = room_data.get(r) %}
@@ -93,10 +102,10 @@
 <div class="fw-bold">Familles &gt;3 pers. dans une chambre (hors 53/54)</div>
 <ul class="list-group list-group-flush small mb-0">
               {% for f in overcrowded_families %}
-                <li class="list-group-item list-group-item-action px-2 d-flex flex-wrap align-items-center gap-2 border-0">
+                <li class="list-group-item list-group-item-action px-2 alert-list-item border-0">
                   <span class="fw-semibold">{{ f.label if f.label not in [None, 'None'] else 'Famille ' ~ f.id }}</span>
                   <span class="text-secondary">chambre {{ rooms_text(f) }}</span>
-                  <span class="badge rounded-pill bg-danger-subtle text-danger ms-auto">{{ f.persons.count() }} pers.</span>
+                  <span class="badge rounded-pill bg-danger-subtle text-danger">{{ f.persons.count() }} pers.</span>
                 </li>
               {% else %}
                 <li class="list-group-item px-2 border-0">Aucune</li>
@@ -110,7 +119,7 @@
 <div class="fw-bold">Femmes isolées</div>
 <ul class="list-group list-group-flush small mb-0">
               {% for p in isolated_women %}
-                <li class="list-group-item list-group-item-action px-2 d-flex flex-wrap align-items-center gap-2 border-0">
+                <li class="list-group-item list-group-item-action px-2 alert-list-item border-0">
                   <span class="fw-semibold">{{ p.first_name }} {{ p.last_name }}</span>
                   <span class="text-secondary">chambre {{ rooms_text(p.family) }}</span>
                   <span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span>
@@ -127,7 +136,7 @@
 <div class="fw-bold">Bébés de moins d'un an</div>
 <ul class="list-group list-group-flush small mb-0">
               {% for p in baby_persons %}
-                <li class="list-group-item list-group-item-action px-2 d-flex flex-wrap align-items-center gap-2 border-0">
+                <li class="list-group-item list-group-item-action px-2 alert-list-item border-0">
                   <span class="fw-semibold">{{ p.first_name }} {{ p.last_name }}</span>
                   <span class="text-secondary">chambre {{ rooms_text(p.family) }}</span>
                   <span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_text(p.dob) }}</span>
