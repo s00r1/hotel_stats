@@ -66,6 +66,21 @@
             </ul>
           </div>
         </div>
+        <div class="alert alert-success d-flex align-items-start mb-0" role="alert">
+          <i class="bi bi-door-open fs-4 me-2"></i>
+          <div>
+            <div class="fw-bold">Chambres disponibles</div>
+            {% if free_rooms %}
+            <div class="d-flex flex-wrap gap-2 mt-1">
+              {% for r in free_rooms %}
+                <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle">{{ r }}</span>
+              {% endfor %}
+            </div>
+            {% else %}
+              <div class="small">Aucune</div>
+            {% endif %}
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -287,6 +287,16 @@ def dashboard():
     recent_values = [days_since(f.arrival_date) for f in recent_families]
     recent_tenures = [tenure_text(f.arrival_date) for f in recent_families]
 
+    # Chambres libres
+    all_rooms = {str(n) for n in range(1, 55) if n != 13}
+    occupied_rooms = set()
+    for f in families:
+        for r in (f.room_number, f.room_number2):
+            r = clean_field(r)
+            if r:
+                occupied_rooms.add(r)
+    free_rooms = sorted(all_rooms - occupied_rooms, key=int)
+
     # Alertes : sur-occupation, femmes isolées, bébés < 1 an
     overcrowded: list[Family] = []
     isolated_women: list[Person] = []
@@ -353,6 +363,7 @@ def dashboard():
         overcrowded_families=overcrowded,
         isolated_women=isolated_women,
         baby_persons=baby_persons,
+        free_rooms=free_rooms,
         Person=Person,
     )
 
