@@ -1,6 +1,18 @@
 {% extends 'base.html' %}
 {% block title %}Tableau de bord - Kardex Hôtel Social{% endblock %}
 {% block content %}
+  <style>
+    #room-layout .room-box {
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
   <div class="row g-4">
 <div class="col-12 col-xl-4 d-flex flex-column">
     <div class="card shadow-soft p-3">
@@ -280,8 +292,28 @@
 </div>
 </div>
 </div>
-</div></div>
-</div>
+ </div></div>
+ </div>
+
+    <div class="card shadow-soft p-3 mt-4">
+      <h6 class="mb-3"><i class="bi bi-building me-2"></i>Disposition des chambres</h6>
+      <div id="room-layout">
+        <h6 class="text-center">RDC</h6>
+        <div class="d-flex flex-wrap gap-2 justify-content-center mb-4">
+          {% for r in rdc_rooms %}
+            {% set info = room_data.get(r) %}
+            <div class="room-box border {{ 'bg-danger-subtle text-danger border-danger-subtle' if info.occupied else 'bg-success-subtle text-success border-success-subtle' }}" data-bs-toggle="tooltip" data-bs-title="{{ info.family if info.occupied else 'Libre' }}">{{ r }}</div>
+          {% endfor %}
+        </div>
+        <h6 class="text-center">1er étage</h6>
+        <div class="d-flex flex-wrap gap-2 justify-content-center">
+          {% for r in etage1_rooms %}
+            {% set info = room_data.get(r) %}
+            <div class="room-box border {{ 'bg-danger-subtle text-danger border-danger-subtle' if info.occupied else 'bg-success-subtle text-success border-success-subtle' }}" data-bs-toggle="tooltip" data-bs-title="{{ info.family if info.occupied else 'Libre' }}">{{ r }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
 
     <div class="card shadow-soft p-3 mt-4">
   <div class="d-flex align-items-center justify-content-between">
@@ -345,6 +377,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.ChartDataLabels) {
     Chart.register(ChartDataLabels);
   }
+
+  const roomTooltipTriggerList = document.querySelectorAll('#room-layout [data-bs-toggle="tooltip"]');
+  roomTooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
 
   window.activeCharts = [];
   window.activeCharts.push(new Chart(document.getElementById('sexChart'), {
