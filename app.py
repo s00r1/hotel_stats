@@ -297,6 +297,17 @@ def dashboard():
                 occupied_rooms.add(r)
     free_rooms = sorted(all_rooms - occupied_rooms, key=int)
 
+    room_data = {r: {"occupied": False, "family": None} for r in all_rooms}
+    for f in families:
+        fam_label = f.label if f.label not in [None, "None"] else f"Famille {f.id}"
+        for r in (f.room_number, f.room_number2):
+            r = clean_field(r)
+            if r:
+                room_data[r] = {"occupied": True, "family": fam_label}
+
+    rdc_rooms = [str(n) for n in range(30, 55)]
+    etage1_rooms = [str(n) for n in range(1, 30) if n != 13]
+
     # Alertes : sur-occupation, femmes isolées, bébés < 1 an
     overcrowded: list[Family] = []
     isolated_women: list[Person] = []
@@ -364,6 +375,9 @@ def dashboard():
         isolated_women=isolated_women,
         baby_persons=baby_persons,
         free_rooms=free_rooms,
+        room_data=room_data,
+        rdc_rooms=rdc_rooms,
+        etage1_rooms=etage1_rooms,
         Person=Person,
     )
 
