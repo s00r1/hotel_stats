@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 {% block title %}Tableau de bord - Kardex Hôtel Social{% endblock %}
 {% block content %}
-<div class="row g-4">
-  <div class="col-12 col-xl-4 d-flex flex-column">
+  <div class="row g-4">
+<div class="col-12 col-xl-4 d-flex flex-column">
     <div class="card shadow-soft p-3">
-      <h6 class="mb-3"><i class="bi bi-exclamation-triangle me-2"></i>Alertes</h6>
-      <div class="d-flex flex-column gap-3">
-        <div class="alert alert-success d-flex align-items-start mb-0" role="alert">
-          <i class="bi bi-door-open fs-4 me-2"></i>
-          <div>
-            <div class="fw-bold">Chambres disponibles</div>
+<h6 class="mb-3"><i class="bi bi-exclamation-triangle me-2"></i>Alertes</h6>
+<div class="d-flex flex-column gap-3">
+<div class="alert alert-success d-flex align-items-start mb-0" role="alert">
+<i class="bi bi-door-open fs-4 me-2"></i>
+<div>
+<div class="fw-bold">Chambres disponibles</div>
             {% if free_rooms %}
             <div class="d-flex flex-wrap gap-2 mt-1">
               {% for r in free_rooms %}
@@ -20,199 +20,104 @@
               <div class="small">Aucune</div>
             {% endif %}
           </div>
-        </div>
-        <div class="alert alert-danger d-flex align-items-start mb-0" role="alert">
-          <i class="bi bi-people-fill fs-4 me-2"></i>
-          <div>
-            <div class="fw-bold">Familles &gt;3 pers. dans une chambre (hors 53/54)</div>
-            <ul class="mb-0 ps-3">
+</div>
+<div class="alert alert-danger d-flex align-items-start mb-0" role="alert">
+<i class="bi bi-people-fill fs-4 me-2"></i>
+<div>
+<div class="fw-bold">Familles &gt;3 pers. dans une chambre (hors 53/54)</div>
+<ul class="mb-0 ps-3">
               {% for f in overcrowded_families %}
                 <li class="small">{{ f.label if f.label not in [None, 'None'] else 'Famille ' ~ f.id }} — chambre {{ rooms_text(f) }} ({{ f.persons.count() }} pers.)</li>
               {% else %}
                 <li class="small">Aucune</li>
               {% endfor %}
             </ul>
-          </div>
-        </div>
-        <div class="alert alert-warning d-flex align-items-start mb-0" role="alert">
-          <i class="bi bi-person-exclamation fs-4 me-2"></i>
-          <div>
-            <div class="fw-bold">Femmes isolées</div>
-            <ul class="mb-0 ps-3">
+</div>
+</div>
+<div class="alert alert-warning d-flex align-items-start mb-0" role="alert">
+<i class="bi bi-person-exclamation fs-4 me-2"></i>
+<div>
+<div class="fw-bold">Femmes isolées</div>
+<ul class="mb-0 ps-3">
               {% for p in isolated_women %}
                 <li class="small">{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}
                   <span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">
                     {{ age_years(p.dob) }} ans
                   </span>
-                </li>
+</li>
               {% else %}
                 <li class="small">Aucune</li>
               {% endfor %}
             </ul>
-          </div>
-        </div>
-        <div class="alert alert-info d-flex align-items-start mb-0" role="alert">
-          <i class="bi bi-baby fs-4 me-2"></i>
-          <div>
-            <div class="fw-bold">Bébés de moins d'un an</div>
-            <ul class="mb-0 ps-3">
+</div>
+</div>
+<div class="alert alert-info d-flex align-items-start mb-0" role="alert">
+<i class="bi bi-baby fs-4 me-2"></i>
+<div>
+<div class="fw-bold">Bébés de moins d'un an</div>
+<ul class="mb-0 ps-3">
               {% for p in baby_persons %}
                 <li class="small">{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}
                   <span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">
                     {{ age_text(p.dob) }}
                   </span>
-                </li>
+</li>
               {% else %}
                 <li class="small">Aucune</li>
               {% endfor %}
             </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-12 col-xl-4">
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="col-12 col-xl-4">
     <div class="card shadow-soft p-3">
-      <div class="d-flex align-items-center">
-        <div class="display-6 me-3 text-info"><i class="bi bi-people-fill"></i></div>
-        <div>
-          <div class="text-secondary text-uppercase small">Total clients</div>
-          <div class="h3 m-0">{{ total_clients }}</div>
-          <div class="small text-secondary">
-            Adultes : {{ adult_female_count }} femmes, {{ adult_male_count }} hommes<br>
+<div class="d-flex align-items-center">
+<div class="display-6 me-3 text-info"><i class="bi bi-people-fill"></i></div>
+<div>
+<div class="text-secondary text-uppercase small">Total clients</div>
+<div class="h3 m-0">{{ total_clients }}</div>
+<div class="small text-secondary">
+            Adultes : {{ adult_female_count }} femmes, {{ adult_male_count }} hommes<br/>
             Enfants : {{ girl_count }} filles, {{ boy_count }} garçons
           </div>
-        </div>
-      </div>
-    </div>
+</div>
+</div>
+</div>
     <div class="card shadow-soft p-3 mt-4">
-      <h6 class="mb-3"><i class="bi bi-gender-ambiguous me-2"></i>Répartition par sexe</h6>
-      <canvas id="sexChart" height="200"></canvas>
-    </div>
+<h6 class="mb-3"><i class="bi bi-gender-ambiguous me-2"></i>Répartition par sexe</h6>
+<canvas height="200" id="sexChart"></canvas>
+</div>
     <div class="card shadow-soft p-3 mt-4">
-      <h6 class="mb-3"><i class="bi bi-hourglass-split me-2"></i>Ancienneté</h6>
-      <ul class="nav nav-pills mb-3" id="seniorityTab" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="old-tab" data-bs-toggle="pill" data-bs-target="#old" type="button" role="tab">Plus anciennes</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="new-tab" data-bs-toggle="pill" data-bs-target="#new" type="button" role="tab">Plus récentes</button>
-        </li>
-      </ul>
-      <div class="tab-content">
-        <div class="tab-pane fade show active" id="old" role="tabpanel">
-          <ul class="nav nav-tabs small mb-3" id="oldSubTab" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="old-fam-tab" data-bs-toggle="tab" data-bs-target="#old-fam" type="button" role="tab">Familles</button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="old-adult-tab" data-bs-toggle="tab" data-bs-target="#old-adults" type="button" role="tab">Adultes</button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="old-child-tab" data-bs-toggle="tab" data-bs-target="#old-children" type="button" role="tab">Enfants</button>
-            </li>
-          </ul>
-          <div class="tab-content">
-            <div class="tab-pane fade show active" id="old-fam" role="tabpanel">
-              <canvas id="oldFamiliesChart" height="200"></canvas>
-            </div>
-            <div class="tab-pane fade" id="old-adults" role="tabpanel">
-              <ul class="list-group list-group-flush small">
-                {% for p in oldest_adults %}
-                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
-                    <span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span>
-                  </li>
-                {% else %}
-                  <li class="list-group-item">Aucun</li>
-                {% endfor %}
-              </ul>
-            </div>
-            <div class="tab-pane fade" id="old-children" role="tabpanel">
-              <ul class="list-group list-group-flush small">
-                {% for p in oldest_children %}
-                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
-                    <span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span>
-                  </li>
-                {% else %}
-                  <li class="list-group-item">Aucun</li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="tab-pane fade" id="new" role="tabpanel">
-          <ul class="nav nav-tabs small mb-3" id="newSubTab" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="new-fam-tab" data-bs-toggle="tab" data-bs-target="#new-fam" type="button" role="tab">Familles</button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="new-adult-tab" data-bs-toggle="tab" data-bs-target="#new-adults" type="button" role="tab">Adultes</button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="new-child-tab" data-bs-toggle="tab" data-bs-target="#new-children" type="button" role="tab">Enfants</button>
-            </li>
-          </ul>
-          <div class="tab-content">
-            <div class="tab-pane fade show active" id="new-fam" role="tabpanel">
-              <canvas id="newFamiliesChart" height="200"></canvas>
-            </div>
-            <div class="tab-pane fade" id="new-adults" role="tabpanel">
-              <ul class="list-group list-group-flush small">
-                {% for p in youngest_adults %}
-                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
-                    <span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span>
-                  </li>
-                {% else %}
-                  <li class="list-group-item">Aucun</li>
-                {% endfor %}
-              </ul>
-            </div>
-            <div class="tab-pane fade" id="new-children" role="tabpanel">
-              <ul class="list-group list-group-flush small">
-                {% for p in youngest_children %}
-                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
-                    <span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span>
-                  </li>
-                {% else %}
-                  <li class="list-group-item">Aucun</li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-12 col-xl-4">
-    <div class="card shadow-soft p-3">
-      <h6 class="mb-3"><i class="bi bi-activity me-2"></i>Tranches d’âge</h6>
-      <canvas id="ageChart" height="200"></canvas>
-      <div class="d-flex align-items-center justify-content-center gap-3 mt-2">
-        <div class="d-flex align-items-center">
-          <span class="me-1" style="width:12px;height:12px;background-color:{{ age_colors_f[0] }};display:inline-block;border-radius:2px;"></span>
-          <span class="small">Femmes</span>
-        </div>
-        <div class="d-flex align-items-center">
-          <span class="me-1" style="width:12px;height:12px;background-color:{{ age_colors_m[0] }};display:inline-block;border-radius:2px;"></span>
-          <span class="small">Hommes</span>
-        </div>
-      </div>
-      <div id="ageLegend" class="mt-2 d-flex flex-column align-items-center">
+<h6 class="mb-3"><i class="bi bi-activity me-2"></i>Tranches d’âge</h6>
+<canvas height="200" id="ageChart"></canvas>
+<div class="d-flex align-items-center justify-content-center gap-3 mt-2">
+<div class="d-flex align-items-center">
+<span class="me-1" style="width:12px;height:12px;background-color:{{ age_colors_f[0] }};display:inline-block;border-radius:2px;"></span>
+<span class="small">Femmes</span>
+</div>
+<div class="d-flex align-items-center">
+<span class="me-1" style="width:12px;height:12px;background-color:{{ age_colors_m[0] }};display:inline-block;border-radius:2px;"></span>
+<span class="small">Hommes</span>
+</div>
+</div>
+<div class="mt-2 d-flex flex-column align-items-center" id="ageLegend">
         {% for lbl in age_labels %}
         <div class="d-flex align-items-center justify-content-center mb-1">
-          <span class="me-1" style="width:12px;height:12px;background-color:{{ age_colors_f[loop.index0] }};display:inline-block;border-radius:2px;"></span>
-          <span class="me-2" style="width:12px;height:12px;background-color:{{ age_colors_m[loop.index0] }};display:inline-block;border-radius:2px;"></span>
-          <span class="small">{{ lbl }}</span>
-        </div>
+<span class="me-1" style="width:12px;height:12px;background-color:{{ age_colors_f[loop.index0] }};display:inline-block;border-radius:2px;"></span>
+<span class="me-2" style="width:12px;height:12px;background-color:{{ age_colors_m[loop.index0] }};display:inline-block;border-radius:2px;"></span>
+<span class="small">{{ lbl }}</span>
+</div>
       {% endfor %}
       </div>
-    </div>
-      <div class="card shadow-soft p-3 mt-4">
-        <h6 class="mb-3"><i class="bi bi-cake2 me-2"></i>Anniversaires</h6>
+</div>
+
+</div>
+<div class="col-12 col-xl-4">
+
+    <div class="card shadow-soft p-3">
+<h6 class="mb-3"><i class="bi bi-cake2 me-2"></i>Anniversaires</h6>
         {% if birthdays_today %}
         <div class="alert alert-warning py-2 mb-3 small">
           Joyeux anniversaire à
@@ -224,74 +129,170 @@
         </div>
         {% endif %}
         <ul class="nav nav-tabs small" id="birthdayTab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="weekahead-tab" data-bs-toggle="tab" data-bs-target="#weekahead" type="button" role="tab">Semaine à venir</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="weekpast-tab" data-bs-toggle="tab" data-bs-target="#weekpast" type="button" role="tab">Semaine passée</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="monthahead-tab" data-bs-toggle="tab" data-bs-target="#monthahead" type="button" role="tab">Mois à venir</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="monthpast-tab" data-bs-toggle="tab" data-bs-target="#monthpast" type="button" role="tab">Mois passé</button>
-          </li>
-        </ul>
-        <div class="tab-content small mt-3">
-          <div class="tab-pane fade show active" id="weekahead" role="tabpanel">
-            <ul class="list-group list-group-flush">
+<li class="nav-item" role="presentation">
+<button class="nav-link active" data-bs-target="#weekahead" data-bs-toggle="tab" id="weekahead-tab" role="tab" type="button">Semaine à venir</button>
+</li>
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#weekpast" data-bs-toggle="tab" id="weekpast-tab" role="tab" type="button">Semaine passée</button>
+</li>
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#monthahead" data-bs-toggle="tab" id="monthahead-tab" role="tab" type="button">Mois à venir</button>
+</li>
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#monthpast" data-bs-toggle="tab" id="monthpast-tab" role="tab" type="button">Mois passé</button>
+</li>
+</ul>
+<div class="tab-content small mt-3">
+<div class="tab-pane fade show active" id="weekahead" role="tabpanel">
+<ul class="list-group list-group-flush">
               {% for b in birthdays_week_ahead %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} — chambre {{ rooms_text(b.person.family) }}</span>
-                  <span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
-                </li>
+<span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} — chambre {{ rooms_text(b.person.family) }}</span>
+<span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
+</li>
               {% else %}
                 <li class="list-group-item">Aucun</li>
               {% endfor %}
             </ul>
-          </div>
-          <div class="tab-pane fade" id="weekpast" role="tabpanel">
-            <ul class="list-group list-group-flush">
+</div>
+<div class="tab-pane fade" id="weekpast" role="tabpanel">
+<ul class="list-group list-group-flush">
               {% for b in birthdays_week_past %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} — chambre {{ rooms_text(b.person.family) }}</span>
-                  <span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
-                </li>
+<span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} — chambre {{ rooms_text(b.person.family) }}</span>
+<span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
+</li>
               {% else %}
                 <li class="list-group-item">Aucun</li>
               {% endfor %}
             </ul>
-          </div>
-          <div class="tab-pane fade" id="monthahead" role="tabpanel">
-            <ul class="list-group list-group-flush">
+</div>
+<div class="tab-pane fade" id="monthahead" role="tabpanel">
+<ul class="list-group list-group-flush">
               {% for b in birthdays_month_ahead %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} — chambre {{ rooms_text(b.person.family) }}</span>
-                  <span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
-                </li>
+<span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} — chambre {{ rooms_text(b.person.family) }}</span>
+<span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
+</li>
               {% else %}
                 <li class="list-group-item">Aucun</li>
               {% endfor %}
             </ul>
-          </div>
-          <div class="tab-pane fade" id="monthpast" role="tabpanel">
-            <ul class="list-group list-group-flush">
+</div>
+<div class="tab-pane fade" id="monthpast" role="tabpanel">
+<ul class="list-group list-group-flush">
               {% for b in birthdays_month_past %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} — chambre {{ rooms_text(b.person.family) }}</span>
-                  <span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
-                </li>
+<span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} — chambre {{ rooms_text(b.person.family) }}</span>
+<span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
+</li>
               {% else %}
                 <li class="list-group-item">Aucun</li>
               {% endfor %}
             </ul>
-          </div>
-        </div>
-      </div>
-  </div>
+</div>
+</div>
+</div>
+    <div class="card shadow-soft p-3 mt-4">
+<h6 class="mb-3"><i class="bi bi-hourglass-split me-2"></i>Ancienneté</h6>
+<ul class="nav nav-pills mb-3" id="seniorityTab" role="tablist">
+<li class="nav-item" role="presentation">
+<button class="nav-link active" data-bs-target="#old" data-bs-toggle="pill" id="old-tab" role="tab" type="button">Plus anciennes</button>
+</li>
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#new" data-bs-toggle="pill" id="new-tab" role="tab" type="button">Plus récentes</button>
+</li>
+</ul>
+<div class="tab-content">
+<div class="tab-pane fade show active" id="old" role="tabpanel">
+<ul class="nav nav-tabs small mb-3" id="oldSubTab" role="tablist">
+<li class="nav-item" role="presentation">
+<button class="nav-link active" data-bs-target="#old-fam" data-bs-toggle="tab" id="old-fam-tab" role="tab" type="button">Familles</button>
+</li>
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#old-adults" data-bs-toggle="tab" id="old-adult-tab" role="tab" type="button">Adultes</button>
+</li>
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#old-children" data-bs-toggle="tab" id="old-child-tab" role="tab" type="button">Enfants</button>
+</li>
+</ul>
+<div class="tab-content">
+<div class="tab-pane fade show active" id="old-fam" role="tabpanel">
+<canvas height="200" id="oldFamiliesChart"></canvas>
+</div>
+<div class="tab-pane fade" id="old-adults" role="tabpanel">
+<ul class="list-group list-group-flush small">
+                {% for p in oldest_adults %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+<span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
+<span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span>
+</li>
+                {% else %}
+                  <li class="list-group-item">Aucun</li>
+                {% endfor %}
+              </ul>
+</div>
+<div class="tab-pane fade" id="old-children" role="tabpanel">
+<ul class="list-group list-group-flush small">
+                {% for p in oldest_children %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+<span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
+<span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span>
+</li>
+                {% else %}
+                  <li class="list-group-item">Aucun</li>
+                {% endfor %}
+              </ul>
+</div>
+</div>
+</div>
+<div class="tab-pane fade" id="new" role="tabpanel">
+<ul class="nav nav-tabs small mb-3" id="newSubTab" role="tablist">
+<li class="nav-item" role="presentation">
+<button class="nav-link active" data-bs-target="#new-fam" data-bs-toggle="tab" id="new-fam-tab" role="tab" type="button">Familles</button>
+</li>
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#new-adults" data-bs-toggle="tab" id="new-adult-tab" role="tab" type="button">Adultes</button>
+</li>
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#new-children" data-bs-toggle="tab" id="new-child-tab" role="tab" type="button">Enfants</button>
+</li>
+</ul>
+<div class="tab-content">
+<div class="tab-pane fade show active" id="new-fam" role="tabpanel">
+<canvas height="200" id="newFamiliesChart"></canvas>
+</div>
+<div class="tab-pane fade" id="new-adults" role="tabpanel">
+<ul class="list-group list-group-flush small">
+                {% for p in youngest_adults %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+<span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
+<span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span>
+</li>
+                {% else %}
+                  <li class="list-group-item">Aucun</li>
+                {% endfor %}
+              </ul>
+</div>
+<div class="tab-pane fade" id="new-children" role="tabpanel">
+<ul class="list-group list-group-flush small">
+                {% for p in youngest_children %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+<span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
+<span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span>
+</li>
+                {% else %}
+                  <li class="list-group-item">Aucun</li>
+                {% endfor %}
+              </ul>
+</div>
+</div>
+</div>
+</div>
+</div></div>
 </div>
 
-<div class="card shadow-soft p-3 mt-4">
+    <div class="card shadow-soft p-3 mt-4">
   <div class="d-flex align-items-center justify-content-between">
     <h6 class="mb-0"><i class="bi bi-clock-history me-2"></i>Familles récentes</h6>
     <span class="badge rounded-pill badge-soft">{{ families|length }} familles</span>
