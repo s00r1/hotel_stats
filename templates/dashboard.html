@@ -93,24 +93,15 @@
 <h6 class="mb-3"><i class="bi bi-activity me-2"></i>Tranches d’âge</h6>
 <canvas height="200" id="ageChart"></canvas>
 <div class="d-flex align-items-center justify-content-center gap-3 mt-2">
-<div class="d-flex align-items-center">
-<span class="me-1" style="width:12px;height:12px;background-color:{{ age_colors_f[0] }};display:inline-block;border-radius:2px;"></span>
-<span class="small">Femmes</span>
+  <div class="d-flex align-items-center">
+    <span class="me-1" style="width:12px;height:12px;background-color:#8bd0db;display:inline-block;border-radius:2px;"></span>
+    <span class="small">Femmes</span>
+  </div>
+  <div class="d-flex align-items-center">
+    <span class="me-1" style="width:12px;height:12px;background-color:#128193;display:inline-block;border-radius:2px;"></span>
+    <span class="small">Hommes</span>
+  </div>
 </div>
-<div class="d-flex align-items-center">
-<span class="me-1" style="width:12px;height:12px;background-color:{{ age_colors_m[0] }};display:inline-block;border-radius:2px;"></span>
-<span class="small">Hommes</span>
-</div>
-</div>
-<div class="mt-2 d-flex flex-column align-items-center" id="ageLegend">
-        {% for lbl in age_labels %}
-        <div class="d-flex align-items-center justify-content-center mb-1">
-<span class="me-1" style="width:12px;height:12px;background-color:{{ age_colors_f[loop.index0] }};display:inline-block;border-radius:2px;"></span>
-<span class="me-2" style="width:12px;height:12px;background-color:{{ age_colors_m[loop.index0] }};display:inline-block;border-radius:2px;"></span>
-<span class="small">{{ lbl }}</span>
-</div>
-      {% endfor %}
-      </div>
 </div>
 
 </div>
