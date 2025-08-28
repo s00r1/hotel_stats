@@ -27,6 +27,35 @@
       color: var(--bs-secondary);
       border-color: var(--bs-secondary-border-subtle);
     }
+    #room-layout .suite {
+      display: flex;
+      gap: 0;
+    }
+    #room-layout .suite .room-box + .room-box {
+      margin-left: -1px;
+    }
+    #room-layout .suite-53 {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #room-layout .suite-53 .suite:first-child .room-box {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    #room-layout .suite-53 .suite:last-child .room-box {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      margin-top: -1px;
+    }
+    #room-layout .connector-vertical {
+      width: 2px;
+      height: 6px;
+      background-color: var(--bs-secondary);
+    }
+    #room-layout .span-2 {
+      grid-column: span 2;
+    }
   </style>
   {% macro room_box(r) %}
     {% set info = room_data.get(r) %}
@@ -322,10 +351,15 @@
       <div id="room-layout">
         <h6 class="text-center">RDC</h6>
         <div class="d-flex gap-4 justify-content-center mb-4 align-items-start">
-          <div class="grid-3">
-            {% for _ in range(3) %}
+          <div class="suite-53">
+            <div class="suite">
               {{ room_box('53') }}
-            {% endfor %}
+              {{ room_box('53') }}
+            </div>
+            <div class="connector-vertical"></div>
+            <div class="suite">
+              {{ room_box('53') }}
+            </div>
           </div>
           <div>
             <div class="grid-12 mb-2">
@@ -334,23 +368,13 @@
               {% endfor %}
             </div>
             <div class="grid-12 mb-2">
-              {% for r in ['EDF',1,2,3,4,5,6,7,8,9,'',''] %}
-                {% if r == 'EDF' %}
-                  {{ plain_box('EDF') }}
-                {% elif r == '' %}
-                  <div></div>
-                {% else %}
-                  {{ room_box(r|string) }}
-                {% endif %}
-              {% endfor %}
-            </div>
-            <div class="grid-12">
-              {% for r in ['', '', '', '', 'Esc', '', 'Esc', '', '', '', '', ''] %}
-                {% if r %}
-                  {{ plain_box('Esc') }}
-                {% else %}
-                  <div></div>
-                {% endif %}
+              {{ plain_box('EDF') }}
+              <div class="suite span-2">
+                {{ room_box('54') }}
+                {{ room_box('54') }}
+              </div>
+              {% for r in [1,2,3,4,5,6,7,8,9] %}
+                {{ room_box(r|string) }}
               {% endfor %}
             </div>
           </div>
@@ -378,15 +402,6 @@
             <div class="grid-12 mb-2">
               {% for r in [22,21,20,19,18,17,16,15,14,12,11,10] %}
                 {{ room_box(r|string) }}
-              {% endfor %}
-            </div>
-            <div class="grid-12">
-              {% for r in ['', '', '', '', '', 'Esc', 'Esc', '', '', '', '', ''] %}
-                {% if r %}
-                  {{ plain_box('Esc') }}
-                {% else %}
-                  <div></div>
-                {% endif %}
               {% endfor %}
             </div>
           </div>
