@@ -12,7 +12,29 @@
       font-weight: 600;
       cursor: pointer;
     }
+    #room-layout .grid-12 {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 6px;
+    }
+    #room-layout .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+    #room-layout .plain-box {
+      background-color: var(--bs-secondary-bg-subtle);
+      color: var(--bs-secondary);
+      border-color: var(--bs-secondary-border-subtle);
+    }
   </style>
+  {% macro room_box(r) %}
+    {% set info = room_data.get(r) %}
+    <div class="room-box border {{ 'bg-danger-subtle text-danger border-danger-subtle' if info and info.occupied else 'bg-success-subtle text-success border-success-subtle' }}" data-bs-toggle="tooltip" data-bs-title="{{ info.family if info and info.occupied else 'Libre' }}">{{ r }}</div>
+  {% endmacro %}
+  {% macro plain_box(label) %}
+    <div class="room-box border plain-box">{{ label }}</div>
+  {% endmacro %}
   <div class="row g-4">
 <div class="col-12 col-xl-4 d-flex flex-column">
     <div class="card shadow-soft p-3">
@@ -299,18 +321,75 @@
       <h6 class="mb-3"><i class="bi bi-building me-2"></i>Disposition des chambres</h6>
       <div id="room-layout">
         <h6 class="text-center">RDC</h6>
-        <div class="d-flex flex-wrap gap-2 justify-content-center mb-4">
-          {% for r in rdc_rooms %}
-            {% set info = room_data.get(r) %}
-            <div class="room-box border {{ 'bg-danger-subtle text-danger border-danger-subtle' if info.occupied else 'bg-success-subtle text-success border-success-subtle' }}" data-bs-toggle="tooltip" data-bs-title="{{ info.family if info.occupied else 'Libre' }}">{{ r }}</div>
-          {% endfor %}
+        <div class="d-flex gap-4 justify-content-center mb-4 align-items-start">
+          <div class="grid-3">
+            {% for _ in range(3) %}
+              {{ room_box('53') }}
+            {% endfor %}
+          </div>
+          <div>
+            <div class="grid-12 mb-2">
+              {% for r in [23,24,25,26,27,28,29,30,31,32,33,34] %}
+                {{ room_box(r|string) }}
+              {% endfor %}
+            </div>
+            <div class="grid-12 mb-2">
+              {% for r in ['EDF',1,2,3,4,5,6,7,8,9,'',''] %}
+                {% if r == 'EDF' %}
+                  {{ plain_box('EDF') }}
+                {% elif r == '' %}
+                  <div></div>
+                {% else %}
+                  {{ room_box(r|string) }}
+                {% endif %}
+              {% endfor %}
+            </div>
+            <div class="grid-12">
+              {% for r in ['', '', '', '', 'Esc', '', 'Esc', '', '', '', '', ''] %}
+                {% if r %}
+                  {{ plain_box('Esc') }}
+                {% else %}
+                  <div></div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
         </div>
         <h6 class="text-center">1er étage</h6>
-        <div class="d-flex flex-wrap gap-2 justify-content-center">
-          {% for r in etage1_rooms %}
-            {% set info = room_data.get(r) %}
-            <div class="room-box border {{ 'bg-danger-subtle text-danger border-danger-subtle' if info.occupied else 'bg-success-subtle text-success border-success-subtle' }}" data-bs-toggle="tooltip" data-bs-title="{{ info.family if info.occupied else 'Libre' }}">{{ r }}</div>
-          {% endfor %}
+        <div class="d-flex gap-4 justify-content-center align-items-start">
+          <div>
+            <div class="grid-3 mb-2">
+              {% for r in [47,48,49] %}
+                {{ room_box(r|string) }}
+              {% endfor %}
+            </div>
+            <div class="grid-3">
+              {% for r in [50,51,52] %}
+                {{ room_box(r|string) }}
+              {% endfor %}
+            </div>
+          </div>
+          <div>
+            <div class="grid-12 mb-2">
+              {% for r in [35,36,37,38,39,40,41,42,43,44,45,46] %}
+                {{ room_box(r|string) }}
+              {% endfor %}
+            </div>
+            <div class="grid-12 mb-2">
+              {% for r in [22,21,20,19,18,17,16,15,14,12,11,10] %}
+                {{ room_box(r|string) }}
+              {% endfor %}
+            </div>
+            <div class="grid-12">
+              {% for r in ['', '', '', '', '', 'Esc', 'Esc', '', '', '', '', ''] %}
+                {% if r %}
+                  {{ plain_box('Esc') }}
+                {% else %}
+                  <div></div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
         </div>
       </div>
     </div>
