@@ -297,13 +297,13 @@ def dashboard():
                 occupied_rooms.add(r)
     free_rooms = sorted(all_rooms - occupied_rooms, key=int)
 
-    room_data = {r: {"occupied": False, "family": None} for r in all_rooms}
+    room_data = {r: {"occupied": False, "family": None, "family_id": None} for r in all_rooms}
     for f in families:
         fam_label = f.label if f.label not in [None, "None"] else f"Famille {f.id}"
         for r in (f.room_number, f.room_number2):
             r = clean_field(r)
             if r:
-                room_data[r] = {"occupied": True, "family": fam_label}
+                room_data[r] = {"occupied": True, "family": fam_label, "family_id": f.id}
 
     rdc_rooms = [str(n) for n in range(30, 55)]
     etage1_rooms = [str(n) for n in range(1, 30) if n != 13]
