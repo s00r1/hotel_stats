@@ -20,13 +20,15 @@ The goal is to offer a pleasant experience by taking care of both **interface** 
 - Sortable and filterable tables powered by *DataTables*.
 - Interactive charts with *Chart.js*.
 - Light/dark theme selector with persistence.
+- Interactive room layout showing occupancy and free rooms.
 
 ### 📚 Content & Statistics
 
 - Complete management of families and people (add, edit, delete).
 - Interactive dashboard:
   - global statistics (gender, age ranges, adults/children),
-  - automatic alerts (overcrowding, isolated women, babies < 1 year),
+  - room layout visualization with occupancy details,
+  - automatic alerts (overcrowding, isolated women, babies < 1 year, available rooms),
   - birthday reminders for the day, upcoming weeks/months,
   - ranking of oldest/newest families, adults and children.
 - Multi-criteria search for families and people currently hosted.
