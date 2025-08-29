@@ -516,6 +516,18 @@ def persons_delete(fid, pid):
     db.session.commit()
     return redirect(url_for("persons_list", fid=fid))
 
+@app.route("/person/<int:pid>")
+def person_detail(pid):
+    p = Person.query.join(Family).filter(Person.id == pid, Family.departure_date.is_(None)).first_or_404()
+    return render_template(
+        "person_detail.html",
+        person=p,
+        fmt_date=fmt_date,
+        age_years=age_years,
+        age_text=age_text,
+        rooms_text=rooms_text,
+    )
+
 # ----- Résidents -----
 
 @app.route("/residents")

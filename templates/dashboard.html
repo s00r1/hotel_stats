@@ -103,7 +103,7 @@
 <ul class="list-group list-group-flush small mb-0">
               {% for f in overcrowded_families %}
                 <li class="list-group-item list-group-item-action px-2 alert-list-item border-0">
-                  <span class="fw-semibold">{{ f.label if f.label not in [None, 'None'] else 'Famille ' ~ f.id }}</span>
+                  <a href="{{ url_for('persons_list', fid=f.id) }}" class="fw-semibold text-decoration-none text-reset">{{ f.label if f.label not in [None, 'None'] else 'Famille ' ~ f.id }}</a>
                   <span class="text-secondary">chambre {{ rooms_text(f) }}</span>
                   <span class="badge rounded-pill bg-danger-subtle text-danger">{{ f.persons.count() }} pers.</span>
                 </li>
@@ -120,7 +120,7 @@
 <ul class="list-group list-group-flush small mb-0">
               {% for p in isolated_women %}
                 <li class="list-group-item list-group-item-action px-2 alert-list-item border-0">
-                  <span class="fw-semibold">{{ p.first_name }} {{ p.last_name }}</span>
+                  <a href="{{ url_for('person_detail', pid=p.id) }}" class="fw-semibold text-decoration-none text-reset">{{ p.first_name }} {{ p.last_name }}</a>
                   <span class="text-secondary">chambre {{ rooms_text(p.family) }}</span>
                   <span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span>
                 </li>
@@ -137,7 +137,7 @@
 <ul class="list-group list-group-flush small mb-0">
               {% for p in baby_persons %}
                 <li class="list-group-item list-group-item-action px-2 alert-list-item border-0">
-                  <span class="fw-semibold">{{ p.first_name }} {{ p.last_name }}</span>
+                  <a href="{{ url_for('person_detail', pid=p.id) }}" class="fw-semibold text-decoration-none text-reset">{{ p.first_name }} {{ p.last_name }}</a>
                   <span class="text-secondary">chambre {{ rooms_text(p.family) }}</span>
                   <span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_text(p.dob) }}</span>
                 </li>
@@ -192,7 +192,7 @@
         <div class="alert alert-warning py-2 mb-3 small">
           Joyeux anniversaire à
           {% for b in birthdays_today %}
-            <strong>{{ b.person.first_name }} {{ b.person.last_name }}</strong> (chambre {{ rooms_text(b.person.family) }},
+            <a href="{{ url_for('person_detail', pid=b.person.id) }}" class="fw-semibold text-decoration-none text-reset">{{ b.person.first_name }} {{ b.person.last_name }}</a> (chambre {{ rooms_text(b.person.family) }},
             <span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>)
             {% if not loop.last %}{% if loop.revindex == 2 %} et {% else %}, {% endif %}{% endif %}
           {% endfor %} !
@@ -216,48 +216,52 @@
 <div class="tab-pane fade show active" id="weekahead" role="tabpanel">
 <ul class="list-group list-group-flush">
               {% for b in birthdays_week_ahead %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-<span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} — chambre {{ rooms_text(b.person.family) }}</span>
-<span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
-</li>
+                <li class="list-group-item list-group-item-action px-2 alert-list-item border-0">
+                  <a href="{{ url_for('person_detail', pid=b.person.id) }}" class="fw-semibold text-decoration-none text-reset">{{ b.person.first_name }} {{ b.person.last_name }}</a>
+                  <span class="text-secondary">{{ fmt_date(b.date) }} — chambre {{ rooms_text(b.person.family) }}</span>
+                  <span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
+                </li>
               {% else %}
-                <li class="list-group-item">Aucun</li>
+                <li class="list-group-item px-2 border-0">Aucun</li>
               {% endfor %}
             </ul>
 </div>
 <div class="tab-pane fade" id="weekpast" role="tabpanel">
 <ul class="list-group list-group-flush">
               {% for b in birthdays_week_past %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-<span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} — chambre {{ rooms_text(b.person.family) }}</span>
-<span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
-</li>
+                <li class="list-group-item list-group-item-action px-2 alert-list-item border-0">
+                  <a href="{{ url_for('person_detail', pid=b.person.id) }}" class="fw-semibold text-decoration-none text-reset">{{ b.person.first_name }} {{ b.person.last_name }}</a>
+                  <span class="text-secondary">{{ fmt_date(b.date) }} — chambre {{ rooms_text(b.person.family) }}</span>
+                  <span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
+                </li>
               {% else %}
-                <li class="list-group-item">Aucun</li>
+                <li class="list-group-item px-2 border-0">Aucun</li>
               {% endfor %}
             </ul>
 </div>
 <div class="tab-pane fade" id="monthahead" role="tabpanel">
 <ul class="list-group list-group-flush">
               {% for b in birthdays_month_ahead %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-<span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} — chambre {{ rooms_text(b.person.family) }}</span>
-<span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
-</li>
+                <li class="list-group-item list-group-item-action px-2 alert-list-item border-0">
+                  <a href="{{ url_for('person_detail', pid=b.person.id) }}" class="fw-semibold text-decoration-none text-reset">{{ b.person.first_name }} {{ b.person.last_name }}</a>
+                  <span class="text-secondary">{{ fmt_date(b.date) }} — chambre {{ rooms_text(b.person.family) }}</span>
+                  <span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
+                </li>
               {% else %}
-                <li class="list-group-item">Aucun</li>
+                <li class="list-group-item px-2 border-0">Aucun</li>
               {% endfor %}
             </ul>
 </div>
 <div class="tab-pane fade" id="monthpast" role="tabpanel">
 <ul class="list-group list-group-flush">
               {% for b in birthdays_month_past %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-<span>{{ fmt_date(b.date) }} — {{ b.person.first_name }} {{ b.person.last_name }} — chambre {{ rooms_text(b.person.family) }}</span>
-<span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
-</li>
+                <li class="list-group-item list-group-item-action px-2 alert-list-item border-0">
+                  <a href="{{ url_for('person_detail', pid=b.person.id) }}" class="fw-semibold text-decoration-none text-reset">{{ b.person.first_name }} {{ b.person.last_name }}</a>
+                  <span class="text-secondary">{{ fmt_date(b.date) }} — chambre {{ rooms_text(b.person.family) }}</span>
+                  <span class="badge rounded-pill" style="background-color: {{ age_color(b.person, b.age) }};">{{ b.age }} ans</span>
+                </li>
               {% else %}
-                <li class="list-group-item">Aucun</li>
+                <li class="list-group-item px-2 border-0">Aucun</li>
               {% endfor %}
             </ul>
 </div>
