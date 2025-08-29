@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Fiche personne - {{ person.first_name }} {{ person.last_name }}{% endblock %}
+{% block content %}
+<div class="card shadow-soft p-3">
+  <h5 class="mb-3">{{ person.first_name }} {{ person.last_name }}</h5>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item"><strong>Famille :</strong> <a href="{{ url_for('persons_list', fid=person.family.id) }}" class="text-decoration-none">{{ person.family.label if person.family.label not in [None, 'None'] else 'Famille ' ~ person.family.id }}</a></li>
+    <li class="list-group-item"><strong>Date de naissance :</strong> {{ fmt_date(person.dob) }}{% if age_text(person.dob) %} ({{ age_text(person.dob) }}){% endif %}</li>
+    <li class="list-group-item"><strong>Sexe :</strong> {{ person.sex or 'Autre/NP' }}</li>
+    <li class="list-group-item"><strong>Téléphone :</strong> {{ person.phone or 'N/A' }}</li>
+    <li class="list-group-item"><strong>Chambre :</strong> {{ rooms_text(person.family) }}</li>
+  </ul>
+</div>
+{% endblock %}
