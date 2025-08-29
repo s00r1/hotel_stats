@@ -295,28 +295,52 @@
 <canvas height="200" id="oldFamiliesChart"></canvas>
 </div>
 <div class="tab-pane fade" id="old-adults" role="tabpanel">
-<ul class="list-group list-group-flush small">
-                {% for p in oldest_adults %}
-                  <li class="list-group-item d-flex justify-content-between align-items-center">
-<span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
-<span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span>
-</li>
-                {% else %}
-                  <li class="list-group-item">Aucun</li>
-                {% endfor %}
-              </ul>
+  <div class="table-responsive">
+    <table class="table table-striped table-hover table-sm align-middle sortable-table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Chambre</th>
+          <th>Âge</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in oldest_adults %}
+        <tr>
+          <td><a href="{{ url_for('person_detail', pid=p.id) }}" class="fw-semibold text-decoration-none text-reset">{{ p.first_name }} {{ p.last_name }}</a></td>
+          <td>{{ rooms_text(p.family) }}</td>
+          <td data-order="{{ age_years(p.dob) }}"><span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3" class="text-center">Aucun</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 <div class="tab-pane fade" id="old-children" role="tabpanel">
-<ul class="list-group list-group-flush small">
-                {% for p in oldest_children %}
-                  <li class="list-group-item d-flex justify-content-between align-items-center">
-<span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
-<span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span>
-</li>
-                {% else %}
-                  <li class="list-group-item">Aucun</li>
-                {% endfor %}
-              </ul>
+  <div class="table-responsive">
+    <table class="table table-striped table-hover table-sm align-middle sortable-table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Chambre</th>
+          <th>Âge</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in oldest_children %}
+        <tr>
+          <td><a href="{{ url_for('person_detail', pid=p.id) }}" class="fw-semibold text-decoration-none text-reset">{{ p.first_name }} {{ p.last_name }}</a></td>
+          <td>{{ rooms_text(p.family) }}</td>
+          <td data-order="{{ age_years(p.dob) }}"><span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3" class="text-center">Aucun</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 </div>
 </div>
@@ -337,28 +361,52 @@
 <canvas height="200" id="newFamiliesChart"></canvas>
 </div>
 <div class="tab-pane fade" id="new-adults" role="tabpanel">
-<ul class="list-group list-group-flush small">
-                {% for p in youngest_adults %}
-                  <li class="list-group-item d-flex justify-content-between align-items-center">
-<span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
-<span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span>
-</li>
-                {% else %}
-                  <li class="list-group-item">Aucun</li>
-                {% endfor %}
-              </ul>
+  <div class="table-responsive">
+    <table class="table table-striped table-hover table-sm align-middle sortable-table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Chambre</th>
+          <th>Âge</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in youngest_adults %}
+        <tr>
+          <td><a href="{{ url_for('person_detail', pid=p.id) }}" class="fw-semibold text-decoration-none text-reset">{{ p.first_name }} {{ p.last_name }}</a></td>
+          <td>{{ rooms_text(p.family) }}</td>
+          <td data-order="{{ age_years(p.dob) }}"><span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3" class="text-center">Aucun</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 <div class="tab-pane fade" id="new-children" role="tabpanel">
-<ul class="list-group list-group-flush small">
-                {% for p in youngest_children %}
-                  <li class="list-group-item d-flex justify-content-between align-items-center">
-<span>{{ p.first_name }} {{ p.last_name }} — chambre {{ rooms_text(p.family) }}</span>
-<span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span>
-</li>
-                {% else %}
-                  <li class="list-group-item">Aucun</li>
-                {% endfor %}
-              </ul>
+  <div class="table-responsive">
+    <table class="table table-striped table-hover table-sm align-middle sortable-table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Chambre</th>
+          <th>Âge</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in youngest_children %}
+        <tr>
+          <td><a href="{{ url_for('person_detail', pid=p.id) }}" class="fw-semibold text-decoration-none text-reset">{{ p.first_name }} {{ p.last_name }}</a></td>
+          <td>{{ rooms_text(p.family) }}</td>
+          <td data-order="{{ age_years(p.dob) }}"><span class="badge rounded-pill" style="background-color: {{ age_color(p) }};">{{ age_years(p.dob) }} ans</span></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3" class="text-center">Aucun</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 </div>
 </div>
