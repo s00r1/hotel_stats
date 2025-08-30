@@ -83,6 +83,23 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       updateTextarea(floorDiv);
     });
+    floorDiv.querySelector('.remove-row').addEventListener('click', () => {
+      const table = floorDiv.querySelector('table');
+      if (table.rows.length > 0) {
+        table.deleteRow(-1);
+        updateTextarea(floorDiv);
+      }
+    });
+    floorDiv.querySelector('.remove-col').addEventListener('click', () => {
+      const table = floorDiv.querySelector('table');
+      const rows = table.rows.length;
+      if (rows > 0 && table.rows[0].cells.length > 0) {
+        for (let i = 0; i < rows; i++) {
+          table.rows[i].deleteCell(-1);
+        }
+        updateTextarea(floorDiv);
+      }
+    });
   }
 
   document.querySelectorAll('#floors .floor-item').forEach(initFloor);
@@ -99,9 +116,11 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="mb-2">
         <label class="form-label">Disposition</label>
         <div class="grid-wrapper mb-2"></div>
-        <div class="mb-2">
+        <div class="mb-2 d-flex flex-wrap gap-2">
           <button type="button" class="btn btn-sm btn-outline-secondary add-row">Ajouter une ligne</button>
           <button type="button" class="btn btn-sm btn-outline-secondary add-col">Ajouter une colonne</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary remove-row">Supprimer une ligne</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary remove-col">Supprimer une colonne</button>
         </div>
         <textarea name="floor_rooms_${idx}" hidden></textarea>
       </div>

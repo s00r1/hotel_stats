@@ -3,8 +3,8 @@
 {% block content %}
   <style>
     #room-layout .room-box {
-      width: 42px;
-      height: 42px;
+      width: {{ layout.cell_width or 80 }}px;
+      height: {{ layout.cell_height or 40 }}px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -24,10 +24,14 @@
   </style>
   {% macro room_box(r) %}
     {% set info = room_data.get(r) %}
-    <div class="room-box border {{ 'bg-danger-subtle text-danger border-danger-subtle' if info and info.occupied else 'bg-success-subtle text-success border-success-subtle' }}"
-         data-bs-toggle="tooltip"
-         data-bs-title="{{ info.family if info and info.occupied else 'Libre' }}"
-         {% if info and info.occupied %}data-family-id="{{ info.family_id }}"{% endif %}>{{ r }}</div>
+    {% if info is not none %}
+      <div class="room-box border {{ 'bg-danger-subtle text-danger border-danger-subtle' if info.occupied else 'bg-success-subtle text-success border-success-subtle' }}"
+           data-bs-toggle="tooltip"
+           data-bs-title="{{ info.family if info.occupied else 'Libre' }}"
+           {% if info.occupied %}data-family-id="{{ info.family_id }}"{% endif %}>{{ r }}</div>
+    {% else %}
+      <div class="room-box border bg-dark text-light border-dark-subtle">{{ r }}</div>
+    {% endif %}
   {% endmacro %}
   <div class="row g-4">
 <div class="col-12 col-xl-4 d-flex flex-column">
@@ -380,9 +384,9 @@
       <div id="room-layout">
         {% for floor in layout.get('floors', []) %}
           <h6 class="text-center">{{ floor.name }}</h6>
-          <div class="d-flex flex-column gap-2 mb-4">
+          <div class="d-flex flex-column mb-4" style="gap: {{ layout.row_gap or 0 }}px;">
             {% for row in floor.rows %}
-              <div class="d-flex gap-2 justify-content-center">
+              <div class="d-flex justify-content-center" style="gap: {{ layout.col_gap or 0 }}px;">
                 {% for room in row %}
                   {{ room_box(room) }}
                 {% endfor %}

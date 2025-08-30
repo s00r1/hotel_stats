@@ -20,5 +20,11 @@
     "show_isolated_women": true,
     "show_baby_alert": true
   },
-  "layout": {"floors": []}
+  "layout": {
+    "cell_width": 80,
+    "cell_height": 40,
+    "col_gap": 0,
+    "row_gap": 0,
+    "floors": []
+  }
 }

@@ -131,12 +131,13 @@
           background: var(--bs-secondary-bg);
         }
         .layout-grid {
-          border-collapse: collapse;
+          border-collapse: separate;
+          border-spacing: {{ config.layout.col_gap or 0 }}px {{ config.layout.row_gap or 0 }}px;
         }
         .layout-grid td {
           border: 1px dashed var(--bs-border-color);
-          width: 80px;
-          height: 40px;
+          width: {{ config.layout.cell_width or 80 }}px;
+          height: {{ config.layout.cell_height or 40 }}px;
           text-align: center;
           vertical-align: middle;
         }
@@ -150,6 +151,26 @@
         <div class="layout-item" draggable="true" data-value="Lingerie">Lingerie</div>
         <div class="layout-item" draggable="true" data-value="Réserve">Réserve</div>
       </div>
+      <div class="row g-2 mb-3">
+        <div class="col">
+          <label class="form-label">Largeur des cellules (px)</label>
+          <input type="number" class="form-control form-control-sm" name="cell_width" value="{{ config.layout.cell_width }}">
+        </div>
+        <div class="col">
+          <label class="form-label">Hauteur des cellules (px)</label>
+          <input type="number" class="form-control form-control-sm" name="cell_height" value="{{ config.layout.cell_height }}">
+        </div>
+      </div>
+      <div class="row g-2 mb-3">
+        <div class="col">
+          <label class="form-label">Espacement colonnes (px)</label>
+          <input type="number" class="form-control form-control-sm" name="col_gap" value="{{ config.layout.col_gap }}">
+        </div>
+        <div class="col">
+          <label class="form-label">Espacement lignes (px)</label>
+          <input type="number" class="form-control form-control-sm" name="row_gap" value="{{ config.layout.row_gap }}">
+        </div>
+      </div>
       <div id="floors">
         {% for f in config.layout.floors %}
         <div class="floor-item border rounded p-2 mb-3">
@@ -160,9 +181,11 @@
           <div class="mb-2">
             <label class="form-label">Disposition</label>
             <div class="grid-wrapper mb-2"></div>
-            <div class="mb-2">
+            <div class="mb-2 d-flex flex-wrap gap-2">
               <button type="button" class="btn btn-sm btn-outline-secondary add-row">Ajouter une ligne</button>
               <button type="button" class="btn btn-sm btn-outline-secondary add-col">Ajouter une colonne</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary remove-row">Supprimer une ligne</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary remove-col">Supprimer une colonne</button>
             </div>
             <textarea name="floor_rooms_{{ loop.index0 }}" hidden>{% for row in f.rows %}{{ row|join(',') }}{% if not loop.last %}\n{% endif %}{% endfor %}</textarea>
           </div>
