@@ -13,8 +13,11 @@
     "groups": [],
     "per_room": {}
   },
-  "persons": {},
   "alerts": {
-    "baby_age": 1
+    "baby_age": 1,
+    "show_free_rooms": true,
+    "show_overcrowded": true,
+    "show_isolated_women": true,
+    "show_baby_alert": true
   }
 }

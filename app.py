@@ -83,9 +83,12 @@ DEFAULT_CONFIG = {
         "groups": [],  # [{"rooms": ["1","2"], "max": 3}, ...]
         "per_room": {},
     },
-    "persons": {},
     "alerts": {
         "baby_age": 1,
+        "show_free_rooms": True,
+        "show_overcrowded": True,
+        "show_isolated_women": True,
+        "show_baby_alert": True,
     },
 }
 
@@ -278,7 +281,12 @@ def set_theme(mode):
 @app.route("/")
 def dashboard():
     cfg = load_config()
-    baby_age = cfg.get("alerts", {}).get("baby_age", 1)
+    alerts_cfg = cfg.get("alerts", {})
+    baby_age = alerts_cfg.get("baby_age", 1)
+    show_free_rooms = alerts_cfg.get("show_free_rooms", True)
+    show_overcrowded = alerts_cfg.get("show_overcrowded", True)
+    show_isolated_women = alerts_cfg.get("show_isolated_women", True)
+    show_baby_alert = alerts_cfg.get("show_baby_alert", True)
     today = date.today()
     persons = Person.query.join(Family).filter(Family.departure_date.is_(None)).all()
 
@@ -501,6 +509,10 @@ def dashboard():
         isolated_women=isolated_women,
         baby_persons=baby_persons,
         baby_age=baby_age,
+        show_free_rooms=show_free_rooms,
+        show_overcrowded=show_overcrowded,
+        show_isolated_women=show_isolated_women,
+        show_baby_alert=show_baby_alert,
         free_rooms=free_rooms,
         room_data=room_data,
         rdc_rooms=rdc_rooms,
@@ -998,6 +1010,10 @@ def config():
         occup["per_room"] = per_room
 
         alerts = cfg["alerts"]
+        alerts["show_free_rooms"] = bool(request.form.get("show_free_rooms"))
+        alerts["show_overcrowded"] = bool(request.form.get("show_overcrowded"))
+        alerts["show_isolated_women"] = bool(request.form.get("show_isolated_women"))
+        alerts["show_baby_alert"] = bool(request.form.get("show_baby_alert"))
         try:
             alerts["baby_age"] = int(request.form.get("baby_age", 1))
         except ValueError:

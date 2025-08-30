@@ -15,9 +15,6 @@
       <button class="nav-link active" id="hotel-tab" data-bs-toggle="tab" data-bs-target="#hotel" type="button" role="tab">Hôtel</button>
     </li>
     <li class="nav-item" role="presentation">
-      <button class="nav-link" id="persons-tab" data-bs-toggle="tab" data-bs-target="#persons" type="button" role="tab">Personnes</button>
-    </li>
-    <li class="nav-item" role="presentation">
       <button class="nav-link" id="alerts-tab" data-bs-toggle="tab" data-bs-target="#alerts" type="button" role="tab">Alertes</button>
     </li>
     <li class="nav-item" role="presentation">
@@ -100,15 +97,29 @@
         </div>
       </div>
     </div>
-    <div class="tab-pane fade" id="persons" role="tabpanel">
-      <p class="text-secondary">Paramètres personnes à définir.</p>
-    </div>
     <div class="tab-pane fade" id="alerts" role="tabpanel">
+      <div class="mb-3">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="show_free_rooms" id="show_free_rooms" {% if config.alerts.show_free_rooms %}checked{% endif %}>
+          <label class="form-check-label" for="show_free_rooms">Chambres disponibles</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="show_overcrowded" id="show_overcrowded" {% if config.alerts.show_overcrowded %}checked{% endif %}>
+          <label class="form-check-label" for="show_overcrowded">Sur-occupation</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="show_isolated_women" id="show_isolated_women" {% if config.alerts.show_isolated_women %}checked{% endif %}>
+          <label class="form-check-label" for="show_isolated_women">Femmes isolées</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="show_baby_alert" id="show_baby_alert" {% if config.alerts.show_baby_alert %}checked{% endif %}>
+          <label class="form-check-label" for="show_baby_alert">Âge bébé</label>
+        </div>
+      </div>
       <div class="mb-3">
         <label class="form-label">Âge limite pour l'alerte bébé (années)</label>
         <input type="number" class="form-control" name="baby_age" value="{{ config.alerts.baby_age }}">
       </div>
-      <p class="text-secondary small">Alerte de sur-occupation configurable ultérieurement.</p>
     </div>
     <div class="tab-pane fade" id="disposition" role="tabpanel">
       <p class="text-secondary">Configuration de la disposition à venir.</p>
