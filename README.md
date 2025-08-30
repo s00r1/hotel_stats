@@ -34,7 +34,7 @@ L'objectif est de proposer une expérience conviviale en soignant autant **l'int
 - Recherche multi‑critères sur les familles et les personnes en cours d’hébergement.
 - Consultation des archives (familles/personnes sorties) avec filtres.
 - Export CSV des familles et des personnes.
-- Sauvegarde/Restauration JSON des données.
+- Sauvegarde/Chargement JSON des données.
 
 ## 🛠️ Installation
 
@@ -75,8 +75,8 @@ Le site est accessible sur [http://127.0.0.1:5000](http://127.0.0.1:5000).
 
 ## 💾 Sauvegarde & export
 
-- Bouton **Exporter** pour obtenir un fichier JSON de toutes les données.
-- Page **Restauration** pour réinjecter un fichier précédemment sauvegardé.
+- Bouton **Sauvegarder Kardex** pour obtenir un fichier JSON de toutes les données.
+- Page **Charger Kardex** pour réinjecter un fichier précédemment sauvegardé.
 - Export CSV des familles et des personnes disponible depuis la barre de navigation.
 
 ## ☁️ Hébergement
