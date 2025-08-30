@@ -1,144 +1,161 @@
 document.addEventListener('DOMContentLoaded', () => {
   const palette = document.getElementById('layout-palette');
-  if (!palette) return;
+  const floorNav = document.getElementById('floor-nav');
+  const floorContainer = document.getElementById('floor-container');
+  const layoutInput = document.getElementById('layout_json');
+  if (!palette || !floorNav || !floorContainer || !layoutInput) return;
 
-  function updateTextarea(floorDiv) {
-    const table = floorDiv.querySelector('table');
-    const textarea = floorDiv.querySelector('textarea');
-    const rows = [];
-    table.querySelectorAll('tr').forEach(tr => {
-      const cells = [];
-      tr.querySelectorAll('td').forEach(td => cells.push(td.textContent.trim()));
-      rows.push(cells.join(','));
-    });
-    textarea.value = rows.join('\n');
+  let floors = [];
+  let currentIndex = -1;
+
+  function updateInput() {
+    const data = floors.map(f => ({ name: f.name, data: f.canvas.toJSON() }));
+    layoutInput.value = JSON.stringify(data);
   }
 
-  function initCell(td, floorDiv) {
-    td.addEventListener('dragover', e => e.preventDefault());
-    td.addEventListener('drop', e => {
-      e.preventDefault();
-      const text = e.dataTransfer.getData('text/plain');
-      if (text) {
-        td.textContent = text;
-        updateTextarea(floorDiv);
-      }
+  function loadFloor(index) {
+    currentIndex = index;
+    floorNav.querySelectorAll('.nav-link').forEach((b, i) => {
+      b.classList.toggle('active', i === index);
     });
-    td.addEventListener('dblclick', () => {
-      const val = prompt('Nom de la pièce', td.textContent);
-      if (val !== null) {
-        td.textContent = val;
-        updateTextarea(floorDiv);
-      }
+    floorContainer.innerHTML = '';
+    const canvasEl = document.createElement('canvas');
+    canvasEl.width = floorContainer.clientWidth;
+    canvasEl.height = floorContainer.clientHeight;
+    floorContainer.appendChild(canvasEl);
+    const canvas = new fabric.Canvas(canvasEl);
+    floors[index].canvas = canvas;
+    canvas.loadFromJSON(floors[index].data || {}, () => {
+      canvas.renderAll();
     });
-  }
+    canvas.on('object:modified', updateInput);
+    canvas.on('object:added', updateInput);
 
-  function buildTable(floorDiv) {
-    const textarea = floorDiv.querySelector('textarea');
-    const wrapper = floorDiv.querySelector('.grid-wrapper');
-    const data = textarea.value.trim()
-      ? textarea.value.trim().split('\n').map(l => l.split(','))
-      : [['']];
-    const table = document.createElement('table');
-    table.className = 'layout-grid';
-    data.forEach(row => {
-      const tr = document.createElement('tr');
-      row.forEach(text => {
-        const td = document.createElement('td');
-        td.className = 'layout-cell';
-        td.textContent = text;
-        initCell(td, floorDiv);
-        tr.appendChild(td);
-      });
-      table.appendChild(tr);
+    let isPanning = false;
+    canvas.on('mouse:down', opt => {
+      if (opt.e.shiftKey) {
+        isPanning = true;
+        canvas.selection = false;
+      }
     });
-    wrapper.innerHTML = '';
-    wrapper.appendChild(table);
-    updateTextarea(floorDiv);
-  }
+    canvas.on('mouse:move', opt => {
+      if (isPanning && opt && opt.e) {
+        const e = opt.e;
+        canvas.relativePan({ x: e.movementX, y: e.movementY });
+      }
+    });
+    canvas.on('mouse:up', () => {
+      canvas.selection = true;
+      isPanning = false;
+    });
+    canvas.on('mouse:wheel', opt => {
+      let zoom = canvas.getZoom();
+      zoom *= 0.999 ** opt.e.deltaY;
+      if (zoom > 4) zoom = 4;
+      if (zoom < 0.2) zoom = 0.2;
+      canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+      opt.e.preventDefault();
+      opt.e.stopPropagation();
+    });
 
-  function initFloor(floorDiv) {
-    buildTable(floorDiv);
-    floorDiv.querySelector('.add-row').addEventListener('click', () => {
-      const table = floorDiv.querySelector('table');
-      const cols = table.rows[0] ? table.rows[0].cells.length : 0;
-      const tr = document.createElement('tr');
-      for (let i = 0; i < cols; i++) {
-        const td = document.createElement('td');
-        td.className = 'layout-cell';
-        initCell(td, floorDiv);
-        tr.appendChild(td);
-      }
-      table.appendChild(tr);
-      updateTextarea(floorDiv);
-    });
-    floorDiv.querySelector('.add-col').addEventListener('click', () => {
-      const table = floorDiv.querySelector('table');
-      const rows = table.rows.length;
-      for (let i = 0; i < rows; i++) {
-        const td = document.createElement('td');
-        td.className = 'layout-cell';
-        initCell(td, floorDiv);
-        table.rows[i].appendChild(td);
-      }
-      updateTextarea(floorDiv);
-    });
-    floorDiv.querySelector('.remove-row').addEventListener('click', () => {
-      const table = floorDiv.querySelector('table');
-      if (table.rows.length > 0) {
-        table.deleteRow(-1);
-        updateTextarea(floorDiv);
-      }
-    });
-    floorDiv.querySelector('.remove-col').addEventListener('click', () => {
-      const table = floorDiv.querySelector('table');
-      const rows = table.rows.length;
-      if (rows > 0 && table.rows[0].cells.length > 0) {
-        for (let i = 0; i < rows; i++) {
-          table.rows[i].deleteCell(-1);
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Delete') {
+        const obj = canvas.getActiveObject();
+        if (obj) {
+          canvas.remove(obj);
+          updateInput();
         }
-        updateTextarea(floorDiv);
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+        const obj = canvas.getActiveObject();
+        if (obj) {
+          const clone = fabric.util.object.clone(obj);
+          clone.set({ left: obj.left + 10, top: obj.top + 10 });
+          canvas.add(clone);
+          updateInput();
+        }
+      }
+    });
+
+    canvas.on('mouse:dblclick', e => {
+      const obj = e.target;
+      if (obj && obj.type === 'group') {
+        const text = obj.item(1); // second item is text
+        const val = prompt('Nom de la pièce', text.text);
+        if (val !== null) {
+          text.text = val;
+          canvas.requestRenderAll();
+          updateInput();
+        }
       }
     });
   }
 
-  document.querySelectorAll('#floors .floor-item').forEach(initFloor);
+  function addFloor(name, data) {
+    const floor = { name: name || `Étage ${floors.length + 1}`, data: data || {} };
+    floors.push(floor);
+    const li = document.createElement('li');
+    li.className = 'nav-item';
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'nav-link';
+    btn.textContent = floor.name;
+    btn.addEventListener('click', () => loadFloor(floors.indexOf(floor)));
+    li.appendChild(btn);
+    floorNav.appendChild(li);
+    loadFloor(floors.length - 1);
+    updateInput();
+  }
 
-  document.getElementById('add-floor').addEventListener('click', () => {
-    const idx = document.querySelectorAll('#floors .floor-item').length;
-    const div = document.createElement('div');
-    div.className = 'floor-item border rounded p-2 mb-3';
-    div.innerHTML = `
-      <div class="mb-2">
-        <label class="form-label">Nom de l'étage</label>
-        <input type="text" class="form-control form-control-sm" name="floor_name_${idx}">
-      </div>
-      <div class="mb-2">
-        <label class="form-label">Disposition</label>
-        <div class="grid-wrapper mb-2"></div>
-        <div class="mb-2 d-flex flex-wrap gap-2">
-          <button type="button" class="btn btn-sm btn-outline-secondary add-row">Ajouter une ligne</button>
-          <button type="button" class="btn btn-sm btn-outline-secondary add-col">Ajouter une colonne</button>
-          <button type="button" class="btn btn-sm btn-outline-secondary remove-row">Supprimer une ligne</button>
-          <button type="button" class="btn btn-sm btn-outline-secondary remove-col">Supprimer une colonne</button>
-        </div>
-        <textarea name="floor_rooms_${idx}" hidden></textarea>
-      </div>
-      <button type="button" class="btn btn-sm btn-outline-danger remove-floor">Supprimer</button>
-    `;
-    document.getElementById('floors').appendChild(div);
-    initFloor(div);
-  });
-
-  document.getElementById('floors').addEventListener('click', e => {
-    if (e.target.classList.contains('remove-floor')) {
-      e.target.closest('.floor-item').remove();
-    }
-  });
+  document.getElementById('add-floor').addEventListener('click', () => addFloor());
 
   palette.querySelectorAll('.layout-item').forEach(item => {
     item.addEventListener('dragstart', e => {
-      e.dataTransfer.setData('text/plain', item.dataset.value);
+      e.dataTransfer.setData('type', item.dataset.type);
+      e.dataTransfer.setData('label', item.dataset.label || item.textContent.trim());
     });
   });
+
+  floorContainer.addEventListener('dragover', e => e.preventDefault());
+  floorContainer.addEventListener('drop', e => {
+    e.preventDefault();
+    if (currentIndex === -1) return;
+    const type = e.dataTransfer.getData('type');
+    const label = e.dataTransfer.getData('label') || type;
+    const canvas = floors[currentIndex].canvas;
+    const rect = new fabric.Rect({ width: 80, height: 40, fill: '#fff', stroke: '#000', strokeWidth: 1 });
+    const text = new fabric.Text(label, { fontSize: 14, originX: 'center', originY: 'center' });
+    const group = new fabric.Group([rect, text], { left: e.offsetX, top: e.offsetY });
+    canvas.add(group);
+    updateInput();
+  });
+
+  // Snap to grid (10px)
+  function snapToGrid(value) {
+    return Math.round(value / 10) * 10;
+  }
+  function applySnapping(opt) {
+    opt.target.set({
+      left: snapToGrid(opt.target.left),
+      top: snapToGrid(opt.target.top)
+    });
+  }
+  function attachSnapping(canvas) {
+    canvas.on('object:moving', applySnapping);
+  }
+
+  // Load from existing data
+  try {
+    const initial = JSON.parse(layoutInput.value || '[]');
+    if (initial.length) {
+      initial.forEach(f => addFloor(f.name, f.data));
+      floors.forEach(f => attachSnapping(f.canvas));
+    } else {
+      addFloor();
+      attachSnapping(floors[0].canvas);
+    }
+  } catch {
+    addFloor();
+    attachSnapping(floors[0].canvas);
+  }
 });
+
