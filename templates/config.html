@@ -122,7 +122,36 @@
       </div>
     </div>
     <div class="tab-pane fade" id="disposition" role="tabpanel">
-      <p class="text-secondary">Configuration de la disposition à venir.</p>
+      <div id="floors">
+        {% for f in config.layout.floors %}
+        <div class="floor-item border rounded p-2 mb-3">
+          <div class="mb-2">
+            <label class="form-label">Nom de l'étage</label>
+            <input type="text" class="form-control form-control-sm" name="floor_name_{{ loop.index0 }}" value="{{ f.name }}">
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Chambres (une ligne par rangée, séparées par des virgules)</label>
+            <textarea class="form-control form-control-sm" name="floor_rooms_{{ loop.index0 }}" rows="3">{% for row in f.rows %}{{ row|join(',') }}{% if not loop.last %}\n{% endif %}{% endfor %}</textarea>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-danger remove-floor">Supprimer</button>
+        </div>
+        {% endfor %}
+      </div>
+      <button type="button" class="btn btn-sm btn-outline-secondary" id="add-floor">Ajouter un étage</button>
+      <script>
+        document.getElementById('add-floor').addEventListener('click', function () {
+          const idx = document.querySelectorAll('#floors .floor-item').length;
+          const div = document.createElement('div');
+          div.className = 'floor-item border rounded p-2 mb-3';
+          div.innerHTML = `\n            <div class="mb-2">\n              <label class="form-label">Nom de l'étage</label>\n              <input type="text" class="form-control form-control-sm" name="floor_name_${idx}">\n            </div>\n            <div class="mb-2">\n              <label class="form-label">Chambres (une ligne par rangée, séparées par des virgules)</label>\n              <textarea class=\"form-control form-control-sm\" name=\"floor_rooms_${idx}\" rows=\"3\"></textarea>\n            </div>\n            <button type=\"button\" class=\"btn btn-sm btn-outline-danger remove-floor\">Supprimer</button>`;
+          document.getElementById('floors').appendChild(div);
+        });
+        document.getElementById('floors').addEventListener('click', function (e) {
+          if (e.target.classList.contains('remove-floor')) {
+            e.target.closest('.floor-item').remove();
+          }
+        });
+      </script>
     </div>
   </div>
   <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>

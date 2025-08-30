@@ -90,6 +90,7 @@ DEFAULT_CONFIG = {
         "show_isolated_women": True,
         "show_baby_alert": True,
     },
+    "layout": {"floors": []},
 }
 
 
@@ -432,9 +433,6 @@ def dashboard():
             if r:
                 room_data[r] = {"occupied": True, "family": fam_label, "family_id": f.id}
 
-    rdc_rooms = sorted([r for r in all_rooms if r.isdigit() and int(r) >= 30], key=int)
-    etage1_rooms = sorted([r for r in all_rooms if r.isdigit() and int(r) < 30], key=int)
-
     # Alertes : sur-occupation, femmes isolées, bébés selon config
     overcrowded_rooms: list[dict] = []
     isolated_women: list[Person] = []
@@ -515,8 +513,7 @@ def dashboard():
         show_baby_alert=show_baby_alert,
         free_rooms=free_rooms,
         room_data=room_data,
-        rdc_rooms=rdc_rooms,
-        etage1_rooms=etage1_rooms,
+        layout=cfg.get("layout", {}),
         Person=Person,
     )
 
@@ -1018,6 +1015,26 @@ def config():
             alerts["baby_age"] = int(request.form.get("baby_age", 1))
         except ValueError:
             alerts["baby_age"] = 1
+
+        layout = cfg.setdefault("layout", {})
+        floors: list[dict] = []
+        idx = 0
+        while True:
+            name_key = f"floor_name_{idx}"
+            rooms_key = f"floor_rooms_{idx}"
+            if name_key not in request.form and rooms_key not in request.form:
+                break
+            name = request.form.get(name_key, "").strip()
+            rooms_text = request.form.get(rooms_key, "")
+            if name:
+                rows: list[list[str]] = []
+                for line in rooms_text.splitlines():
+                    row = [r.strip() for r in line.split(",") if r.strip()]
+                    if row:
+                        rows.append(row)
+                floors.append({"name": name, "rows": rows})
+            idx += 1
+        layout["floors"] = floors
 
         save_config(cfg)
         return redirect(url_for("config"))
