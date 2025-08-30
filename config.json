@@ -9,7 +9,9 @@
     "exclude_rooms": []
   },
   "occupation": {
-    "default_max": ""
+    "default_max": "",
+    "groups": [],
+    "per_room": {}
   },
   "persons": {},
   "alerts": {
