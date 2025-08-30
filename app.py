@@ -91,10 +91,6 @@ DEFAULT_CONFIG = {
         "show_baby_alert": True,
     },
     "layout": {
-        "cell_width": 80,
-        "cell_height": 40,
-        "col_gap": 0,
-        "row_gap": 0,
         "floors": [],
     },
 }
@@ -1023,41 +1019,11 @@ def config():
             alerts["baby_age"] = 1
 
         layout = cfg.setdefault("layout", {})
+        layout_json = request.form.get("layout_json", "[]")
         try:
-            layout["cell_width"] = int(request.form.get("cell_width", layout.get("cell_width", 80)))
-        except ValueError:
-            layout["cell_width"] = 80
-        try:
-            layout["cell_height"] = int(request.form.get("cell_height", layout.get("cell_height", 40)))
-        except ValueError:
-            layout["cell_height"] = 40
-        try:
-            layout["col_gap"] = int(request.form.get("col_gap", layout.get("col_gap", 0)))
-        except ValueError:
-            layout["col_gap"] = 0
-        try:
-            layout["row_gap"] = int(request.form.get("row_gap", layout.get("row_gap", 0)))
-        except ValueError:
-            layout["row_gap"] = 0
-
-        floors: list[dict] = []
-        idx = 0
-        while True:
-            name_key = f"floor_name_{idx}"
-            rooms_key = f"floor_rooms_{idx}"
-            if name_key not in request.form and rooms_key not in request.form:
-                break
-            name = request.form.get(name_key, "").strip()
-            rooms_text = request.form.get(rooms_key, "")
-            if name:
-                rows: list[list[str]] = []
-                for line in rooms_text.splitlines():
-                    row = [r.strip() for r in line.split(",") if r.strip()]
-                    if row:
-                        rows.append(row)
-                floors.append({"name": name, "rows": rows})
-            idx += 1
-        layout["floors"] = floors
+            layout["floors"] = json.loads(layout_json)
+        except json.JSONDecodeError:
+            layout["floors"] = []
 
         save_config(cfg)
         return redirect(url_for("config"))

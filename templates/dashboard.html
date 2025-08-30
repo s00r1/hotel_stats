@@ -384,6 +384,7 @@
       <div id="room-layout">
         {% for floor in layout.get('floors', []) %}
           <h6 class="text-center">{{ floor.name }}</h6>
+          {% if floor.rows %}
           <div class="d-flex flex-column mb-4" style="gap: {{ layout.row_gap or 0 }}px;">
             {% for row in floor.rows %}
               <div class="d-flex justify-content-center" style="gap: {{ layout.col_gap or 0 }}px;">
@@ -393,6 +394,9 @@
               </div>
             {% endfor %}
           </div>
+          {% else %}
+          <div class="mb-4 text-center text-secondary small">Aucune disposition compatible</div>
+          {% endif %}
         {% endfor %}
       </div>
     </div>
