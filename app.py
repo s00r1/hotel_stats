@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from io import StringIO
 import csv
 import json
+import math
 
 from flask import Flask, request, redirect, url_for, render_template, make_response
 from flask_sqlalchemy import SQLAlchemy
@@ -427,7 +428,7 @@ def dashboard():
     etage1_rooms = sorted([r for r in all_rooms if r.isdigit() and int(r) < 30], key=int)
 
     # Alertes : sur-occupation, femmes isolées, bébés selon config
-    overcrowded: list[Family] = []
+    overcrowded_rooms: list[dict] = []
     isolated_women: list[Person] = []
     baby_persons: list[Person] = []
 
@@ -435,10 +436,19 @@ def dashboard():
         persons_list = f.persons.all()
 
         rooms = [r for r in (f.room_number, f.room_number2) if r]
-        capacity = sum(room_capacity(r, cfg) for r in rooms)
-
-        if rooms and capacity and len(persons_list) > capacity:
-            overcrowded.append(f)
+        if rooms:
+            per_room = math.ceil(len(persons_list) / len(rooms))
+            for r in rooms:
+                capacity = room_capacity(r, cfg)
+                if capacity and per_room > capacity:
+                    overcrowded_rooms.append(
+                        {
+                            "family": f,
+                            "room": r,
+                            "person_count": per_room,
+                            "capacity": capacity,
+                        }
+                    )
 
         adult_females: list[Person] = []
         has_adult_male = False
@@ -487,7 +497,7 @@ def dashboard():
         adult_male_count=adult_male_count,
         girl_count=girl_count,
         boy_count=boy_count,
-        overcrowded_families=overcrowded,
+        overcrowded_rooms=overcrowded_rooms,
         isolated_women=isolated_women,
         baby_persons=baby_persons,
         baby_age=baby_age,

@@ -99,13 +99,13 @@
 <div class="alert alert-danger d-flex align-items-start mb-0" role="alert">
 <i class="bi bi-people-fill fs-4 me-2"></i>
 <div>
-<div class="fw-bold">Familles &gt;3 pers. dans une chambre</div>
+<div class="fw-bold">Chambres en sur-occupation</div>
 <ul class="list-group list-group-flush small mb-0">
-              {% for f in overcrowded_families %}
+              {% for r in overcrowded_rooms %}
                 <li class="list-group-item list-group-item-action px-2 alert-list-item border-0">
-                  <a href="{{ url_for('persons_list', fid=f.id) }}" class="fw-semibold text-decoration-none text-reset">{{ f.label if f.label not in [None, 'None'] else 'Famille ' ~ f.id }}</a>
-                  <span class="text-secondary">chambre {{ rooms_text(f) }}</span>
-                  <span class="badge rounded-pill bg-danger-subtle text-danger">{{ f.persons.count() }} pers.</span>
+                  <a href="{{ url_for('persons_list', fid=r.family.id) }}" class="fw-semibold text-decoration-none text-reset">Chambre {{ r.room }}</a>
+                  <span class="text-secondary">{{ r.family.label if r.family.label not in [None, 'None'] else 'Famille ' ~ r.family.id }}</span>
+                  <span class="badge rounded-pill bg-danger-subtle text-danger">{{ r.person_count }}/{{ r.capacity }} pers.</span>
                 </li>
               {% else %}
                 <li class="list-group-item px-2 border-0">Aucune</li>
