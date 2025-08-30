@@ -133,7 +133,7 @@
 <div class="alert alert-info d-flex align-items-start mb-0" role="alert">
 <i class="bi bi-baby fs-4 me-2"></i>
 <div>
-<div class="fw-bold">Bébés de moins d'un an</div>
+<div class="fw-bold">Bébés de moins de {{ baby_age }} an{{ '' if baby_age == 1 else 's' }}</div>
 <ul class="list-group list-group-flush small mb-0">
               {% for p in baby_persons %}
                 <li class="list-group-item list-group-item-action px-2 alert-list-item border-0">

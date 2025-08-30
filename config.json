@@ -1,0 +1,18 @@
+{
+  "hotel": {
+    "total_rooms": "",
+    "numbering": "numeric",
+    "numeric_start": "",
+    "numeric_end": "",
+    "alpha_start": "",
+    "alpha_end": "",
+    "exclude_rooms": []
+  },
+  "occupation": {
+    "default_max": ""
+  },
+  "persons": {},
+  "alerts": {
+    "baby_age": 1
+  }
+}

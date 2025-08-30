@@ -65,6 +65,49 @@ AGE_COLORS_M = ['#128193', '#19a078', '#208537', '#cc9a05', '#ca6410', '#b02a37'
 
 SEX_CHOICES = ["F", "M", "Autre/NP"]
 
+# ----- Configuration -----
+CONFIG_FILE = "config.json"
+DEFAULT_CONFIG = {
+    "hotel": {
+        "total_rooms": "",
+        "numbering": "numeric",
+        "numeric_start": "",
+        "numeric_end": "",
+        "alpha_start": "",
+        "alpha_end": "",
+        "exclude_rooms": [],
+    },
+    "occupation": {
+        "default_max": "",
+    },
+    "persons": {},
+    "alerts": {
+        "baby_age": 1,
+    },
+}
+
+
+def load_config() -> dict:
+    try:
+        with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        data = {}
+    # merge with defaults
+    def merge(d, default):
+        for k, v in default.items():
+            if k not in d:
+                d[k] = v
+            elif isinstance(v, dict):
+                merge(d[k], v)
+    merge(data, DEFAULT_CONFIG)
+    return data
+
+
+def save_config(data: dict) -> None:
+    with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
 def clean_field(v: str | None) -> str | None:
     """Retourne None pour les champs vides ou contenant la chaîne 'None'."""
     if not v:
@@ -163,6 +206,8 @@ def set_theme(mode):
 
 @app.route("/")
 def dashboard():
+    cfg = load_config()
+    baby_age = cfg.get("alerts", {}).get("baby_age", 1)
     today = date.today()
     persons = Person.query.join(Family).filter(Family.departure_date.is_(None)).all()
 
@@ -308,7 +353,7 @@ def dashboard():
     rdc_rooms = [str(n) for n in range(30, 55)]
     etage1_rooms = [str(n) for n in range(1, 30) if n != 13]
 
-    # Alertes : sur-occupation, femmes isolées, bébés < 1 an
+    # Alertes : sur-occupation, femmes isolées, bébés selon config
     overcrowded: list[Family] = []
     isolated_women: list[Person] = []
     baby_persons: list[Person] = []
@@ -335,7 +380,7 @@ def dashboard():
                     has_adult_male = True
                 elif p.sex == "F":
                     adult_females.append(p)
-            if a < 1:
+            if a < baby_age:
                 baby_persons.append(p)
         if adult_females and not has_adult_male:
             isolated_women.extend(adult_females)
@@ -374,6 +419,7 @@ def dashboard():
         overcrowded_families=overcrowded,
         isolated_women=isolated_women,
         baby_persons=baby_persons,
+        baby_age=baby_age,
         free_rooms=free_rooms,
         room_data=room_data,
         rdc_rooms=rdc_rooms,
@@ -820,6 +866,34 @@ def restore():
         db.session.commit()
         return redirect(url_for("dashboard"))
     return render_template("restore.html")
+
+
+@app.route("/config", methods=["GET", "POST"])
+def config():
+    cfg = load_config()
+    if request.method == "POST":
+        hotel = cfg["hotel"]
+        hotel["total_rooms"] = request.form.get("total_rooms", "")
+        hotel["numbering"] = request.form.get("numbering", "numeric")
+        hotel["numeric_start"] = request.form.get("numeric_start", "")
+        hotel["numeric_end"] = request.form.get("numeric_end", "")
+        hotel["alpha_start"] = request.form.get("alpha_start", "")
+        hotel["alpha_end"] = request.form.get("alpha_end", "")
+        excl = request.form.get("exclude_rooms", "")
+        hotel["exclude_rooms"] = [r.strip() for r in excl.split(",") if r.strip()]
+
+        occup = cfg["occupation"]
+        occup["default_max"] = request.form.get("default_max", "")
+
+        alerts = cfg["alerts"]
+        try:
+            alerts["baby_age"] = int(request.form.get("baby_age", 1))
+        except ValueError:
+            alerts["baby_age"] = 1
+
+        save_config(cfg)
+        return redirect(url_for("config"))
+    return render_template("config.html", config=cfg)
 
 # ============================
 with app.app_context():
