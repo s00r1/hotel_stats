@@ -2,6 +2,13 @@
 {% block title %}Configuration - Kardex Hôtel Social{% endblock %}
 {% block content %}
 <h1 class="h4 mb-4">Configuration</h1>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('config_export') }}">Exporter</a>
+  <form method="post" action="{{ url_for('config_import') }}" enctype="multipart/form-data" class="d-flex gap-2">
+    <input type="file" name="file" class="form-control form-control-sm" required>
+    <button type="submit" class="btn btn-sm btn-outline-secondary">Importer</button>
+  </form>
+</div>
 <form method="post">
   <ul class="nav nav-tabs" id="configTab" role="tablist">
     <li class="nav-item" role="presentation">
@@ -72,7 +79,24 @@
             <label class="form-label">Occupation maximale par défaut</label>
             <input type="number" class="form-control" name="default_max" value="{{ config.occupation.default_max }}">
           </div>
-          <p class="text-secondary small">Configuration détaillée par chambre ou groupe à venir.</p>
+          <div class="mb-3">
+            <label class="form-label">Groupes de chambres</label>
+            <textarea class="form-control" name="groups" rows="3">{{ groups_text }}</textarea>
+            <div class="form-text">Ex : <code>1-5:3</code> ou <code>10,11:2</code>.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Occupation par chambre</label>
+            <div class="row row-cols-2 row-cols-sm-3 g-2">
+              {% for r in rooms %}
+              <div class="col">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text">{{ r }}</span>
+                  <input type="number" class="form-control" name="room_max_{{ r }}" value="{{ config.occupation.per_room.get(r, '') }}">
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -79,6 +79,8 @@ DEFAULT_CONFIG = {
     },
     "occupation": {
         "default_max": "",
+        "groups": [],  # [{"rooms": ["1","2"], "max": 3}, ...]
+        "per_room": {},
     },
     "persons": {},
     "alerts": {
@@ -107,6 +109,74 @@ def load_config() -> dict:
 def save_config(data: dict) -> None:
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def generate_rooms(cfg: dict) -> list[str]:
+    hotel = cfg.get("hotel", {})
+    numbering = hotel.get("numbering", "numeric")
+    rooms: list[str] = []
+    if numbering == "numeric":
+        try:
+            start = int(hotel.get("numeric_start") or 1)
+            end = int(hotel.get("numeric_end") or hotel.get("total_rooms") or 0)
+        except ValueError:
+            start, end = 1, 0
+        if end >= start:
+            rooms = [str(n) for n in range(start, end + 1)]
+    # autres types à implémenter ultérieurement
+    exclude = set(hotel.get("exclude_rooms") or [])
+    return [r for r in rooms if r not in exclude]
+
+
+def parse_groups(raw: str) -> list[dict]:
+    groups: list[dict] = []
+    for line in raw.splitlines():
+        line = line.strip()
+        if not line or ":" not in line:
+            continue
+        rooms_part, max_part = line.split(":", 1)
+        try:
+            max_val = int(max_part.strip())
+        except ValueError:
+            continue
+        rooms_list: list[str] = []
+        for part in rooms_part.split(","):
+            part = part.strip()
+            if not part:
+                continue
+            if "-" in part:
+                try:
+                    start, end = part.split("-", 1)
+                    start_i = int(start)
+                    end_i = int(end)
+                    rooms_list.extend(str(n) for n in range(start_i, end_i + 1))
+                except ValueError:
+                    continue
+            else:
+                rooms_list.append(part)
+        if rooms_list:
+            groups.append({"rooms": rooms_list, "max": max_val})
+    return groups
+
+
+def room_capacity(room: str, cfg: dict) -> int:
+    occup = cfg.get("occupation", {})
+    per_room = occup.get("per_room", {})
+    if room in per_room:
+        try:
+            return int(per_room[room])
+        except (ValueError, TypeError):
+            pass
+    for g in occup.get("groups", []):
+        if room in g.get("rooms", []):
+            try:
+                return int(g.get("max"))
+            except (ValueError, TypeError):
+                continue
+    try:
+        return int(occup.get("default_max", 0))
+    except (ValueError, TypeError):
+        return 0
 
 def clean_field(v: str | None) -> str | None:
     """Retourne None pour les champs vides ou contenant la chaîne 'None'."""
@@ -333,14 +403,17 @@ def dashboard():
     recent_tenures = [tenure_text(f.arrival_date) for f in recent_families]
 
     # Chambres libres
-    all_rooms = {str(n) for n in range(1, 55) if n != 13}
-    occupied_rooms = set()
+    all_rooms = set(generate_rooms(cfg))
+    occupied_rooms: set[str] = set()
     for f in families:
         for r in (f.room_number, f.room_number2):
             r = clean_field(r)
             if r:
                 occupied_rooms.add(r)
-    free_rooms = sorted(all_rooms - occupied_rooms, key=int)
+    free_rooms = sorted(
+        all_rooms - occupied_rooms,
+        key=lambda x: int(x) if x.isdigit() else x,
+    )
 
     room_data = {r: {"occupied": False, "family": None, "family_id": None} for r in all_rooms}
     for f in families:
@@ -350,8 +423,8 @@ def dashboard():
             if r:
                 room_data[r] = {"occupied": True, "family": fam_label, "family_id": f.id}
 
-    rdc_rooms = [str(n) for n in range(30, 55)]
-    etage1_rooms = [str(n) for n in range(1, 30) if n != 13]
+    rdc_rooms = sorted([r for r in all_rooms if r.isdigit() and int(r) >= 30], key=int)
+    etage1_rooms = sorted([r for r in all_rooms if r.isdigit() and int(r) < 30], key=int)
 
     # Alertes : sur-occupation, femmes isolées, bébés selon config
     overcrowded: list[Family] = []
@@ -362,11 +435,9 @@ def dashboard():
         persons_list = f.persons.all()
 
         rooms = [r for r in (f.room_number, f.room_number2) if r]
-        capacity = 0
-        for r in rooms:
-            capacity += 8 if r in ("53", "54") else 3
+        capacity = sum(room_capacity(r, cfg) for r in rooms)
 
-        if rooms and len(persons_list) > capacity:
+        if rooms and capacity and len(persons_list) > capacity:
             overcrowded.append(f)
 
         adult_females: list[Person] = []
@@ -868,9 +939,31 @@ def restore():
     return render_template("restore.html")
 
 
+@app.route("/config/export")
+def config_export():
+    cfg = load_config()
+    resp = make_response(json.dumps(cfg, ensure_ascii=False, indent=2))
+    resp.headers["Content-Type"] = "application/json; charset=utf-8"
+    resp.headers["Content-Disposition"] = "attachment; filename=config.json"
+    return resp
+
+
+@app.route("/config/import", methods=["POST"])
+def config_import():
+    file = request.files.get("file")
+    if file:
+        try:
+            data = json.load(file.stream)
+            save_config(data)
+        except json.JSONDecodeError:
+            pass
+    return redirect(url_for("config"))
+
+
 @app.route("/config", methods=["GET", "POST"])
 def config():
     cfg = load_config()
+    rooms = generate_rooms(cfg)
     if request.method == "POST":
         hotel = cfg["hotel"]
         hotel["total_rooms"] = request.form.get("total_rooms", "")
@@ -882,8 +975,17 @@ def config():
         excl = request.form.get("exclude_rooms", "")
         hotel["exclude_rooms"] = [r.strip() for r in excl.split(",") if r.strip()]
 
+        rooms = generate_rooms(cfg)
+
         occup = cfg["occupation"]
         occup["default_max"] = request.form.get("default_max", "")
+        occup["groups"] = parse_groups(request.form.get("groups", ""))
+        per_room: dict[str, str] = {}
+        for r in rooms:
+            val = request.form.get(f"room_max_{r}", "")
+            if val:
+                per_room[r] = val
+        occup["per_room"] = per_room
 
         alerts = cfg["alerts"]
         try:
@@ -893,7 +995,10 @@ def config():
 
         save_config(cfg)
         return redirect(url_for("config"))
-    return render_template("config.html", config=cfg)
+    groups_text = "\n".join(
+        f"{','.join(g['rooms'])}:{g['max']}" for g in cfg.get("occupation", {}).get("groups", [])
+    )
+    return render_template("config.html", config=cfg, rooms=rooms, groups_text=groups_text)
 
 # ============================
 with app.app_context():
