@@ -88,7 +88,7 @@
               <div class="col">
                 <div class="input-group input-group-sm">
                   <span class="input-group-text">{{ r }}</span>
-                  <input type="number" class="form-control" name="room_max_{{ r }}" value="{{ config.occupation.per_room.get(r, '') }}">
+                  <input type="number" class="form-control" name="room_max_{{ r }}" value="{{ config.occupation.per_room.get(r,'') }}">
                 </div>
               </div>
               {% endfor %}
@@ -122,6 +122,34 @@
       </div>
     </div>
     <div class="tab-pane fade" id="disposition" role="tabpanel">
+      <style>
+        #layout-palette .layout-item {
+          cursor: grab;
+          padding: 4px 8px;
+          border: 1px solid var(--bs-border-color);
+          border-radius: 4px;
+          background: var(--bs-secondary-bg);
+        }
+        .layout-grid {
+          border-collapse: collapse;
+        }
+        .layout-grid td {
+          border: 1px dashed var(--bs-border-color);
+          width: 80px;
+          height: 40px;
+          text-align: center;
+          vertical-align: middle;
+        }
+      </style>
+      <div id="layout-palette" class="d-flex flex-wrap gap-2 mb-3">
+        <div class="layout-item" draggable="true" data-value="Chambre">Chambre</div>
+        <div class="layout-item" draggable="true" data-value="Local EDF">Local EDF</div>
+        <div class="layout-item" draggable="true" data-value="Local poubelles">Local poubelles</div>
+        <div class="layout-item" draggable="true" data-value="Escalier">Escalier</div>
+        <div class="layout-item" draggable="true" data-value="Atelier">Atelier</div>
+        <div class="layout-item" draggable="true" data-value="Lingerie">Lingerie</div>
+        <div class="layout-item" draggable="true" data-value="Réserve">Réserve</div>
+      </div>
       <div id="floors">
         {% for f in config.layout.floors %}
         <div class="floor-item border rounded p-2 mb-3">
@@ -130,30 +158,24 @@
             <input type="text" class="form-control form-control-sm" name="floor_name_{{ loop.index0 }}" value="{{ f.name }}">
           </div>
           <div class="mb-2">
-            <label class="form-label">Chambres (une ligne par rangée, séparées par des virgules)</label>
-            <textarea class="form-control form-control-sm" name="floor_rooms_{{ loop.index0 }}" rows="3">{% for row in f.rows %}{{ row|join(',') }}{% if not loop.last %}\n{% endif %}{% endfor %}</textarea>
+            <label class="form-label">Disposition</label>
+            <div class="grid-wrapper mb-2"></div>
+            <div class="mb-2">
+              <button type="button" class="btn btn-sm btn-outline-secondary add-row">Ajouter une ligne</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary add-col">Ajouter une colonne</button>
+            </div>
+            <textarea name="floor_rooms_{{ loop.index0 }}" hidden>{% for row in f.rows %}{{ row|join(',') }}{% if not loop.last %}\n{% endif %}{% endfor %}</textarea>
           </div>
           <button type="button" class="btn btn-sm btn-outline-danger remove-floor">Supprimer</button>
         </div>
         {% endfor %}
       </div>
       <button type="button" class="btn btn-sm btn-outline-secondary" id="add-floor">Ajouter un étage</button>
-      <script>
-        document.getElementById('add-floor').addEventListener('click', function () {
-          const idx = document.querySelectorAll('#floors .floor-item').length;
-          const div = document.createElement('div');
-          div.className = 'floor-item border rounded p-2 mb-3';
-          div.innerHTML = `\n            <div class="mb-2">\n              <label class="form-label">Nom de l'étage</label>\n              <input type="text" class="form-control form-control-sm" name="floor_name_${idx}">\n            </div>\n            <div class="mb-2">\n              <label class="form-label">Chambres (une ligne par rangée, séparées par des virgules)</label>\n              <textarea class=\"form-control form-control-sm\" name=\"floor_rooms_${idx}\" rows=\"3\"></textarea>\n            </div>\n            <button type=\"button\" class=\"btn btn-sm btn-outline-danger remove-floor\">Supprimer</button>`;
-          document.getElementById('floors').appendChild(div);
-        });
-        document.getElementById('floors').addEventListener('click', function (e) {
-          if (e.target.classList.contains('remove-floor')) {
-            e.target.closest('.floor-item').remove();
-          }
-        });
-      </script>
     </div>
   </div>
   <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
 </form>
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/layout.js') }}"></script>
+{% endblock %}
 {% endblock %}
