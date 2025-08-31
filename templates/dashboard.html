@@ -23,14 +23,23 @@
     }
   </style>
   {% macro room_box(r) %}
-    {% set info = room_data.get(r) %}
-    {% if info is not none %}
+    {% if r is mapping %}
+      {% set label = r.label %}
+      {% set rtype = r.type %}
+    {% else %}
+      {% set label = r %}
+      {% set rtype = 'room' %}
+    {% endif %}
+    {% set info = room_data.get(label) %}
+    {% if rtype != 'room' %}
+      <div class="room-box border bg-dark text-light border-dark-subtle">{{ label }}</div>
+    {% elif info is not none %}
       <div class="room-box border {{ 'bg-danger-subtle text-danger border-danger-subtle' if info.occupied else 'bg-success-subtle text-success border-success-subtle' }}"
            data-bs-toggle="tooltip"
            data-bs-title="{{ info.family if info.occupied else 'Libre' }}"
-           {% if info.occupied %}data-family-id="{{ info.family_id }}"{% endif %}>{{ r }}</div>
+           {% if info.occupied %}data-family-id="{{ info.family_id }}"{% endif %}>{{ label }}</div>
     {% else %}
-      <div class="room-box border bg-dark text-light border-dark-subtle">{{ r }}</div>
+      <div class="room-box border bg-dark text-light border-dark-subtle">{{ label }}</div>
     {% endif %}
   {% endmacro %}
   <div class="row g-4">

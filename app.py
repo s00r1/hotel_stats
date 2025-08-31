@@ -166,12 +166,12 @@ def parse_groups(raw: str) -> list[dict]:
     return groups
 
 
-def extract_room_rows(stage_data) -> list[list[str]]:
-    """Convertit les données Konva d'un étage en grille de chambres.
+def extract_room_rows(stage_data) -> list[list[dict]]:
+    """Convertit les données Konva d'un étage en grille d'éléments.
 
-    Seuls les groupes dont l'attribut ``type`` est ``"room"`` (ou absent)
-    sont pris en compte. Les positions ``x``/``y`` sont utilisées pour
-    trier les chambres ligne par ligne.
+    Tous les groupes sont pris en compte. Le champ ``type`` permet de
+    distinguer les chambres des autres pièces afin de les afficher
+    différemment sur le tableau de bord.
     """
 
     if isinstance(stage_data, str):
@@ -180,30 +180,30 @@ def extract_room_rows(stage_data) -> list[list[str]]:
         except json.JSONDecodeError:
             return []
 
-    rooms = []
+    rooms: list[dict] = []
 
     def walk(node):
         if not isinstance(node, dict):
             return
         if node.get("className") == "Group":
             attrs = node.get("attrs", {})
-            if attrs.get("type") in (None, "room"):
-                x = attrs.get("x", 0)
-                y = attrs.get("y", 0)
-                label = ""
-                for child in node.get("children", []):
-                    if child.get("className") == "Text":
-                        label = child.get("attrs", {}).get("text", "").strip()
-                        break
-                if label:
-                    rooms.append({"x": x, "y": y, "label": label})
+            rtype = attrs.get("type", "room")
+            x = attrs.get("x", 0)
+            y = attrs.get("y", 0)
+            label = ""
+            for child in node.get("children", []):
+                if child.get("className") == "Text":
+                    label = child.get("attrs", {}).get("text", "").strip()
+                    break
+            if label:
+                rooms.append({"x": x, "y": y, "label": label, "type": rtype})
         for child in node.get("children", []):
             walk(child)
 
     walk(stage_data)
     rooms.sort(key=lambda g: (g["y"], g["x"]))
 
-    rows: list[list[str]] = []
+    rows: list[list[dict]] = []
     current_y = None
     line: list[dict] = []
     tolerance = 20  # pixels
@@ -215,13 +215,13 @@ def extract_room_rows(stage_data) -> list[list[str]]:
                 current_y = g["y"]
         else:
             line.sort(key=lambda d: d["x"])
-            rows.append([d["label"] for d in line])
+            rows.append([{"label": d["label"], "type": d["type"]} for d in line])
             line = [g]
             current_y = g["y"]
 
     if line:
         line.sort(key=lambda d: d["x"])
-        rows.append([d["label"] for d in line])
+        rows.append([{"label": d["label"], "type": d["type"]} for d in line])
 
     return rows
 
@@ -1085,10 +1085,15 @@ def config():
         except json.JSONDecodeError:
             floors_raw = []
         floors: list[dict] = []
+        seen_names: set[str] = set()
         for f in floors_raw:
+            name = f.get("name", "") or ""
+            if name in seen_names:
+                continue
+            seen_names.add(name)
             stage_data = f.get("data")
             rows = extract_room_rows(stage_data)
-            floors.append({"name": f.get("name", ""), "data": stage_data, "rows": rows})
+            floors.append({"name": name, "data": stage_data, "rows": rows})
         layout["floors"] = floors
 
         save_config(cfg)
