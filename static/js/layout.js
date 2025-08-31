@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const widthInput = document.getElementById('cell_width');
   const heightInput = document.getElementById('cell_height');
   const trash = document.getElementById('layout-trash');
+  const zoomInBtn = document.getElementById('zoom-in');
+  const zoomOutBtn = document.getElementById('zoom-out');
   if (!palette || !floorNav || !floorContainer || !layoutInput) return;
 
   let floors = [];
@@ -30,6 +32,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function snap(v) {
     return Math.round(v / 10) * 10;
+  }
+
+  function zoomStage(stage, zoomIn) {
+    const scaleBy = 1.05;
+    const oldScale = stage.scaleX();
+    const pointer = { x: stage.width() / 2, y: stage.height() / 2 };
+    const mousePointTo = {
+      x: (pointer.x - stage.x()) / oldScale,
+      y: (pointer.y - stage.y()) / oldScale
+    };
+    const newScale = zoomIn ? oldScale * scaleBy : oldScale / scaleBy;
+    stage.scale({ x: newScale, y: newScale });
+    const newPos = {
+      x: pointer.x - mousePointTo.x * newScale,
+      y: pointer.y - mousePointTo.y * newScale
+    };
+    stage.position(newPos);
+    stage.batchDraw();
   }
 
   function overTrash(stage) {
@@ -186,6 +206,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.getElementById('add-floor').addEventListener('click', () => addFloor());
+
+  zoomInBtn?.addEventListener('click', () => {
+    if (currentIndex !== -1) {
+      zoomStage(floors[currentIndex].stage, true);
+    }
+  });
+
+  zoomOutBtn?.addEventListener('click', () => {
+    if (currentIndex !== -1) {
+      zoomStage(floors[currentIndex].stage, false);
+    }
+  });
 
   palette.querySelectorAll('.layout-item').forEach(item => {
     item.addEventListener('dragstart', e => {
