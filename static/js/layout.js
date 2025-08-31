@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const layoutInput = document.getElementById('layout_json');
   const widthInput = document.getElementById('cell_width');
   const heightInput = document.getElementById('cell_height');
+  const trash = document.getElementById('layout-trash');
   if (!palette || !floorNav || !floorContainer || !layoutInput) return;
 
   let floors = [];
@@ -31,9 +32,37 @@ document.addEventListener('DOMContentLoaded', () => {
     return Math.round(v / 10) * 10;
   }
 
+  function overTrash(stage) {
+    if (!trash) return false;
+    const pointer = stage.getPointerPosition();
+    if (!pointer) return false;
+    const stageRect = stage.container().getBoundingClientRect();
+    const pageX = stageRect.left + pointer.x;
+    const pageY = stageRect.top + pointer.y;
+    const trashRect = trash.getBoundingClientRect();
+    return (
+      pageX >= trashRect.left && pageX <= trashRect.right &&
+      pageY >= trashRect.top && pageY <= trashRect.bottom
+    );
+  }
+
   function setupGroup(group) {
+    group.on('dragmove', () => {
+      if (overTrash(group.getStage())) {
+        trash?.classList.add('dragover');
+      } else {
+        trash?.classList.remove('dragover');
+      }
+    });
     group.on('dragend', () => {
-      group.position({ x: snap(group.x()), y: snap(group.y()) });
+      const stage = group.getStage();
+      trash?.classList.remove('dragover');
+      if (overTrash(stage)) {
+        group.destroy();
+        stage.batchDraw();
+      } else {
+        group.position({ x: snap(group.x()), y: snap(group.y()) });
+      }
       updateInput();
     });
     group.on('dblclick', () => {
@@ -207,6 +236,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let initial = [];
   try {
     initial = JSON.parse(layoutInput.value || "[]");
+    if (!Array.isArray(initial) && Array.isArray(initial?.floors)) {
+      initial = initial.floors;
+    }
   } catch {
     initial = [];
   }

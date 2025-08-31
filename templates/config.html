@@ -137,6 +137,15 @@
           background-size: 10px 10px;
           position: relative;
         }
+        #layout-trash {
+          border: 2px dashed var(--bs-danger);
+          border-radius: 4px;
+          color: var(--bs-danger);
+          cursor: default;
+        }
+        #layout-trash.dragover {
+          background: var(--bs-danger-bg-subtle);
+        }
       </style>
       <div class="row g-3 mb-3">
         <div class="col">
@@ -159,18 +168,21 @@
         </div>
       </div>
       <div class="d-flex gap-3">
-        <div class="flex-shrink-0">
-          <div id="layout-palette" class="d-flex flex-column gap-2 mb-3">
-            <div class="layout-item" draggable="true" data-type="room" data-label="Chambre">Chambre</div>
-            <div class="layout-item" draggable="true" data-type="edf" data-label="EDF">EDF</div>
-            <div class="layout-item" draggable="true" data-type="trash" data-label="Poubelles">Poubelles</div>
-            <div class="layout-item" draggable="true" data-type="stairs" data-label="Escalier">Escalier</div>
-            <div class="layout-item" draggable="true" data-type="workshop" data-label="Atelier">Atelier</div>
-            <div class="layout-item" draggable="true" data-type="laundry" data-label="Lingerie">Lingerie</div>
-            <div class="layout-item" draggable="true" data-type="storage" data-label="Réserve">Réserve</div>
+          <div class="flex-shrink-0">
+            <div id="layout-palette" class="d-flex flex-column gap-2 mb-3">
+              <div class="layout-item" draggable="true" data-type="room" data-label="Chambre">Chambre</div>
+              <div class="layout-item" draggable="true" data-type="edf" data-label="EDF">EDF</div>
+              <div class="layout-item" draggable="true" data-type="trash" data-label="Poubelles">Poubelles</div>
+              <div class="layout-item" draggable="true" data-type="stairs" data-label="Escalier">Escalier</div>
+              <div class="layout-item" draggable="true" data-type="workshop" data-label="Atelier">Atelier</div>
+              <div class="layout-item" draggable="true" data-type="laundry" data-label="Lingerie">Lingerie</div>
+              <div class="layout-item" draggable="true" data-type="storage" data-label="Réserve">Réserve</div>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-secondary mb-3" id="add-floor">Ajouter un étage</button>
+            <div id="layout-trash" class="p-3 text-center">
+              <i class="bi bi-trash fs-3"></i>
+            </div>
           </div>
-          <button type="button" class="btn btn-sm btn-outline-secondary" id="add-floor">Ajouter un étage</button>
-        </div>
         <div class="flex-grow-1">
           <ul class="nav nav-pills mb-2" id="floor-nav"></ul>
           <div id="floor-container" class="border"></div>
