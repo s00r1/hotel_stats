@@ -73,6 +73,44 @@ Le site est accessible sur [http://127.0.0.1:5000](http://127.0.0.1:5000).
 - Utilisez les pages **Recherche** et **Archives** pour filtrer les dossiers.
 - Les tableaux sont triables et filtrables, et les formulaires acceptent les dates et le sexe pour alimenter les statistiques.
 
+## ⚙️ Configuration de l'interface
+
+La page **Configuration** permet d'adapter l'application à la structure réelle de l'hôtel. On y accède depuis la barre de navigation, et deux boutons en haut permettent **d'exporter** ou **d'importer** vos réglages au format JSON.
+
+### Onglet « Hôtel »
+
+#### Sous‑onglet « Chambres »
+
+- **Nombre total de chambres** : nombre global de chambres gérées par l'application.
+- **Type de numérotation** : choix entre une numérotation *Numérique*, *Alphabétique* ou *Mixte*.
+- **Plages de numérotation** : précisez les bornes de numérotation (ex. `1` à `20` ou `A` à `D`).
+- **Chambres à exclure** : liste séparée par des virgules pour ignorer certaines chambres (ex. `13,A1`).
+
+#### Sous‑onglet « Occupation »
+
+- **Occupation maximale par défaut** : capacité standard de chaque chambre.
+- **Groupes de chambres** : permet de définir des ensembles de chambres partageant une capacité (ex. `1-5:3` signifie chambres 1 à 5 limitées à 3 personnes).
+- **Occupation par chambre** : si besoin, saisissez une capacité spécifique pour chaque numéro de chambre.
+
+### Onglet « Alertes »
+
+Active ou désactive les rappels automatiques affichés sur le tableau de bord :
+
+- **Chambres disponibles** : signale les chambres non occupées.
+- **Sur‑occupation** : met en avant les chambres dépassant la capacité définie.
+- **Femmes isolées** : repère les femmes hébergées sans autre adulte.
+- **Âge bébé** : déclenche une alerte pour les enfants en dessous de l'âge limite (modifiable).
+
+### Onglet « Disposition »
+
+Cet onglet sert à dessiner le plan de l'hôtel :
+
+- **Largeur/Hauteur des cases** et **Espaces horizontal/vertical** : contrôlent la grille de placement.
+- **Palette de pièces** : faites glisser les éléments (chambre, escalier, etc.) pour composer chaque étage.
+- **Gestion des étages** : ajoutez plusieurs niveaux et ajustez le zoom pour affiner la disposition.
+
+Une fois vos modifications réalisées, cliquez sur **Enregistrer** pour sauvegarder la configuration.
+
 ## 💾 Sauvegarde & export
 
 - Bouton **Sauvegarder Kardex** pour obtenir un fichier JSON de toutes les données.

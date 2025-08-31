@@ -73,6 +73,44 @@ The site is available at [http://127.0.0.1:5000](http://127.0.0.1:5000).
 - Use the **Search** and **Archives** pages to filter records.
 - Tables are sortable and filterable, and forms accept dates and gender to feed statistics.
 
+## ⚙️ Interface Configuration
+
+The **Configuration** page adapts the app to your hotel. Access it via the navigation bar; top buttons let you **export** or **import** your settings in JSON.
+
+### Tab "Hotel"
+
+#### Sub‑tab "Rooms"
+
+- **Total number of rooms**: overall rooms managed.
+- **Numbering type**: choose *Numeric*, *Alphabetic* or *Mixed*.
+- **Numbering ranges**: specify start and end values (e.g., `1` to `20` or `A` to `D`).
+- **Excluded rooms**: comma‑separated list of rooms to ignore (e.g., `13,A1`).
+
+#### Sub‑tab "Occupation"
+
+- **Default maximum occupancy**: standard capacity for each room.
+- **Room groups**: define sets of rooms sharing a capacity (e.g., `1-5:3` means rooms 1–5 limited to 3 people).
+- **Per-room occupancy**: set a specific capacity for individual room numbers.
+
+### Tab "Alerts"
+
+Enable or disable automatic reminders shown on the dashboard:
+
+- **Free rooms**: highlight unoccupied rooms.
+- **Overcrowding**: flag rooms exceeding their capacity.
+- **Isolated women**: identify women hosted without another adult.
+- **Baby age**: raise an alert for children below the chosen age limit.
+
+### Tab "Layout"
+
+Used to draw the hotel's floor plan:
+
+- **Cell width/height** and **horizontal/vertical gaps**: control the grid.
+- **Item palette**: drag elements (room, stairs, etc.) to build each floor.
+- **Floor management**: add multiple levels and adjust zoom to refine the layout.
+
+Click **Save** when finished to store your configuration.
+
 ## 💾 Backup & Export
 
 - **Export** button to obtain a JSON file with all data.
