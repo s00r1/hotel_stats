@@ -96,13 +96,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const floor = { name: name || `Étage ${floors.length + 1}`, data: data || null, stage: null };
     floors.push(floor);
     const li = document.createElement('li');
-    li.className = 'nav-item';
+    li.className = 'nav-item d-flex align-items-center gap-1';
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'nav-link';
+    btn.className = 'nav-link flex-grow-1';
     btn.textContent = floor.name;
     btn.addEventListener('click', () => loadFloor(floors.indexOf(floor)));
-    li.appendChild(btn);
+    const renameBtn = document.createElement('button');
+    renameBtn.type = 'button';
+    renameBtn.className = 'btn btn-sm btn-outline-secondary';
+    renameBtn.innerHTML = '<i class="bi bi-pencil"></i>';
+    renameBtn.addEventListener('click', () => {
+      const val = prompt("Nom de l'étage", floor.name);
+      if (val !== null && val.trim()) {
+        floor.name = val.trim();
+        btn.textContent = floor.name;
+        updateInput();
+      }
+    });
+    const deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
+    deleteBtn.className = 'btn btn-sm btn-outline-danger';
+    deleteBtn.innerHTML = '<i class="bi bi-trash"></i>';
+    deleteBtn.addEventListener('click', () => {
+      const idx = floors.indexOf(floor);
+      if (idx !== -1) {
+        floors.splice(idx, 1);
+        li.remove();
+        if (floors.length) {
+          loadFloor(Math.min(idx, floors.length - 1));
+        } else {
+          currentIndex = -1;
+          floorContainer.innerHTML = '';
+        }
+        updateInput();
+      }
+    });
+    li.append(btn, renameBtn, deleteBtn);
     floorNav.appendChild(li);
     loadFloor(floors.length - 1);
   }
@@ -125,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const type = e.dataTransfer.getData('type');
     const label = e.dataTransfer.getData('label') || type;
     const group = new Konva.Group({ x: e.offsetX, y: e.offsetY, draggable: true });
+    group.setAttr('type', type);
     const rect = new Konva.Rect({ width: 80, height: 40, stroke: '#000', fill: '#fff', strokeWidth: 1 });
     const text = new Konva.Text({ text: label, fontSize: 14, width: 80, align: 'center' });
     text.y((40 - text.height()) / 2);

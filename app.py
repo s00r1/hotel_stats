@@ -166,6 +166,66 @@ def parse_groups(raw: str) -> list[dict]:
     return groups
 
 
+def extract_room_rows(stage_data) -> list[list[str]]:
+    """Convertit les données Konva d'un étage en grille de chambres.
+
+    Seuls les groupes dont l'attribut ``type`` est ``"room"`` (ou absent)
+    sont pris en compte. Les positions ``x``/``y`` sont utilisées pour
+    trier les chambres ligne par ligne.
+    """
+
+    if isinstance(stage_data, str):
+        try:
+            stage_data = json.loads(stage_data)
+        except json.JSONDecodeError:
+            return []
+
+    rooms = []
+
+    def walk(node):
+        if not isinstance(node, dict):
+            return
+        if node.get("className") == "Group":
+            attrs = node.get("attrs", {})
+            if attrs.get("type") in (None, "room"):
+                x = attrs.get("x", 0)
+                y = attrs.get("y", 0)
+                label = ""
+                for child in node.get("children", []):
+                    if child.get("className") == "Text":
+                        label = child.get("attrs", {}).get("text", "").strip()
+                        break
+                if label:
+                    rooms.append({"x": x, "y": y, "label": label})
+        for child in node.get("children", []):
+            walk(child)
+
+    walk(stage_data)
+    rooms.sort(key=lambda g: (g["y"], g["x"]))
+
+    rows: list[list[str]] = []
+    current_y = None
+    line: list[dict] = []
+    tolerance = 20  # pixels
+
+    for g in rooms:
+        if current_y is None or abs(g["y"] - current_y) <= tolerance:
+            line.append(g)
+            if current_y is None:
+                current_y = g["y"]
+        else:
+            line.sort(key=lambda d: d["x"])
+            rows.append([d["label"] for d in line])
+            line = [g]
+            current_y = g["y"]
+
+    if line:
+        line.sort(key=lambda d: d["x"])
+        rows.append([d["label"] for d in line])
+
+    return rows
+
+
 def room_capacity(room: str, cfg: dict) -> int:
     occup = cfg.get("occupation", {})
     per_room = occup.get("per_room", {})
@@ -1021,9 +1081,15 @@ def config():
         layout = cfg.setdefault("layout", {})
         layout_json = request.form.get("layout_json", "[]")
         try:
-            layout["floors"] = json.loads(layout_json)
+            floors_raw = json.loads(layout_json)
         except json.JSONDecodeError:
-            layout["floors"] = []
+            floors_raw = []
+        floors: list[dict] = []
+        for f in floors_raw:
+            stage_data = f.get("data")
+            rows = extract_room_rows(stage_data)
+            floors.append({"name": f.get("name", ""), "data": stage_data, "rows": rows})
+        layout["floors"] = floors
 
         save_config(cfg)
         return redirect(url_for("config"))
