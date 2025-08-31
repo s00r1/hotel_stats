@@ -12,7 +12,16 @@ document.addEventListener('DOMContentLoaded', () => {
   let selected = null;
 
   function updateInput() {
-    const data = floors.map(f => ({ name: f.name, data: f.stage.toJSON() }));
+    const seen = new Set();
+    const data = [];
+    floors.forEach(f => {
+      if (!f.stage) return;
+      f.data = f.stage.toJSON();
+      const key = f.name.trim().toLowerCase();
+      if (seen.has(key)) return;
+      seen.add(key);
+      data.push({ name: f.name, data: f.data });
+    });
     layoutInput.value = JSON.stringify(data);
   }
 
