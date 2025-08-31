@@ -202,15 +202,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  let initial = [];
   try {
-    const initial = JSON.parse(layoutInput.value || '[]');
-    if (initial.length) {
-      initial.forEach(f => addFloor(f.name, f.data));
-    } else {
-      addFloor();
-    }
+    initial = JSON.parse(layoutInput.value || "[]");
   } catch {
-    addFloor();
+    initial = [];
+  }
+  if (Array.isArray(initial) && initial.length) {
+    initial.forEach(f => addFloor(f.name, f.data));
   }
 });
 
