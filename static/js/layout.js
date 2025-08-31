@@ -7,10 +7,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let floors = [];
   let currentIndex = -1;
+  let selected = null;
 
   function updateInput() {
-    const data = floors.map(f => ({ name: f.name, data: f.canvas.toJSON() }));
+    const data = floors.map(f => ({ name: f.name, data: f.stage.toJSON() }));
     layoutInput.value = JSON.stringify(data);
+  }
+
+  function snap(v) {
+    return Math.round(v / 10) * 10;
+  }
+
+  function setupGroup(group) {
+    group.on('dragend', () => {
+      group.position({ x: snap(group.x()), y: snap(group.y()) });
+      updateInput();
+    });
+    group.on('dblclick', () => {
+      const text = group.findOne('Text');
+      const val = prompt('Nom de la pièce', text.text());
+      if (val !== null) {
+        text.text(val);
+        updateInput();
+      }
+    });
+    group.on('mousedown', () => {
+      selected = group;
+    });
   }
 
   function loadFloor(index) {
@@ -19,79 +42,58 @@ document.addEventListener('DOMContentLoaded', () => {
       b.classList.toggle('active', i === index);
     });
     floorContainer.innerHTML = '';
-    const canvasEl = document.createElement('canvas');
-    canvasEl.width = floorContainer.clientWidth;
-    canvasEl.height = floorContainer.clientHeight;
-    floorContainer.appendChild(canvasEl);
-    const canvas = new fabric.Canvas(canvasEl);
-    floors[index].canvas = canvas;
-    canvas.loadFromJSON(floors[index].data || {}, () => {
-      canvas.renderAll();
-    });
-    canvas.on('object:modified', updateInput);
-    canvas.on('object:added', updateInput);
+    const stageData = floors[index].data;
+    let stage;
+    if (stageData) {
+      stage = Konva.Node.create(stageData, floorContainer);
+      stage.width(floorContainer.clientWidth);
+      stage.height(floorContainer.clientHeight);
+    } else {
+      stage = new Konva.Stage({
+        container: floorContainer,
+        width: floorContainer.clientWidth,
+        height: floorContainer.clientHeight
+      });
+      const layer = new Konva.Layer();
+      stage.add(layer);
+    }
+    floors[index].stage = stage;
+    stage.find('Group').each(g => setupGroup(g));
 
-    let isPanning = false;
-    canvas.on('mouse:down', opt => {
-      if (opt.e.shiftKey) {
-        isPanning = true;
-        canvas.selection = false;
+    stage.on('mousedown', e => {
+      if (e.evt.shiftKey) {
+        stage.draggable(true);
       }
     });
-    canvas.on('mouse:move', opt => {
-      if (isPanning && opt && opt.e) {
-        const e = opt.e;
-        canvas.relativePan({ x: e.movementX, y: e.movementY });
+    stage.on('mouseup', () => stage.draggable(false));
+    stage.on('wheel', e => {
+      e.evt.preventDefault();
+      const scaleBy = 1.05;
+      const oldScale = stage.scaleX();
+      const pointer = stage.getPointerPosition();
+      const mousePointTo = {
+        x: (pointer.x - stage.x()) / oldScale,
+        y: (pointer.y - stage.y()) / oldScale
+      };
+      const newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
+      stage.scale({ x: newScale, y: newScale });
+      const newPos = {
+        x: pointer.x - mousePointTo.x * newScale,
+        y: pointer.y - mousePointTo.y * newScale
+      };
+      stage.position(newPos);
+      stage.batchDraw();
+    });
+    stage.on('click', e => {
+      if (e.target === stage) {
+        selected = null;
       }
     });
-    canvas.on('mouse:up', () => {
-      canvas.selection = true;
-      isPanning = false;
-    });
-    canvas.on('mouse:wheel', opt => {
-      let zoom = canvas.getZoom();
-      zoom *= 0.999 ** opt.e.deltaY;
-      if (zoom > 4) zoom = 4;
-      if (zoom < 0.2) zoom = 0.2;
-      canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
-      opt.e.preventDefault();
-      opt.e.stopPropagation();
-    });
-
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Delete') {
-        const obj = canvas.getActiveObject();
-        if (obj) {
-          canvas.remove(obj);
-          updateInput();
-        }
-      } else if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
-        const obj = canvas.getActiveObject();
-        if (obj) {
-          const clone = fabric.util.object.clone(obj);
-          clone.set({ left: obj.left + 10, top: obj.top + 10 });
-          canvas.add(clone);
-          updateInput();
-        }
-      }
-    });
-
-    canvas.on('mouse:dblclick', e => {
-      const obj = e.target;
-      if (obj && obj.type === 'group') {
-        const text = obj.item(1); // second item is text
-        const val = prompt('Nom de la pièce', text.text);
-        if (val !== null) {
-          text.text = val;
-          canvas.requestRenderAll();
-          updateInput();
-        }
-      }
-    });
+    updateInput();
   }
 
   function addFloor(name, data) {
-    const floor = { name: name || `Étage ${floors.length + 1}`, data: data || {} };
+    const floor = { name: name || `Étage ${floors.length + 1}`, data: data || null, stage: null };
     floors.push(floor);
     const li = document.createElement('li');
     li.className = 'nav-item';
@@ -103,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
     li.appendChild(btn);
     floorNav.appendChild(li);
     loadFloor(floors.length - 1);
-    updateInput();
   }
 
   document.getElementById('add-floor').addEventListener('click', () => addFloor());
@@ -119,43 +120,47 @@ document.addEventListener('DOMContentLoaded', () => {
   floorContainer.addEventListener('drop', e => {
     e.preventDefault();
     if (currentIndex === -1) return;
+    const stage = floors[currentIndex].stage;
+    const layer = stage.findOne('Layer');
     const type = e.dataTransfer.getData('type');
     const label = e.dataTransfer.getData('label') || type;
-    const canvas = floors[currentIndex].canvas;
-    const rect = new fabric.Rect({ width: 80, height: 40, fill: '#fff', stroke: '#000', strokeWidth: 1 });
-    const text = new fabric.Text(label, { fontSize: 14, originX: 'center', originY: 'center' });
-    const group = new fabric.Group([rect, text], { left: e.offsetX, top: e.offsetY });
-    canvas.add(group);
+    const group = new Konva.Group({ x: e.offsetX, y: e.offsetY, draggable: true });
+    const rect = new Konva.Rect({ width: 80, height: 40, stroke: '#000', fill: '#fff', strokeWidth: 1 });
+    const text = new Konva.Text({ text: label, fontSize: 14, width: 80, align: 'center' });
+    text.y((40 - text.height()) / 2);
+    group.add(rect);
+    group.add(text);
+    layer.add(group);
+    setupGroup(group);
+    layer.draw();
     updateInput();
   });
 
-  // Snap to grid (10px)
-  function snapToGrid(value) {
-    return Math.round(value / 10) * 10;
-  }
-  function applySnapping(opt) {
-    opt.target.set({
-      left: snapToGrid(opt.target.left),
-      top: snapToGrid(opt.target.top)
-    });
-  }
-  function attachSnapping(canvas) {
-    canvas.on('object:moving', applySnapping);
-  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Delete' && selected && currentIndex !== -1) {
+      selected.destroy();
+      floors[currentIndex].stage.batchDraw();
+      selected = null;
+      updateInput();
+    } else if ((e.ctrlKey || e.metaKey) && e.key === 'd' && selected && currentIndex !== -1) {
+      const clone = selected.clone({ x: selected.x() + 10, y: selected.y() + 10 });
+      floors[currentIndex].stage.findOne('Layer').add(clone);
+      setupGroup(clone);
+      floors[currentIndex].stage.batchDraw();
+      selected = clone;
+      updateInput();
+    }
+  });
 
-  // Load from existing data
   try {
     const initial = JSON.parse(layoutInput.value || '[]');
     if (initial.length) {
       initial.forEach(f => addFloor(f.name, f.data));
-      floors.forEach(f => attachSnapping(f.canvas));
     } else {
       addFloor();
-      attachSnapping(floors[0].canvas);
     }
   } catch {
     addFloor();
-    attachSnapping(floors[0].canvas);
   }
 });
 
