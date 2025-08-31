@@ -104,7 +104,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function addFloor(name, data) {
-    const floor = { name: name || `Étage ${floors.length + 1}`, data: data || null, stage: null };
+    if (!name) {
+      const existing = new Set(floors.map(f => f.name.trim().toLowerCase()));
+      let idx = floors.length + 1;
+      while (existing.has(`étage ${idx}`)) idx++;
+      name = `Étage ${idx}`;
+    }
+    const floor = { name, data: data || null, stage: null };
     floors.push(floor);
     const li = document.createElement('li');
     li.className = 'nav-item d-flex align-items-center gap-1';

@@ -3,6 +3,7 @@
 {% block content %}
   <style>
     #room-layout .room-box {
+      position: absolute;
       width: {{ layout.cell_width or 80 }}px;
       height: {{ layout.cell_height or 40 }}px;
       display: flex;
@@ -26,20 +27,26 @@
     {% if r is mapping %}
       {% set label = r.label %}
       {% set rtype = r.type %}
+      {% set x = r.x %}
+      {% set y = r.y %}
     {% else %}
       {% set label = r %}
       {% set rtype = 'room' %}
+      {% set x = 0 %}
+      {% set y = 0 %}
     {% endif %}
     {% set info = room_data.get(label) %}
+    {% set pos = 'left:' ~ x ~ 'px; top:' ~ y ~ 'px;' %}
     {% if rtype != 'room' %}
-      <div class="room-box border bg-dark text-light border-dark-subtle">{{ label }}</div>
+      <div class="room-box border bg-dark text-light border-dark-subtle" style="{{ pos }}">{{ label }}</div>
     {% elif info is not none %}
       <div class="room-box border {{ 'bg-danger-subtle text-danger border-danger-subtle' if info.occupied else 'bg-success-subtle text-success border-success-subtle' }}"
+           style="{{ pos }}"
            data-bs-toggle="tooltip"
            data-bs-title="{{ info.family if info.occupied else 'Libre' }}"
            {% if info.occupied %}data-family-id="{{ info.family_id }}"{% endif %}>{{ label }}</div>
     {% else %}
-      <div class="room-box border bg-dark text-light border-dark-subtle">{{ label }}</div>
+      <div class="room-box border bg-dark text-light border-dark-subtle" style="{{ pos }}">{{ label }}</div>
     {% endif %}
   {% endmacro %}
   <div class="row g-4">
@@ -393,14 +400,10 @@
       <div id="room-layout">
         {% for floor in layout.get('floors', []) %}
           <h6 class="text-center">{{ floor.name }}</h6>
-          {% if floor.rows %}
-          <div class="d-flex flex-column mb-4" style="gap: {{ layout.row_gap or 0 }}px;">
-            {% for row in floor.rows %}
-              <div class="d-flex justify-content-center" style="gap: {{ layout.col_gap or 0 }}px;">
-                {% for room in row %}
-                  {{ room_box(room) }}
-                {% endfor %}
-              </div>
+          {% if floor.rooms %}
+          <div class="position-relative mb-4" style="width: {{ floor.width }}px; height: {{ floor.height }}px;">
+            {% for room in floor.rooms %}
+              {{ room_box(room) }}
             {% endfor %}
           </div>
           {% else %}

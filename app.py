@@ -166,64 +166,49 @@ def parse_groups(raw: str) -> list[dict]:
     return groups
 
 
-def extract_room_rows(stage_data) -> list[list[dict]]:
-    """Convertit les données Konva d'un étage en grille d'éléments.
+def extract_room_layout(stage_data, cell_w=80, cell_h=40) -> tuple[list[dict], int, int]:
+    """Extrait les éléments d'une scène Konva avec leur position.
 
-    Tous les groupes sont pris en compte. Le champ ``type`` permet de
-    distinguer les chambres des autres pièces afin de les afficher
-    différemment sur le tableau de bord.
+    Retourne ``(rooms, width, height)`` où ``rooms`` est une liste de
+    dictionnaires ``{label, type, x, y}``. ``width`` et ``height``
+    correspondent à la taille totale occupée par la disposition.
     """
 
     if isinstance(stage_data, str):
         try:
             stage_data = json.loads(stage_data)
         except json.JSONDecodeError:
-            return []
+            return [], 0, 0
 
     rooms: list[dict] = []
+    max_x = 0
+    max_y = 0
 
     def walk(node):
+        nonlocal max_x, max_y
         if not isinstance(node, dict):
             return
         if node.get("className") == "Group":
             attrs = node.get("attrs", {})
             rtype = attrs.get("type", "room")
-            x = attrs.get("x", 0)
-            y = attrs.get("y", 0)
+            x = int(attrs.get("x", 0))
+            y = int(attrs.get("y", 0))
             label = ""
             for child in node.get("children", []):
                 if child.get("className") == "Text":
                     label = child.get("attrs", {}).get("text", "").strip()
                     break
             if label:
-                rooms.append({"x": x, "y": y, "label": label, "type": rtype})
+                rooms.append({"label": label, "type": rtype, "x": x, "y": y})
+                max_x = max(max_x, x)
+                max_y = max(max_y, y)
         for child in node.get("children", []):
             walk(child)
 
     walk(stage_data)
-    rooms.sort(key=lambda g: (g["y"], g["x"]))
-
-    rows: list[list[dict]] = []
-    current_y = None
-    line: list[dict] = []
-    tolerance = 20  # pixels
-
-    for g in rooms:
-        if current_y is None or abs(g["y"] - current_y) <= tolerance:
-            line.append(g)
-            if current_y is None:
-                current_y = g["y"]
-        else:
-            line.sort(key=lambda d: d["x"])
-            rows.append([{"label": d["label"], "type": d["type"]} for d in line])
-            line = [g]
-            current_y = g["y"]
-
-    if line:
-        line.sort(key=lambda d: d["x"])
-        rows.append([{"label": d["label"], "type": d["type"]} for d in line])
-
-    return rows
+    width = max_x + cell_w
+    height = max_y + cell_h
+    return rooms, width, height
 
 
 def room_capacity(room: str, cfg: dict) -> int:
@@ -1102,6 +1087,8 @@ def config():
             floors_raw = []
         floors: list[dict] = []
         seen_names: set[str] = set()
+        cell_w = layout["cell_width"]
+        cell_h = layout["cell_height"]
         for f in floors_raw:
             name = (f.get("name") or "").strip()
             key = name.lower()
@@ -1109,8 +1096,14 @@ def config():
                 continue
             seen_names.add(key)
             stage_data = f.get("data")
-            rows = extract_room_rows(stage_data)
-            floors.append({"name": name, "data": stage_data, "rows": rows})
+            rooms, width, height = extract_room_layout(stage_data, cell_w, cell_h)
+            floors.append({
+                "name": name,
+                "data": stage_data,
+                "rooms": rooms,
+                "width": width,
+                "height": height,
+            })
         layout["floors"] = floors
 
         save_config(cfg)
