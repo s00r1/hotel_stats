@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const floorNav = document.getElementById('floor-nav');
   const floorContainer = document.getElementById('floor-container');
   const layoutInput = document.getElementById('layout_json');
+  const widthInput = document.getElementById('cell_width');
+  const heightInput = document.getElementById('cell_height');
   if (!palette || !floorNav || !floorContainer || !layoutInput) return;
 
   let floors = [];
@@ -156,9 +158,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const label = e.dataTransfer.getData('label') || type;
     const group = new Konva.Group({ x: e.offsetX, y: e.offsetY, draggable: true });
     group.setAttr('type', type);
-    const rect = new Konva.Rect({ width: 80, height: 40, stroke: '#000', fill: '#fff', strokeWidth: 1 });
-    const text = new Konva.Text({ text: label, fontSize: 14, width: 80, align: 'center' });
-    text.y((40 - text.height()) / 2);
+    const w = parseInt(widthInput?.value) || 80;
+    const h = parseInt(heightInput?.value) || 40;
+    const rect = new Konva.Rect({ width: w, height: h, stroke: '#000', fill: '#fff', strokeWidth: 1 });
+    const text = new Konva.Text({ text: label, fontSize: 14, width: w, align: 'center' });
+    text.y((h - text.height()) / 2);
     group.add(rect);
     group.add(text);
     layer.add(group);

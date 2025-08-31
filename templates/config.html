@@ -138,12 +138,32 @@
           position: relative;
         }
       </style>
+      <div class="row g-3 mb-3">
+        <div class="col">
+          <label class="form-label">Largeur des cases</label>
+          <input type="number" class="form-control" id="cell_width" name="cell_width" value="{{ config.layout.cell_width or 80 }}">
+        </div>
+        <div class="col">
+          <label class="form-label">Hauteur des cases</label>
+          <input type="number" class="form-control" id="cell_height" name="cell_height" value="{{ config.layout.cell_height or 40 }}">
+        </div>
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col">
+          <label class="form-label">Espace horizontal</label>
+          <input type="number" class="form-control" name="col_gap" value="{{ config.layout.col_gap or 0 }}">
+        </div>
+        <div class="col">
+          <label class="form-label">Espace vertical</label>
+          <input type="number" class="form-control" name="row_gap" value="{{ config.layout.row_gap or 0 }}">
+        </div>
+      </div>
       <div class="d-flex gap-3">
         <div class="flex-shrink-0">
           <div id="layout-palette" class="d-flex flex-column gap-2 mb-3">
             <div class="layout-item" draggable="true" data-type="room" data-label="Chambre">Chambre</div>
-            <div class="layout-item" draggable="true" data-type="edf" data-label="Local EDF">Local EDF</div>
-            <div class="layout-item" draggable="true" data-type="trash" data-label="Local poubelles">Local poubelles</div>
+            <div class="layout-item" draggable="true" data-type="edf" data-label="EDF">EDF</div>
+            <div class="layout-item" draggable="true" data-type="trash" data-label="Poubelles">Poubelles</div>
             <div class="layout-item" draggable="true" data-type="stairs" data-label="Escalier">Escalier</div>
             <div class="layout-item" draggable="true" data-type="workshop" data-label="Atelier">Atelier</div>
             <div class="layout-item" draggable="true" data-type="laundry" data-label="Lingerie">Lingerie</div>
