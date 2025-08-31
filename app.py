@@ -1081,16 +1081,33 @@ def config():
         layout = cfg.setdefault("layout", {})
         layout_json = request.form.get("layout_json", "[]")
         try:
+            layout["cell_width"] = int(request.form.get("cell_width", 80))
+        except ValueError:
+            layout["cell_width"] = 80
+        try:
+            layout["cell_height"] = int(request.form.get("cell_height", 40))
+        except ValueError:
+            layout["cell_height"] = 40
+        try:
+            layout["col_gap"] = int(request.form.get("col_gap", 0))
+        except ValueError:
+            layout["col_gap"] = 0
+        try:
+            layout["row_gap"] = int(request.form.get("row_gap", 0))
+        except ValueError:
+            layout["row_gap"] = 0
+        try:
             floors_raw = json.loads(layout_json)
         except json.JSONDecodeError:
             floors_raw = []
         floors: list[dict] = []
         seen_names: set[str] = set()
         for f in floors_raw:
-            name = f.get("name", "") or ""
-            if name in seen_names:
+            name = (f.get("name") or "").strip()
+            key = name.lower()
+            if key in seen_names:
                 continue
-            seen_names.add(name)
+            seen_names.add(key)
             stage_data = f.get("data")
             rows = extract_room_rows(stage_data)
             floors.append({"name": name, "data": stage_data, "rows": rows})
