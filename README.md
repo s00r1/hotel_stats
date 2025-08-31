@@ -5,6 +5,8 @@ Application web légère pour gérer les familles hébergées dans un hôtel soc
 
 L'objectif est de proposer une expérience conviviale en soignant autant **l'interface** que **les données**. Les graphiques, les tableaux responsives et les thèmes personnalisables offrent une présentation claire, tandis que la base de données assure un contenu fiable et complet.
 
+Les dernières évolutions introduisent une **page de configuration complète** (chambres, alertes, plan interactif) et la saisie des **coordonnées téléphoniques** pour les familles comme pour les personnes.
+
 ## Sommaire
 - [Fonctionnalités](#-fonctionnalités)
 - [Installation](#-installation)
@@ -21,10 +23,12 @@ L'objectif est de proposer une expérience conviviale en soignant autant **l'int
 - Graphiques interactifs illustrés par *Chart.js*.
 - Sélecteur de thème clair/sombre avec mémorisation.
 - Plan des chambres interactif affichant l'occupation et les chambres libres.
+- Éditeur de plan par glisser-déposer pour dessiner les étages.
 
 ### 📚 Contenu & statistiques
 
 - Gestion complète des familles et des personnes (ajout, édition, suppression).
+- Page de configuration pour définir chambres, limites d'occupation et alertes.
 - Tableau de bord interactif :
   - statistiques globales (sexe, tranches d’âge, adultes/enfants),
   - visualisation du plan des chambres avec détail de l'occupation,
@@ -35,6 +39,7 @@ L'objectif est de proposer une expérience conviviale en soignant autant **l'int
 - Consultation des archives (familles/personnes sorties) avec filtres.
 - Export CSV des familles et des personnes.
 - Sauvegarde/Chargement JSON des données.
+- Saisie des numéros de téléphone (familles et personnes) et second numéro de chambre.
 
 ## 🛠️ Installation
 
@@ -77,6 +82,7 @@ Le site est accessible sur [http://127.0.0.1:5000](http://127.0.0.1:5000).
 
 - Bouton **Sauvegarder Kardex** pour obtenir un fichier JSON de toutes les données.
 - Page **Charger Kardex** pour réinjecter un fichier précédemment sauvegardé.
+- Sauvegarde/chargement de la configuration de l'hôtel.
 - Export CSV des familles et des personnes disponible depuis la barre de navigation.
 
 ## ☁️ Hébergement

@@ -5,6 +5,8 @@ Lightweight web application to manage families hosted in a social hotel and anal
 
 The goal is to offer a pleasant experience by taking care of both **interface** and **data**. Interactive charts, responsive tables, and customizable themes provide a clear presentation, while the database ensures reliable and complete content.
 
+Recent updates bring a **full configuration page** (rooms, alerts, interactive layout) and phone number fields for families and individuals.
+
 ## Table of Contents
 - [Features](#-features)
 - [Installation](#-installation)
@@ -21,10 +23,12 @@ The goal is to offer a pleasant experience by taking care of both **interface** 
 - Interactive charts with *Chart.js*.
 - Light/dark theme selector with persistence.
 - Interactive room layout showing occupancy and free rooms.
+- Drag-and-drop layout editor to design floors.
 
 ### 📚 Content & Statistics
 
 - Complete management of families and people (add, edit, delete).
+- Configuration page to define rooms, capacity limits and alerts.
 - Interactive dashboard:
   - global statistics (gender, age ranges, adults/children),
   - room layout visualization with occupancy details,
@@ -35,6 +39,7 @@ The goal is to offer a pleasant experience by taking care of both **interface** 
 - Archive consultation (departed families/people) with filters.
 - CSV export of families and people.
 - JSON backup/restore of data.
+- Phone numbers for families and individuals, plus a second room field for families.
 
 ## 🛠️ Installation
 
@@ -77,6 +82,7 @@ The site is available at [http://127.0.0.1:5000](http://127.0.0.1:5000).
 
 - **Export** button to obtain a JSON file with all data.
 - **Restore** page to import a previously saved file.
+- Save/load the hotel configuration from the interface.
 - CSV export of families and people available from the navigation bar.
 
 ## ☁️ Hosting
