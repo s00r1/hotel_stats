@@ -1026,57 +1026,6 @@ def config_import():
     return redirect(url_for("config"))
 
 
-@app.route("/layout/export")
-def layout_export():
-    cfg = load_config()
-    layout = cfg.get("layout", {})
-    resp = make_response(json.dumps(layout, ensure_ascii=False, indent=2))
-    resp.headers["Content-Type"] = "application/json; charset=utf-8"
-    resp.headers["Content-Disposition"] = "attachment; filename=layout.json"
-    return resp
-
-
-@app.route("/layout/import", methods=["POST"])
-def layout_import():
-    file = request.files.get("file")
-    if file:
-        try:
-            data = json.load(file.stream)
-        except json.JSONDecodeError:
-            data = None
-        if isinstance(data, dict) or isinstance(data, list):
-            cfg = load_config()
-            layout = cfg.setdefault("layout", {})
-            if isinstance(data, dict):
-                layout.update({k: v for k, v in data.items() if k != "floors"})
-                floors_raw = data.get("floors", [])
-            else:
-                floors_raw = data
-            floors: list[dict] = []
-            seen_names: set[str] = set()
-            cell_w = layout.get("cell_width", 80)
-            cell_h = layout.get("cell_height", 40)
-            for f in floors_raw:
-                if not isinstance(f, dict):
-                    continue
-                name = (f.get("name") or "").strip()
-                key = name.lower()
-                if key in seen_names:
-                    continue
-                seen_names.add(key)
-                stage_data = f.get("data")
-                rooms, width, height = extract_room_layout(stage_data, cell_w, cell_h)
-                floors.append({
-                    "name": name,
-                    "data": stage_data,
-                    "rooms": rooms,
-                    "width": width,
-                    "height": height,
-                })
-            layout["floors"] = floors
-            save_config(cfg)
-    return redirect(url_for("config"))
-
 
 @app.route("/config", methods=["GET", "POST"])
 def config():
