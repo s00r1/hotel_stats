@@ -276,18 +276,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  let initialLayout = {};
+  let initialFloors = [];
   try {
-    initialLayout = JSON.parse(layoutInput.value || "{}");
+    const parsed = JSON.parse(layoutInput.value || "[]");
+    initialFloors = Array.isArray(parsed)
+      ? parsed
+      : Array.isArray(parsed?.floors)
+        ? parsed.floors
+        : [];
   } catch {
-    initialLayout = {};
+    initialFloors = [];
   }
-  const initialFloors = Array.isArray(initialLayout?.floors)
-    ? initialLayout.floors
-    : Array.isArray(initialLayout)
-      ? initialLayout
-      : [];
-  if (initialFloors.length) {
+  if (Array.isArray(initialFloors) && initialFloors.length) {
     initialFloors.forEach(f => addFloor(f.name, f.data));
   }
 });
