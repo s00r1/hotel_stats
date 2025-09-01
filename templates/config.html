@@ -18,6 +18,9 @@
       <button class="nav-link" id="alerts-tab" data-bs-toggle="tab" data-bs-target="#alerts" type="button" role="tab">Alertes</button>
     </li>
     <li class="nav-item" role="presentation">
+      <button class="nav-link" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">Dashboard</button>
+    </li>
+    <li class="nav-item" role="presentation">
       <button class="nav-link" id="disposition-tab" data-bs-toggle="tab" data-bs-target="#disposition" type="button" role="tab">Disposition</button>
     </li>
   </ul>
@@ -117,8 +120,44 @@
         </div>
       </div>
       <div class="mb-3">
-        <label class="form-label">Âge limite pour l'alerte bébé (années)</label>
-        <input type="number" class="form-control" name="baby_age" value="{{ config.alerts.baby_age }}">
+      <label class="form-label">Âge limite pour l'alerte bébé (années)</label>
+      <input type="number" class="form-control" name="baby_age" value="{{ config.alerts.baby_age }}">
+    </div>
+    </div>
+    <div class="tab-pane fade" id="dashboard" role="tabpanel">
+      <div class="mb-3">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="show_alerts" id="show_alerts" {% if config.dashboard.show_alerts %}checked{% endif %}>
+          <label class="form-check-label" for="show_alerts">Alertes</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="show_total_clients" id="show_total_clients" {% if config.dashboard.show_total_clients %}checked{% endif %}>
+          <label class="form-check-label" for="show_total_clients">Total clients</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="show_birthdays" id="show_birthdays" {% if config.dashboard.show_birthdays %}checked{% endif %}>
+          <label class="form-check-label" for="show_birthdays">Anniversaires</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="show_tenures" id="show_tenures" {% if config.dashboard.show_tenures %}checked{% endif %}>
+          <label class="form-check-label" for="show_tenures">Ancienneté</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="show_age_groups" id="show_age_groups" {% if config.dashboard.show_age_groups %}checked{% endif %}>
+          <label class="form-check-label" for="show_age_groups">Tranches d’âge</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="show_room_layout" id="show_room_layout" {% if config.dashboard.show_room_layout %}checked{% endif %}>
+          <label class="form-check-label" for="show_room_layout">Disposition des chambres</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="show_recent_families" id="show_recent_families" {% if config.dashboard.show_recent_families %}checked{% endif %}>
+          <label class="form-check-label" for="show_recent_families">Familles récentes</label>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Diamètre du graphique des sexes (px)</label>
+        <input type="number" class="form-control" name="sex_chart_diameter" value="{{ config.dashboard.sex_chart_diameter }}">
       </div>
     </div>
     <div class="tab-pane fade" id="disposition" role="tabpanel">

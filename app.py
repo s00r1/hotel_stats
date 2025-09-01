@@ -90,6 +90,16 @@ DEFAULT_CONFIG = {
         "show_isolated_women": True,
         "show_baby_alert": True,
     },
+    "dashboard": {
+        "show_alerts": True,
+        "show_total_clients": True,
+        "show_birthdays": True,
+        "show_tenures": True,
+        "show_age_groups": True,
+        "show_room_layout": True,
+        "show_recent_families": True,
+        "sex_chart_diameter": 200,
+    },
     "layout": {
         "floors": [],
     },
@@ -330,11 +340,20 @@ def set_theme(mode):
 def dashboard():
     cfg = load_config()
     alerts_cfg = cfg.get("alerts", {})
+    dashboard_cfg = cfg.get("dashboard", {})
     baby_age = alerts_cfg.get("baby_age", 1)
     show_free_rooms = alerts_cfg.get("show_free_rooms", True)
     show_overcrowded = alerts_cfg.get("show_overcrowded", True)
     show_isolated_women = alerts_cfg.get("show_isolated_women", True)
     show_baby_alert = alerts_cfg.get("show_baby_alert", True)
+    show_alert_box = dashboard_cfg.get("show_alerts", True)
+    show_total_clients = dashboard_cfg.get("show_total_clients", True)
+    show_birthdays = dashboard_cfg.get("show_birthdays", True)
+    show_tenures = dashboard_cfg.get("show_tenures", True)
+    show_age_groups = dashboard_cfg.get("show_age_groups", True)
+    show_room_layout = dashboard_cfg.get("show_room_layout", True)
+    show_recent_families = dashboard_cfg.get("show_recent_families", True)
+    sex_chart_diameter = dashboard_cfg.get("sex_chart_diameter", 200)
     today = date.today()
     persons = Person.query.join(Family).filter(Family.departure_date.is_(None)).all()
 
@@ -558,6 +577,14 @@ def dashboard():
         show_overcrowded=show_overcrowded,
         show_isolated_women=show_isolated_women,
         show_baby_alert=show_baby_alert,
+        show_alert_box=show_alert_box,
+        show_total_clients=show_total_clients,
+        show_birthdays=show_birthdays,
+        show_tenures=show_tenures,
+        show_age_groups=show_age_groups,
+        show_room_layout=show_room_layout,
+        show_recent_families=show_recent_families,
+        sex_chart_diameter=sex_chart_diameter,
         free_rooms=free_rooms,
         room_data=room_data,
         layout=cfg.get("layout", {}),
@@ -1063,6 +1090,19 @@ def config():
             alerts["baby_age"] = int(request.form.get("baby_age", 1))
         except ValueError:
             alerts["baby_age"] = 1
+
+        dashboard_cfg = cfg.setdefault("dashboard", {})
+        dashboard_cfg["show_alerts"] = bool(request.form.get("show_alerts"))
+        dashboard_cfg["show_total_clients"] = bool(request.form.get("show_total_clients"))
+        dashboard_cfg["show_birthdays"] = bool(request.form.get("show_birthdays"))
+        dashboard_cfg["show_tenures"] = bool(request.form.get("show_tenures"))
+        dashboard_cfg["show_age_groups"] = bool(request.form.get("show_age_groups"))
+        dashboard_cfg["show_room_layout"] = bool(request.form.get("show_room_layout"))
+        dashboard_cfg["show_recent_families"] = bool(request.form.get("show_recent_families"))
+        try:
+            dashboard_cfg["sex_chart_diameter"] = int(request.form.get("sex_chart_diameter", 200))
+        except ValueError:
+            dashboard_cfg["sex_chart_diameter"] = 200
 
         layout = cfg.setdefault("layout", {})
         layout_json = request.form.get("layout_json", "[]")
