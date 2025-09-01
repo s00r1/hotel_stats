@@ -147,6 +147,13 @@
           background: var(--bs-danger-bg-subtle);
         }
       </style>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('layout_export') }}">Sauvegarder disposition</a>
+        <form method="post" action="{{ url_for('layout_import') }}" enctype="multipart/form-data" class="d-flex gap-2">
+          <input type="file" name="file" class="form-control form-control-sm" required>
+          <button type="submit" class="btn btn-sm btn-outline-secondary">Charger disposition</button>
+        </form>
+      </div>
       <div class="row g-3 mb-3">
         <div class="col">
           <label class="form-label">Largeur des cases</label>
