@@ -67,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function setupGroup(group) {
+    group.draggable(true);
     group.on('dragmove', () => {
       if (overTrash(group.getStage())) {
         trash?.classList.add('dragover');
