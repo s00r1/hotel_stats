@@ -1090,6 +1090,13 @@ def config():
         cell_w = layout["cell_width"]
         cell_h = layout["cell_height"]
         for f in floors_raw:
+            if isinstance(f, str):
+                try:
+                    f = json.loads(f)
+                except json.JSONDecodeError:
+                    continue
+            if not isinstance(f, dict):
+                continue
             name = (f.get("name") or "").strip()
             key = name.lower()
             if key in seen_names:
