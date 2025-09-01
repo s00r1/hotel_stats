@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateInput();
   }
 
-  function addFloor(name, data) {
+  function addFloor(name, data, select = true) {
     if (!name) {
       const existing = new Set(floors.map(f => f.name.trim().toLowerCase()));
       let idx = floors.length + 1;
@@ -213,7 +213,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     li.append(btn, renameBtn, deleteBtn);
     floorNav.appendChild(li);
-    loadFloor(floors.length - 1);
+    if (select) {
+      loadFloor(floors.length - 1);
+    }
   }
 
   document.getElementById('add-floor').addEventListener('click', () => addFloor());
@@ -288,7 +290,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initialFloors = [];
   }
   if (Array.isArray(initialFloors) && initialFloors.length) {
-    initialFloors.forEach(f => addFloor(f.name, f.data));
+    initialFloors.forEach(f => addFloor(f.name, f.data, false));
+    loadFloor(0);
   }
 });
 
