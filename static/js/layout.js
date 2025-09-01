@@ -265,17 +265,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  let initial = [];
+  let initialLayout = {};
   try {
-    initial = JSON.parse(layoutInput.value || "[]");
-    if (!Array.isArray(initial) && Array.isArray(initial?.floors)) {
-      initial = initial.floors;
-    }
+    initialLayout = JSON.parse(layoutInput.value || "{}");
   } catch {
-    initial = [];
+    initialLayout = {};
   }
-  if (Array.isArray(initial) && initial.length) {
-    initial.forEach(f => addFloor(f.name, f.data));
+  const initialFloors = Array.isArray(initialLayout?.floors)
+    ? initialLayout.floors
+    : Array.isArray(initialLayout)
+      ? initialLayout
+      : [];
+  if (initialFloors.length) {
+    initialFloors.forEach(f => addFloor(f.name, f.data));
   }
 });
 
