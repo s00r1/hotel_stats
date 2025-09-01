@@ -50,6 +50,7 @@
     {% endif %}
   {% endmacro %}
   <div class="row g-4">
+{% if show_alert_box %}
 <div class="col-12 col-xl-4 d-flex flex-column">
     <div class="card shadow-soft p-3">
 <h6 class="mb-3"><i class="bi bi-exclamation-triangle me-2"></i>Alertes</h6>
@@ -131,7 +132,9 @@
 </div>
 </div>
 </div>
+{% endif %}
 <div class="col-12 col-xl-4">
+    {% if show_total_clients %}
     <div class="card shadow-soft p-3">
 <div class="d-flex align-items-center">
 <div class="display-6 me-3 text-info"><i class="bi bi-people-fill"></i></div>
@@ -145,10 +148,12 @@
 </div>
 </div>
 </div>
+    {% endif %}
     <div class="card shadow-soft p-3 mt-4">
 <h6 class="mb-3"><i class="bi bi-gender-ambiguous me-2"></i>Répartition par sexe</h6>
-<canvas height="200" id="sexChart"></canvas>
+<canvas id="sexChart" width="{{ sex_chart_diameter }}" height="{{ sex_chart_diameter }}"></canvas>
 </div>
+    {% if show_age_groups %}
     <div class="card shadow-soft p-3 mt-4">
 <h6 class="mb-3"><i class="bi bi-activity me-2"></i>Tranches d’âge</h6>
 <canvas height="200" id="ageChart"></canvas>
@@ -163,10 +168,12 @@
   </div>
 </div>
 </div>
+    {% endif %}
 
 </div>
 <div class="col-12 col-xl-4">
 
+    {% if show_birthdays %}
     <div class="card shadow-soft p-3">
 <h6 class="mb-3"><i class="bi bi-cake2 me-2"></i>Anniversaires</h6>
         {% if birthdays_today %}
@@ -247,7 +254,9 @@
             </ul>
 </div>
 </div>
-</div>
+    </div>
+    {% endif %}
+    {% if show_tenures %}
     <div class="card shadow-soft p-3 mt-4">
 <h6 class="mb-3"><i class="bi bi-hourglass-split me-2"></i>Ancienneté</h6>
 <ul class="nav nav-pills mb-3" id="seniorityTab" role="tablist">
@@ -322,7 +331,8 @@
       </tbody>
     </table>
   </div>
-</div>
+    </div>
+    {% endif %}
 </div>
 </div>
 <div class="tab-pane fade" id="new" role="tabpanel">
@@ -395,6 +405,7 @@
  </div></div>
  </div>
 
+    {% if show_room_layout %}
     <div class="card shadow-soft p-3 mt-4">
       <h6 class="mb-3"><i class="bi bi-building me-2"></i>Disposition des chambres</h6>
       <div id="room-layout">
@@ -412,7 +423,9 @@
         {% endfor %}
       </div>
     </div>
+    {% endif %}
 
+    {% if show_recent_families %}
     <div class="card shadow-soft p-3 mt-4">
   <div class="d-flex align-items-center justify-content-between">
     <h6 class="mb-0"><i class="bi bi-clock-history me-2"></i>Familles récentes</h6>
@@ -444,6 +457,7 @@
     </table>
   </div>
 </div>
+    {% endif %}
 {% for f in families %}
 <div class="modal fade" id="famModal{{ f.id }}" tabindex="-1">
   <div class="modal-dialog">

@@ -20,6 +20,16 @@
     "show_isolated_women": true,
     "show_baby_alert": true
   },
+  "dashboard": {
+    "show_alerts": true,
+    "show_total_clients": true,
+    "show_birthdays": true,
+    "show_tenures": true,
+    "show_age_groups": true,
+    "show_room_layout": true,
+    "show_recent_families": true,
+    "sex_chart_diameter": 200
+  },
   "layout": {
     "floors": []
   }
