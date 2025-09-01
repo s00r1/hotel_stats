@@ -28,7 +28,17 @@
     "show_age_groups": true,
     "show_room_layout": true,
     "show_recent_families": true,
-    "sex_chart_diameter": 200
+    "sex_chart_diameter": 200,
+    "layout": {
+      "alerts": {"order": 1, "width": 4},
+      "total_clients": {"order": 2, "width": 4},
+      "birthdays": {"order": 3, "width": 4},
+      "sex_chart": {"order": 4, "width": 4},
+      "tenures": {"order": 5, "width": 4},
+      "age_groups": {"order": 6, "width": 4},
+      "room_layout": {"order": 7, "width": 4},
+      "recent_families": {"order": 8, "width": 4}
+    }
   },
   "layout": {
     "floors": []

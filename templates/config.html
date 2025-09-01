@@ -159,6 +159,58 @@
         <label class="form-label">Diamètre du graphique des sexes (px)</label>
         <input type="number" class="form-control" name="sex_chart_diameter" value="{{ config.dashboard.sex_chart_diameter }}">
       </div>
+      <div class="mb-3">
+        <label class="form-label">Disposition des boxes</label>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+              <tr><th>Boxe</th><th>Ordre</th><th>Largeur (1-12)</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Alertes</td>
+                <td><input type="number" class="form-control" name="order_alerts" value="{{ config.dashboard.layout.alerts.order }}"></td>
+                <td><input type="number" class="form-control" name="width_alerts" value="{{ config.dashboard.layout.alerts.width }}"></td>
+              </tr>
+              <tr>
+                <td>Total clients</td>
+                <td><input type="number" class="form-control" name="order_total_clients" value="{{ config.dashboard.layout.total_clients.order }}"></td>
+                <td><input type="number" class="form-control" name="width_total_clients" value="{{ config.dashboard.layout.total_clients.width }}"></td>
+              </tr>
+              <tr>
+                <td>Anniversaires</td>
+                <td><input type="number" class="form-control" name="order_birthdays" value="{{ config.dashboard.layout.birthdays.order }}"></td>
+                <td><input type="number" class="form-control" name="width_birthdays" value="{{ config.dashboard.layout.birthdays.width }}"></td>
+              </tr>
+              <tr>
+                <td>Répartition par sexe</td>
+                <td><input type="number" class="form-control" name="order_sex_chart" value="{{ config.dashboard.layout.sex_chart.order }}"></td>
+                <td><input type="number" class="form-control" name="width_sex_chart" value="{{ config.dashboard.layout.sex_chart.width }}"></td>
+              </tr>
+              <tr>
+                <td>Ancienneté</td>
+                <td><input type="number" class="form-control" name="order_tenures" value="{{ config.dashboard.layout.tenures.order }}"></td>
+                <td><input type="number" class="form-control" name="width_tenures" value="{{ config.dashboard.layout.tenures.width }}"></td>
+              </tr>
+              <tr>
+                <td>Tranches d’âge</td>
+                <td><input type="number" class="form-control" name="order_age_groups" value="{{ config.dashboard.layout.age_groups.order }}"></td>
+                <td><input type="number" class="form-control" name="width_age_groups" value="{{ config.dashboard.layout.age_groups.width }}"></td>
+              </tr>
+              <tr>
+                <td>Disposition des chambres</td>
+                <td><input type="number" class="form-control" name="order_room_layout" value="{{ config.dashboard.layout.room_layout.order }}"></td>
+                <td><input type="number" class="form-control" name="width_room_layout" value="{{ config.dashboard.layout.room_layout.width }}"></td>
+              </tr>
+              <tr>
+                <td>Familles récentes</td>
+                <td><input type="number" class="form-control" name="order_recent_families" value="{{ config.dashboard.layout.recent_families.order }}"></td>
+                <td><input type="number" class="form-control" name="width_recent_families" value="{{ config.dashboard.layout.recent_families.width }}"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
     <div class="tab-pane fade" id="disposition" role="tabpanel">
       <style>
