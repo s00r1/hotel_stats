@@ -106,11 +106,22 @@ document.addEventListener('DOMContentLoaded', () => {
     floorContainer.innerHTML = '';
     const stageData = floors[index].data;
     let stage;
-    if (stageData) {
-      stage = Konva.Node.create(stageData, floorContainer);
-      stage.width(floorContainer.clientWidth);
-      stage.height(floorContainer.clientHeight);
-    } else {
+    try {
+      if (stageData) {
+        stage = Konva.Node.create(stageData, floorContainer);
+        stage.width(floorContainer.clientWidth);
+        stage.height(floorContainer.clientHeight);
+      } else {
+        stage = new Konva.Stage({
+          container: floorContainer,
+          width: floorContainer.clientWidth,
+          height: floorContainer.clientHeight
+        });
+        const layer = new Konva.Layer();
+        stage.add(layer);
+      }
+    } catch (err) {
+      console.error('Erreur lors du chargement de l\'étage', err);
       stage = new Konva.Stage({
         container: floorContainer,
         width: floorContainer.clientWidth,
