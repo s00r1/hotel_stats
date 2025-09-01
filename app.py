@@ -99,6 +99,16 @@ DEFAULT_CONFIG = {
         "show_room_layout": True,
         "show_recent_families": True,
         "sex_chart_diameter": 200,
+        "layout": {
+            "alerts": {"order": 1, "width": 4},
+            "total_clients": {"order": 2, "width": 4},
+            "birthdays": {"order": 3, "width": 4},
+            "sex_chart": {"order": 4, "width": 4},
+            "tenures": {"order": 5, "width": 4},
+            "age_groups": {"order": 6, "width": 4},
+            "room_layout": {"order": 7, "width": 4},
+            "recent_families": {"order": 8, "width": 4},
+        },
     },
     "layout": {
         "floors": [],
@@ -354,6 +364,7 @@ def dashboard():
     show_room_layout = dashboard_cfg.get("show_room_layout", True)
     show_recent_families = dashboard_cfg.get("show_recent_families", True)
     sex_chart_diameter = dashboard_cfg.get("sex_chart_diameter", 200)
+    box_layout = dashboard_cfg.get("layout", {})
     today = date.today()
     persons = Person.query.join(Family).filter(Family.departure_date.is_(None)).all()
 
@@ -588,6 +599,7 @@ def dashboard():
         free_rooms=free_rooms,
         room_data=room_data,
         layout=cfg.get("layout", {}),
+        box_layout=box_layout,
         Person=Person,
     )
 
@@ -1103,6 +1115,27 @@ def config():
             dashboard_cfg["sex_chart_diameter"] = int(request.form.get("sex_chart_diameter", 200))
         except ValueError:
             dashboard_cfg["sex_chart_diameter"] = 200
+        box_layout: dict[str, dict[str, int]] = {}
+        for key in [
+            "alerts",
+            "total_clients",
+            "birthdays",
+            "sex_chart",
+            "tenures",
+            "age_groups",
+            "room_layout",
+            "recent_families",
+        ]:
+            try:
+                order = int(request.form.get(f"order_{key}", 0))
+            except ValueError:
+                order = 0
+            try:
+                width = int(request.form.get(f"width_{key}", 4))
+            except ValueError:
+                width = 4
+            box_layout[key] = {"order": order, "width": width}
+        dashboard_cfg["layout"] = box_layout
 
         layout = cfg.setdefault("layout", {})
         layout_json = request.form.get("layout_json", "[]")
