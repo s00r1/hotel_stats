@@ -18,8 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const seen = new Set();
     const data = [];
     floors.forEach(f => {
-      if (!f.stage) return;
-      f.data = f.stage.toJSON();
+      if (f.stage) {
+        f.data = f.stage.toJSON();
+      }
       const key = f.name.trim().toLowerCase();
       if (seen.has(key)) return;
       seen.add(key);
