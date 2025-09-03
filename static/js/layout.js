@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-  if (window.__layoutInit) return;
-  window.__layoutInit = true;
+  // Nettoie toute initialisation précédente si le script est réexécuté
+  if (window.__layoutCleanup) {
+    window.__layoutCleanup();
+  }
+
   const palette = document.getElementById('layout-palette');
   const floorNav = document.getElementById('floor-nav');
   const floorContainer = document.getElementById('floor-container');
@@ -219,19 +222,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  document.getElementById('add-floor').addEventListener('click', () => addFloor());
+  const addFloorBtn = document.getElementById('add-floor');
+  const addFloorHandler = () => addFloor();
+  addFloorBtn.addEventListener('click', addFloorHandler);
 
-  zoomInBtn?.addEventListener('click', () => {
+  const zoomInHandler = () => {
     if (currentIndex !== -1) {
       zoomStage(floors[currentIndex].stage, true);
     }
-  });
+  };
+  zoomInBtn?.addEventListener('click', zoomInHandler);
 
-  zoomOutBtn?.addEventListener('click', () => {
+  const zoomOutHandler = () => {
     if (currentIndex !== -1) {
       zoomStage(floors[currentIndex].stage, false);
     }
-  });
+  };
+  zoomOutBtn?.addEventListener('click', zoomOutHandler);
 
   palette.querySelectorAll('.layout-item').forEach(item => {
     item.addEventListener('dragstart', e => {
@@ -240,8 +247,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  floorContainer.addEventListener('dragover', e => e.preventDefault());
-  floorContainer.addEventListener('drop', e => {
+  const dragOverHandler = e => e.preventDefault();
+  floorContainer.addEventListener('dragover', dragOverHandler);
+  const dropHandler = e => {
     e.preventDefault();
     if (currentIndex === -1) return;
     const stage = floors[currentIndex].stage;
@@ -261,9 +269,10 @@ document.addEventListener('DOMContentLoaded', () => {
     setupGroup(group);
     layer.draw();
     updateInput();
-  });
+  };
+  floorContainer.addEventListener('drop', dropHandler);
 
-  document.addEventListener('keydown', e => {
+  const keydownHandler = e => {
     if (e.key === 'Delete' && selected && currentIndex !== -1) {
       selected.destroy();
       floors[currentIndex].stage.batchDraw();
@@ -277,7 +286,20 @@ document.addEventListener('DOMContentLoaded', () => {
       selected = clone;
       updateInput();
     }
-  });
+  };
+  document.addEventListener('keydown', keydownHandler);
+
+  // Fonction de nettoyage pour les réinitialisations ultérieures
+  window.__layoutCleanup = () => {
+    addFloorBtn.removeEventListener('click', addFloorHandler);
+    zoomInBtn?.removeEventListener('click', zoomInHandler);
+    zoomOutBtn?.removeEventListener('click', zoomOutHandler);
+    floorContainer.removeEventListener('dragover', dragOverHandler);
+    floorContainer.removeEventListener('drop', dropHandler);
+    document.removeEventListener('keydown', keydownHandler);
+    floorNav.innerHTML = '';
+    floorContainer.innerHTML = '';
+  };
 
   let initialFloors = [];
   try {
