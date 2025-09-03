@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const trash = document.getElementById('layout-trash');
   const zoomInBtn = document.getElementById('zoom-in');
   const zoomOutBtn = document.getElementById('zoom-out');
+  const form = layoutInput.closest('form');
   if (!palette || !floorNav || !floorContainer || !layoutInput) return;
 
   let floors = [];
@@ -219,6 +220,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.getElementById('add-floor').addEventListener('click', () => addFloor());
+
+  form?.addEventListener('submit', () => updateInput());
 
   zoomInBtn?.addEventListener('click', () => {
     if (currentIndex !== -1) {
