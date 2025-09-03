@@ -167,11 +167,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function addFloor(name, data, select = true) {
+    const existing = new Set(floors.map(f => f.name.trim().toLowerCase()));
     if (!name) {
-      const existing = new Set(floors.map(f => f.name.trim().toLowerCase()));
       let idx = floors.length + 1;
       while (existing.has(`étage ${idx}`)) idx++;
       name = `Étage ${idx}`;
+    } else if (existing.has(name.trim().toLowerCase())) {
+      return;
     }
     const floor = { name, data: data || null, stage: null };
     floors.push(floor);
@@ -293,7 +295,14 @@ document.addEventListener('DOMContentLoaded', () => {
     initialFloors = [];
   }
   if (Array.isArray(initialFloors) && initialFloors.length) {
-    initialFloors.forEach(f => addFloor(f.name, f.data, false));
+    const seen = new Set();
+    const uniqueFloors = initialFloors.filter(f => {
+      const key = f?.name?.trim().toLowerCase();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    uniqueFloors.forEach(f => addFloor(f.name, f.data, false));
     loadFloor(0);
   }
 });
