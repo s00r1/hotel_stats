@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  if (window.__layoutInit) return;
-  window.__layoutInit = true;
   const palette = document.getElementById('layout-palette');
   const floorNav = document.getElementById('floor-nav');
   const floorContainer = document.getElementById('floor-container');
