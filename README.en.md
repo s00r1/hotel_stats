@@ -1,7 +1,7 @@
-# Social Hotel – Kardex & Statistics
+# FlexiLogis – Kardex & Statistics
 **Languages: [Français](README.md) | [English](README.en.md) | [العربية](README.ar.md)**
 
-Lightweight web application to manage families hosted in a social hotel and analyze the hosted population. Built with **Flask**, **SQLite**, **Bootstrap** and **Chart.js**.
+Lightweight web application to manage families hosted in a facility and analyze the hosted population. Built with **Flask**, **SQLite**, **Bootstrap** and **Chart.js**.
 
 The goal is to offer a pleasant experience by taking care of both **interface** and **data**. Interactive charts, responsive tables, and customizable themes provide a clear presentation, while the database ensures reliable and complete content.
 
@@ -41,8 +41,8 @@ The goal is to offer a pleasant experience by taking care of both **interface** 
 1. Clone the repository:
 
 ```bash
-git clone https://example.com/hotel_stats.git
-cd hotel_stats
+git clone https://example.com/flexilogis.git
+cd flexilogis
 ```
 
 2. (Optional) Create a virtual environment:
@@ -75,7 +75,7 @@ The site is available at [http://127.0.0.1:5000](http://127.0.0.1:5000).
 
 ## ⚙️ Interface Configuration
 
-The **Configuration** page adapts the app to your hotel. Access it via the navigation bar; top buttons let you **export** or **import** your settings in JSON.
+The **Configuration** page adapts the app to your facility. Access it via the navigation bar; top buttons let you **export** or **import** your settings in JSON.
 
 ### Tab "Hotel"
 
@@ -125,7 +125,7 @@ For production:
 
 ```bash
 export FLASK_ENV=production
-export DATABASE_URL="sqlite:///hotel_social.db"  # or another DBMS
+export DATABASE_URL="sqlite:///flexilogis.db"  # or another DBMS
 ```
 
 2. Use a WSGI server like [Gunicorn](https://gunicorn.org/):
