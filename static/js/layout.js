@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
       stage.add(layer);
     }
     floors[index].stage = stage;
-    stage.find('Group').each(g => setupGroup(g));
+    stage.find('Group').forEach(g => setupGroup(g));
 
     stage.on('mousedown', e => {
       if (e.evt.shiftKey) {
