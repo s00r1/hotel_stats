@@ -93,6 +93,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const val = prompt('Nom de la pièce', text.text());
       if (val !== null) {
         text.text(val);
+        const rect = group.findOne('Rect');
+        const h = rect.height();
+        text.y((h - text.height()) / 2);
+        group.getLayer().draw();
         updateInput();
       }
     });
