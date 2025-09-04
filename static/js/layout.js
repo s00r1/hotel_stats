@@ -295,14 +295,15 @@ document.addEventListener('DOMContentLoaded', () => {
     initialFloors = [];
   }
   if (Array.isArray(initialFloors) && initialFloors.length) {
+    floors.length = 0;
+    floorNav.innerHTML = '';
     const seen = new Set();
-    const uniqueFloors = initialFloors.filter(f => {
+    initialFloors.forEach(f => {
       const key = f?.name?.trim().toLowerCase();
-      if (!key || seen.has(key)) return false;
+      if (!key || seen.has(key)) return;
       seen.add(key);
-      return true;
+      addFloor(f.name, f.data, false);
     });
-    uniqueFloors.forEach(f => addFloor(f.name, f.data, false));
     loadFloor(0);
   }
 });
