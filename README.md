@@ -1,7 +1,7 @@
-# Hôtel Social – Kardex & Statistiques
+# FlexiLogis – Kardex & Statistiques
 **Langues : [Français](README.md) | [English](README.en.md) | [العربية](README.ar.md)**
 
-Application web légère pour gérer les familles hébergées dans un hôtel social et analyser la population accueillie. Conçue avec **Flask**, **SQLite**, **Bootstrap** et **Chart.js**.
+Application web légère pour gérer les familles hébergées dans un établissement et analyser la population accueillie. Conçue avec **Flask**, **SQLite**, **Bootstrap** et **Chart.js**.
 
 L'objectif est de proposer une expérience conviviale en soignant autant **l'interface** que **les données**. Les graphiques, les tableaux responsives et les thèmes personnalisables offrent une présentation claire, tandis que la base de données assure un contenu fiable et complet.
 
@@ -41,8 +41,8 @@ L'objectif est de proposer une expérience conviviale en soignant autant **l'int
 1. Cloner le dépôt :
 
 ```bash
-git clone https://example.com/hotel_stats.git
-cd hotel_stats
+git clone https://example.com/flexilogis.git
+cd flexilogis
 ```
 
 2. (Optionnel) Créer un environnement virtuel :
@@ -75,7 +75,7 @@ Le site est accessible sur [http://127.0.0.1:5000](http://127.0.0.1:5000).
 
 ## ⚙️ Configuration de l'interface
 
-La page **Configuration** permet d'adapter l'application à la structure réelle de l'hôtel. On y accède depuis la barre de navigation, et deux boutons en haut permettent **d'exporter** ou **d'importer** vos réglages au format JSON.
+La page **Configuration** permet d'adapter l'application à la structure réelle de l'établissement. On y accède depuis la barre de navigation, et deux boutons en haut permettent **d'exporter** ou **d'importer** vos réglages au format JSON.
 
 ### Onglet « Hôtel »
 
@@ -125,7 +125,7 @@ Pour la production :
 
 ```bash
 export FLASK_ENV=production
-export DATABASE_URL="sqlite:///hotel_social.db"  # ou autre SGBD
+export DATABASE_URL="sqlite:///flexilogis.db"  # ou autre SGBD
 ```
 
 2. Utiliser un serveur WSGI comme [Gunicorn](https://gunicorn.org/) :

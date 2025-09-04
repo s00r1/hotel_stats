@@ -1,4 +1,4 @@
-# app.py  —  Hôtel Social • Kardex + Stats (Flask + SQLite + Chart.js)
+# app.py  —  FlexiLogis • Kardex + Stats (Flask + SQLite + Chart.js)
 # Python 3.12 x64 recommandé
 
 from datetime import date, datetime
@@ -14,7 +14,7 @@ from sqlalchemy import or_, text
 from sqlalchemy.exc import OperationalError
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///hotel_social.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///flexilogis.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 

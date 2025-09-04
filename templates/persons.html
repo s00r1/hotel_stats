@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Personnes - Kardex Hôtel Social{% endblock %}
+{% block title %}Personnes - FlexiLogis{% endblock %}
 {% block content %}
 <div class="d-flex align-items-center justify-content-between mb-3">
 <h4 class="m-0"><i class="bi bi-person-lines-fill me-2"></i>{{ family.label if family.label not in [None, 'None'] else 'Famille' }} <span class="text-secondary">| Chambre {{ rooms_text(family) or '—' }}</span></h4>
