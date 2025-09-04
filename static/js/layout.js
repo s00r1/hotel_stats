@@ -30,6 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
     layoutInput.value = JSON.stringify(data);
   }
 
+  window.addEventListener('beforeunload', () => updateInput());
+
   function snap(v) {
     return Math.round(v / 10) * 10;
   }
@@ -100,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function loadFloor(index) {
+    updateInput();
     currentIndex = index;
     floorNav.querySelectorAll('.nav-link').forEach((b, i) => {
       b.classList.toggle('active', i === index);
@@ -163,7 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
         selected = null;
       }
     });
-    updateInput();
   }
 
   function addFloor(name, data, select = true) {
